@@ -1,7 +1,7 @@
 {
     "name": "RSSHub",
     "description": "A rsshub powered by flask.",
-    "repository": "https://github.com/alphardex/rsshub",
+    "repository": "https://github.com/alphardex/RSSHub-python",
     "keywords": [
         "python",
         "flask"
