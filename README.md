@@ -48,6 +48,6 @@ flask run
 
 ### 部署到Heroku
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/alphardex/rsshub)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/alphardex/RSSHub-python)
 
 记得在环境变量中把FLASK_CONFIG设为production
