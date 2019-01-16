@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.doubanio.com/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+bootstrap-flask = "*"
+flask-debugtoolbar = "*"
+flask-moment = "*"
+Flask = "*"
+python-dotenv = "*"
+"psycopg2" = "*"
+gunicorn = "*"
+requests = "*"
+parsel = "*"
+
+[dev-packages]
+coverage = "*"
+pdir2 = "*"
+ptpython = "*"
+yapf = "*"
+pylint = "*"
+
+[scripts]
+test = "python -m unittest discover"
+coverage = "coverage run -m unittest discover"

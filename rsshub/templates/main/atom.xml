@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <generator>{{config['SITE_NAME']}}</generator>
+    <webMaster>{{config['EMAIL']}}</webMaster>
+    <language>zh-cn</language>
+    <id>{{link}}</id>
+    <title><![CDATA[{{title|safe}}]]></title>
+    <link href="{{link}}"/>
+    <author>
+        <name><![CDATA[{{author|safe}}]]></name>
+    </author>
+    {% for item in items %}
+        <entry>
+            <id>{{item.link}}</id>
+            <title><![CDATA[{{item.title|safe}}]]></title>
+            <published>{{item.pubDate}}</published>
+            <updated>{{item.pubDate}}</updated>
+            <link href="{{item.link}}"/>
+            <content type="html" src="{{item.link}}"><![CDATA[{{item.description|safe}}]]></content>
+        </entry>
+    {% endfor %}
+</feed>
