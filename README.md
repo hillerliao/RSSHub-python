@@ -35,7 +35,7 @@ DEMO地址：https://rsshub-python.herokuapp.com
 
 ``` bash
 git clone https://github.com/alphardex/RSSHub-python
-cd rsshub
+cd RSSHub-python
 pipenv install --dev
 pipenv shell
 ```
