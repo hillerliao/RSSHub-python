@@ -6,7 +6,12 @@ domain = 'https://chuansongme.com'
 def parse(post):
     item = {}
     item['title'] = post.css('a.question_link::text').extract()[-1].strip()
-    item['link'] = f"{domain}{post.css('a.question_link::attr(href)').extract_first()}"
+    link = f"{domain}{post.css('a.question_link::attr(href)').extract_first()}"
+    item['link'] = link
+    try:
+        item['description'] = '\n'.join(fetch(link).css('p span::text').extract())
+    except AttributeError:
+        pass
     return item
 
 
