@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 import click
 from flask import Flask, render_template
 from flask.cli import with_appcontext
@@ -19,6 +20,7 @@ def create_app(config_name=None):
     register_blueprints(app)
     register_extensions(app)
     register_errors(app)
+    register_context_processors(app)
     register_cli(app)
 
     return app
@@ -46,6 +48,13 @@ def register_errors(app):
     @app.errorhandler(500)
     def internal_server_error(e):
         return render_template('errors/500.html'), 500
+
+
+def register_context_processors(app):
+    @app.context_processor
+    def inject_date_now():
+        now = datetime.utcnow()
+        return {'now': now}
 
 
 def register_cli(app):

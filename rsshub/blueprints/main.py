@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, current_app, request
-
+from flask import Blueprint, render_template, request
 
 bp = Blueprint('main', __name__)
 
@@ -7,12 +6,6 @@ bp = Blueprint('main', __name__)
 @bp.route('/')
 def index():
     return render_template('main/index.html')
-
-
-@bp.route('/feeds')
-def feeds():
-    feed_rules = [rule for rule in current_app.url_map._rules if 'main' in rule.endpoint][:-2]
-    return render_template('main/feeds.html', rules=feed_rules)
 
 
 @bp.app_template_global()
@@ -34,13 +27,8 @@ def filter_content(ctx):
 
 
 #---------- feed路由从这里开始 -----------#
-@bp.route('/guokr/scentific')
-def guokr_scientific():
-    from rsshub.spiders.guokr.scientific import ctx
-    return render_template('main/atom.xml', **filter_content(ctx))
-
-
-@bp.route('/toutiao/today')
-def toutiao_today():
-    from rsshub.spiders.toutiao.today import ctx
-    return render_template('main/atom.xml', **filter_content(ctx))
+@bp.route('/chuansongme/articles/<string:category>')
+@bp.route('/chuansongme/articles')
+def chuansongme_articles(category=''):
+    from rsshub.spiders.chuansongme.articles import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))

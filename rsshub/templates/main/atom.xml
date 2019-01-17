@@ -13,8 +13,8 @@
         <entry>
             <id>{{item.link}}</id>
             <title><![CDATA[{{item.title|safe}}]]></title>
-            <published>{{item.pubDate}}</published>
-            <updated>{{item.pubDate}}</updated>
+            <published>{{item.pubDate|default(now)}}</published>
+            <updated>{{item.pubDate|default(now)}}</updated>
             <link href="{{item.link}}"/>
             <content type="html" src="{{item.link}}"><![CDATA[{{item.description|safe}}]]></content>
         </entry>
