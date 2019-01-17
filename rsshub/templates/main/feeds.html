@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block title %}All Feeds{% endblock title %}
+
+{% block content %}
+<div class="card text-left">
+  <div class="card-body">
+    <h4 class="card-title">传送门</h4>
+    <h6 class="text-muted">文章 <a href="https://github.com/alphardex" target="_blank" class="badge badge-secondary">by alphardex</a></h6>
+    <p class="card-text">举例：<a href="https://rsshub-python.herokuapp.com/chuansongme/articles" target="_blank">https://rsshub-python.herokuapp.com/chuansongme/articles</a></p>
+    <p class="card-text">路由：<code>/chuansongme/articles/:category</code></p>
+    <p class="card-text">参数：category [默认为“最新”]</p>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                {% for th in ['精选','区块链','汽车','创意科技','媒体达人','电影音乐','娱乐休闲','生活旅行','学习工具','历史读书','金融理财','美食菜谱'] %}
+                <th>{{th}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for td in ['select', 'blockchain', 'auto', 'ideatech', 'newsmedia', 'moviemusic', 'fun', 'lifejourney', 'utility', 'hisbook', 'finance', 'food']%}
+                <td>{{td}}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+<br>
+{% endblock content %}

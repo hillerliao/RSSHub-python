@@ -8,6 +8,11 @@ def index():
     return render_template('main/index.html')
 
 
+@bp.route('/feeds')
+def feeds():
+    return render_template('main/feeds.html')
+
+
 @bp.app_template_global()
 def filter_content(ctx):
     include_title = request.args.get('include_title')
