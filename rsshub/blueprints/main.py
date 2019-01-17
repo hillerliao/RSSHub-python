@@ -37,3 +37,10 @@ def filter_content(ctx):
 def chuansongme_articles(category=''):
     from rsshub.spiders.chuansongme.articles import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+
+@bp.route('/ctolib/topics/<string:category>')
+@bp.route('/ctolib/topics')
+def ctolib_topics(category=''):
+    from rsshub.spiders.ctolib.topics import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))

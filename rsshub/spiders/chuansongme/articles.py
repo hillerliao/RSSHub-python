@@ -16,7 +16,7 @@ def ctx(category=''):
     posts = tree.css('.feed_body .pagedlist_item')
     return {
         'title': '传送门',
-        'link': 'https://chuansongme.com',
+        'link': domain,
         'description': '传送门：微信公众号订阅',
         'author': 'alphardex',
         'items': list(map(parse, posts))

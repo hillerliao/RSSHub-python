@@ -29,4 +29,30 @@
   </div>
 </div>
 <br>
+<div class="card text-left">
+  <div class="card-body">
+    <h4 class="card-title">CTOLib</h4>
+    <h6 class="text-muted">话题 <a href="https://github.com/alphardex" target="_blank" class="badge badge-secondary">by alphardex</a></h6>
+    <p class="card-text">举例：<a href="https://rsshub-python.herokuapp.com/ctolib/topics" target="_blank">https://rsshub-python.herokuapp.com/ctolib/topics</a></p>
+    <p class="card-text">路由：<code>/ctolib/topics/:category</code></p>
+    <p class="card-text">参数：category [默认为“默认排序”]</p>
+    <table class="table table-bordered table-sm">
+        <thead>
+            <tr>
+                {% for th in ['最新发布', '优质主题'] %}
+                <th>{{th}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for td in ['last', 'popular']%}
+                <td>{{td}}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+<br>
 {% endblock content %}
