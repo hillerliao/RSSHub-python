@@ -44,3 +44,9 @@ def chuansongme_articles(category=''):
 def ctolib_topics(category=''):
     from rsshub.spiders.ctolib.topics import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+
+@bp.route('/infoq/recommend')
+def infoq_recommend():
+    from rsshub.spiders.infoq.recommend import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
