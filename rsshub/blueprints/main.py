@@ -32,6 +32,13 @@ def filter_content(ctx):
 
 
 #---------- feed路由从这里开始 -----------#
+@bp.route('/cninfo/announcement/<string:stock_id>/<string:category>')
+@bp.route('/cninfo/announcement')
+def cninfo_announcement(stock_id='', category=''):
+    from rsshub.spiders.cninfo.announcement import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(stock_id,category)))
+
+
 @bp.route('/chuansongme/articles/<string:category>')
 @bp.route('/chuansongme/articles')
 def chuansongme_articles(category=''):
