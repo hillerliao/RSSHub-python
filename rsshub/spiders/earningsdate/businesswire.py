@@ -16,9 +16,9 @@ def ctx(category=''):
     items = list(map(parse, posts)) 
     items = filter_content(items)
     return {
-        'title': 'Earnings Date - Prnewswire',
+        'title': 'Earnings Date - Businesswire',
         'link': f'{domain}/portal/site/home/template.PAGE/news/',
-        'description': 'Earnings Date - Prnewswire',
+        'description': 'Earnings Date - Businesswire',
         'author': 'hillerliao',
         'items': items
     }
