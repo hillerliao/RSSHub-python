@@ -17,7 +17,7 @@ def ctx(category=''):
     posts = tree.css('.news_list li')
     return {
         'title': '东兴资管产品最新公告',
-        'link': domain,
+        'link': f'{domain}/main/zcgl/zxgg/index.shtml?catalogId=1,5,228',
         'description': '东兴资管产品最新公告',
         'author': 'hillerliao',
         'items': list(map(parse, posts)) 
