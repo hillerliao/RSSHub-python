@@ -1,3 +1,4 @@
+import re
 from flask import Response
 import requests
 from parsel import Selector
@@ -23,3 +24,15 @@ def fetch(url: str, headers: dict=DEFAULT_HEADERS, proxies: dict=None):
         html = res.text
         tree = Selector(text=html)
         return tree
+
+def filter_content(items):
+    content = []    
+    p1 = re.compile(r'(.*)(to|will|date|schedule) (.*)results', re.IGNORECASE)
+    p2 = re.compile(r'(.*)(schedule|announce|to) (.*)call', re.IGNORECASE)
+    p3 = re.compile(r'(.*)release (.*)date', re.IGNORECASE)
+
+    for item in items:
+        title = item['title']
+        if p1.match(title) or p2.match(title) or p3.match(title):
+            content.append(item)
+    return content  

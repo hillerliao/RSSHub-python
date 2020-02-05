@@ -31,6 +31,7 @@ def filter_content(ctx):
     return ctx
 
 
+
 #---------- feed路由从这里开始 -----------#
 @bp.route('/cninfo/announcement/<string:stock_id>/<string:category>')
 @bp.route('/cninfo/announcement')
@@ -58,7 +59,25 @@ def infoq_recommend():
     from rsshub.spiders.infoq.recommend import ctx
     return render_template('main/atom.xml', **filter_content(ctx()))
 
+
 @bp.route('/dxzg/notice')
 def dxzg_notice():
     from rsshub.spiders.dxzg.notice import ctx
     return render_template('main/atom.xml', **filter_content(ctx()))
+
+
+@bp.route('/earningsdate/prnewswire')
+def earningsdate_prnewswire():
+    from rsshub.spiders.earningsdate.prnewswire import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+@bp.route('/earningsdate/globenewswire')
+def earningsdate_globenewswire():
+    from rsshub.spiders.earningsdate.globenewswire import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+@bp.route('/earningsdate/businesswire')
+def earningsdate_businesswire():
+    from rsshub.spiders.earningsdate.businesswire import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
