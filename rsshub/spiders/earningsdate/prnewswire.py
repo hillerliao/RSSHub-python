@@ -11,7 +11,7 @@ def parse(post):
     return item
 
 def ctx(category=''):
-    tree = fetch(f"{domain}/news-releases/financial-services-latest-news/earnings-list/?page=5&pagesize=100")
+    tree = fetch(f"{domain}/news-releases/financial-services-latest-news/earnings-list/?page=1&pagesize=100")
     posts = tree.css('.card-list-hr .col-sm-8')
     items = list(map(parse, posts)) 
     items = filter_content(items)
