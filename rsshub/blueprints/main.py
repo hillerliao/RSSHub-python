@@ -57,3 +57,8 @@ def ctolib_topics(category=''):
 def infoq_recommend():
     from rsshub.spiders.infoq.recommend import ctx
     return render_template('main/atom.xml', **filter_content(ctx()))
+
+@bp.route('/dxzg/notice')
+def dxzg_notice():
+    from rsshub.spiders.dxzg.notice import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))

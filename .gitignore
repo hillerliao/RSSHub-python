@@ -15,3 +15,5 @@ venv
 .coverage
 htmlcov/
 data-dev.db
+
+.env
