@@ -85,3 +85,8 @@ def earningsdate_businesswire():
 def jiemian_newsflash(category=''):
     from rsshub.spiders.jiemian.newsflash import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+@bp.route('/csrc/audit/<string:category>')
+def csrc_audit(category=''):
+    from rsshub.spiders.csrc.audit import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
