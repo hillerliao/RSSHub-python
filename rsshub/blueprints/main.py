@@ -90,3 +90,8 @@ def jiemian_newsflash(category=''):
 def csrc_audit(category=''):
     from rsshub.spiders.csrc.audit import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+@bp.route('/caixin/scroll/<string:category>')
+def caixin_scroll(category=''):
+    from rsshub.spiders.caixin.scroll import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))    
