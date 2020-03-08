@@ -95,3 +95,8 @@ def csrc_audit(category=''):
 def caixin_scroll(category=''):
     from rsshub.spiders.caixin.scroll import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))    
+
+@bp.route('/eastmoney/report/<string:type>/<string:category>')
+def eastmoney_report(category='', type=''):
+    from rsshub.spiders.eastmoney.report import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(type,category)))      
