@@ -100,3 +100,8 @@ def caixin_scroll(category=''):
 def eastmoney_report(category='', type=''):
     from rsshub.spiders.eastmoney.report import ctx
     return render_template('main/atom.xml', **filter_content(ctx(type,category)))      
+
+@bp.route('/xuangubao/<string:type>/<string:category>')
+def xuangubao_xuangubao(type='', category=''):
+    from rsshub.spiders.xuangubao.xuangubao import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(type, category)))        
