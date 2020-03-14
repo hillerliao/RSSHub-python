@@ -8,14 +8,14 @@ def parse(post):
     item = {}
     item['title'] = post.css('title::text').extract_first().strip()
     item['description'] = post.css('description::text').extract_first().strip(']]>')
-    item['link'] = post.css('guid::text').extract_first()
+    item['link'] = post.css('link::text').extract_first()
     item['pubDate'] = post.css('pubDate::text').extract_first()
     return item
 
 
 def ctx(category=''):
     tree = fetch(f"https://feed.{domain}/rss/home/?rss=G1QFDERJXkJeGVtYWA==", 
-                 headers=DEFAULT_HEADERS)
+                headers=DEFAULT_HEADERS)
     posts = tree.css('item')
     items = list(map(parse, posts))
     items = filter_content(items)
