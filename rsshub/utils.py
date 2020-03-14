@@ -28,7 +28,7 @@ def fetch(url: str, headers: dict=DEFAULT_HEADERS, proxies: dict=None):
 def filter_content(items):
     content = []    
     p1 = re.compile(r'(.*)(to|will|date|schedule) (.*)results', re.IGNORECASE)
-    p2 = re.compile(r'(.*)(schedule|announce|to) (.*)call', re.IGNORECASE)
+    p2 = re.compile(r'(.*)(schedule|schedules|announce|to) (.*)call', re.IGNORECASE)
     p3 = re.compile(r'(.*)release (.*)date', re.IGNORECASE)
 
     for item in items:

@@ -7,8 +7,8 @@ domain = 'businesswire.com'
 def parse(post):
     item = {}
     item['title'] = post.css('title::text').extract_first().strip()
-    item['description'] = post.css('description::text').extract_first().strip(']]>')
-    item['link'] = post.css('link::text').extract_first()
+    item['description'] = post.css('description::text').extract_first()
+    item['link'] = post.extract().split('      ')[-2].split('>')[-1].strip()
     item['pubDate'] = post.css('pubDate::text').extract_first()
     return item
 
