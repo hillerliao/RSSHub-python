@@ -105,3 +105,8 @@ def eastmoney_report(category='', type=''):
 def xuangubao_xuangubao(type='', category=''):
     from rsshub.spiders.xuangubao.xuangubao import ctx
     return render_template('main/atom.xml', **filter_content(ctx(type, category)))        
+
+@bp.route('/cls/subject/<string:category>')
+def cls_subject(category=''):
+    from rsshub.spiders.cls.subject import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))      
