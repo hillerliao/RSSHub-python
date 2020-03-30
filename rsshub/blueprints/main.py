@@ -110,3 +110,8 @@ def xuangubao_xuangubao(type='', category=''):
 def cls_subject(category=''):
     from rsshub.spiders.cls.subject import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))      
+
+@bp.route('/chaindd/column/<string:category>')
+def chaindd_column(category=''):
+    from rsshub.spiders.chaindd.column import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))      
