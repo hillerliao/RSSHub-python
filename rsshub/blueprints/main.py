@@ -115,3 +115,8 @@ def cls_subject(category=''):
 def chaindd_column(category=''):
     from rsshub.spiders.chaindd.column import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))      
+
+@bp.route('/techcrunch/tag/<string:category>')
+def techcrunch_tag(category=''):
+    from rsshub.spiders.techcrunch.tag import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
