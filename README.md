@@ -8,7 +8,7 @@ RSSHub 是一个轻量、易于扩展的 RSS 生成器，可以给任何奇奇�
 
 **其实用Python写爬虫要比JS更方便:p**
 
-DEMO地址：https://rsshub-python.herokuapp.com
+DEMO地址：https://pyrsshub.herokuapp.com
 
 ## RSS过滤
 
