@@ -120,3 +120,8 @@ def chaindd_column(category=''):
 def techcrunch_tag(category=''):
     from rsshub.spiders.techcrunch.tag import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+@bp.route('/weiyangx/express/')
+def weiyangx_express():
+    from rsshub.spiders.weiyangx.express import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))

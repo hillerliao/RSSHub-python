@@ -17,7 +17,6 @@ def ctx(category=''):
     res = requests.get(url, headers=DEFAULT_HEADERS)
     res = json.loads(res.text)
     posts = res 
-    print(posts)
     items = list(map(parse, posts))
     return {
         'title': f'{category} - tag - Techcrunch',
