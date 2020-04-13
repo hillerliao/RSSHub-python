@@ -1,28 +1,21 @@
-import requests
-import json
 from rsshub.utils import DEFAULT_HEADERS
+from rsshub.utils import fetch
 
 domain = 'https://www.weiyangx.com'
 
 
 def parse(post):
     item = {}
-    item['title'] = post['title']
-    item['description'] = post['content']
-    item['link'] = post['url']
-    item['author'] = post['authorMeta']
+    item['title'] = post.css('h2::text').extract_first()
+    item['description'] = post.css('p::text').extract_first()
+    item['link'] = post.css('a::attr(href)').extract_first()
     return item
 
 
 def ctx(category=''):
-    url = f'https://www.weiyangx.com/wp-admin/admin-ajax.php'
-    q_data = {"action": "home_load_more_news",
-              "postOffset": "00",
-              "tagId": category,
-              "_ajax_nonce": "1846edad4e"}
-
-    res = requests.post(url, data=q_data, headers=DEFAULT_HEADERS)
-    posts = json.loads(res.text)['data']
+    url = f'https://www.weiyangx.com/tag/{category}'
+    tree = fetch(url, headers=DEFAULT_HEADERS)
+    posts = tree.css('.category-post-node')
     items = list(map(parse, posts))
     return {
         'title': f'{category} - 文章 - 未央网',

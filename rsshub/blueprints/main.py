@@ -121,6 +121,11 @@ def techcrunch_tag(category=''):
     from rsshub.spiders.techcrunch.tag import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/weiyangx/home')
+def weiyangx_home():
+    from rsshub.spiders.weiyangx.home import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
 @bp.route('/weiyangx/express/')
 def weiyangx_express():
     from rsshub.spiders.weiyangx.express import ctx
