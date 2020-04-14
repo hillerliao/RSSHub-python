@@ -135,3 +135,8 @@ def weiyangx_express():
 def weiyangx_tag(category=''):
     from rsshub.spiders.weiyangx.tag import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+@bp.route('/jintiankansha/column/<string:category>')
+def jintiankansha_column(category=''):
+    from rsshub.spiders.jintiankansha.column import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))    
