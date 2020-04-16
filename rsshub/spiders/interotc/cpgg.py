@@ -9,7 +9,7 @@ def parse(post):
     end_date = ''
     if '东兴证券' in post['TITLE']:
         end_date = post['CONTENT'].split('存续期到期日')[1].split('。')[0]
-    item['title'] = post['TITLE'] + ' (' + post['CPDM'] + ', ' + post['CPMC'] + ', ' + end_date + ')'    
+    item['title'] = post['TITLE'] + ' (' + post['CPDM'] + ', ' + end_date +  ', ' + post['CPMC'] + ')'    
     item['description'] = post['CONTENT']
     item['link'] = f'{domain}/portal/newportal/cpggDetail.html?bdid=' + str(post['BDID'])
     item['pubDate'] = post['FBSJ']
@@ -22,7 +22,7 @@ def ctx(category=''):
     # req_params = {'pageSize': '10','startDate':'-1', 'keyword': category, 'pageIndex': '1'}
     # posts = requests.post(url, \
     #         data=req_params, headers=DEFAULT_HEADERS)
-    req_params = f'?keyword={category}&pageSize=30'
+    req_params = f'?keyword={category}&pageSize=100'
     posts = requests.get(url+req_params)
     import json
     posts = json.loads(posts.text)['resultSet']           
