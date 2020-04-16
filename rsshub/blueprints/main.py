@@ -140,3 +140,8 @@ def weiyangx_tag(category=''):
 def jintiankansha_column(category=''):
     from rsshub.spiders.jintiankansha.column import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))    
+
+@bp.route('/interotc/cpgg/<string:category>')
+def interotc_cpgg(category=''):
+    from rsshub.spiders.interotc.cpgg import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))    
