@@ -22,7 +22,7 @@ def ctx(category=''):
     # req_params = {'pageSize': '10','startDate':'-1', 'keyword': category, 'pageIndex': '1'}
     # posts = requests.post(url, \
     #         data=req_params, headers=DEFAULT_HEADERS)
-    req_params = f'?keyword={category}&pageSize=100'
+    req_params = f'?keyword={category}&pageSize=150'
     posts = requests.get(url+req_params)
     import json
     posts = json.loads(posts.text)['resultSet']           

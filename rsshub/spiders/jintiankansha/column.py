@@ -13,6 +13,7 @@ def parse(post):
 
 def ctx(category=''):
     url = f'{domain}/column/{category}'
+    DEFAULT_HEADERS.update({'Host': 'www.jintiankansha.me'})
     tree = fetch(url, headers=DEFAULT_HEADERS)
     posts = tree.css('.cell.item')
     items = list(map(parse, posts))
