@@ -60,6 +60,12 @@ def infoq_recommend():
     return render_template('main/atom.xml', **filter_content(ctx()))
 
 
+@bp.route('/infoq/topic/<int:category>')
+def infoq_topic(category=''):
+    from rsshub.spiders.infoq.topic import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+
 @bp.route('/dxzg/notice')
 def dxzg_notice():
     from rsshub.spiders.dxzg.notice import ctx

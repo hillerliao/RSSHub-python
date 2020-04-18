@@ -15,7 +15,7 @@ def parse(post):
 def ctx():
     DEFAULT_HEADERS.update({'Referer': 'https://www.infoq.cn'}) # 必须设置Referer，不然会451错误
     import json
-    posts = requests.post(f'{domain}/public/v1/my/recommond', data={'size': 20}, headers=DEFAULT_HEADERS)
+    posts = requests.post(f'{domain}/public/v1/my/recommond', json={'size': 20}, headers=DEFAULT_HEADERS)
     posts = json.loads(posts.text)['data']
     return {
         'title': 'infoq',
