@@ -10,11 +10,12 @@ def ctx(category=''):
     def parse(post):
         item = {}
         item['description'] = item['title'] = stock.upper() + '的评级：' +  ', '.join(post.css('td::text').extract())
-        return item
+        return item    
+
     
     url = f'{domain}/stock/{category}/ratings'
     tree = fetch(url, headers=DEFAULT_HEADERS)
-    posts = tree.css('tr')
+    posts = tree.css('tbody tr')
     items = list(map(parse, posts))
 
     column_title = tree.css('title::text').extract_first()
