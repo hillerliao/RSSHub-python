@@ -151,3 +151,8 @@ def jintiankansha_column(category=''):
 def interotc_cpgg(category=''):
     from rsshub.spiders.interotc.cpgg import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))    
+
+@bp.route('/benzinga/ratings/<string:category>')
+def benzinga_ratings(category=''):
+    from rsshub.spiders.benzinga.ratings import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))        
