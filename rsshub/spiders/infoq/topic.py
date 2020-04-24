@@ -9,6 +9,7 @@ def parse(post):
     item['title'] = post['article_title']
     item['description'] = f"{post['article_summary']}<br><img referrerpolicy='no-referrer' src={post.get('article_cover')}>"
     item['link'] = f"{domain}/article/{post['uuid']}"
+    item['pubDate'] = post['publish_time']
     return item
 
 
@@ -21,7 +22,7 @@ def ctx(category=''):
 
     posts = json.loads(posts.text)['data']
     return {
-        'title': f'{category} - topic - infoq',
+        'title': f'{category} - Topic - InfoQ',
         'link': referer,
         'description': 'InfoQ - 促进软件开发领域知识与创新的传播',
         'author': 'hillerliao',
