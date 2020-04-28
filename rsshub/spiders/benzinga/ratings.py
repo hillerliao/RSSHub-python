@@ -10,6 +10,7 @@ def ctx(category=''):
     def parse(post):
         item = {}
         item['description'] = item['title'] = stock.upper() + '的评级：' +  ', '.join(post.css('td::text').extract())
+        item['link'] = url
         return item    
 
     
