@@ -17,3 +17,6 @@ htmlcov/
 data-dev.db
 
 .env
+uwsgi.ini
+Dockerfile
+.dockerignore
