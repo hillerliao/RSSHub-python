@@ -2,11 +2,14 @@ from flask import Blueprint, render_template, request
 
 bp = Blueprint('main', __name__)
 
-
 @bp.route('/')
+def word():
+    from rsshub.spiders.word.word import ctx
+    return render_template('main/word.html', **ctx())
+
+@bp.route('/index')
 def index():
     return render_template('main/index.html')
-
 
 @bp.route('/feeds')
 def feeds():

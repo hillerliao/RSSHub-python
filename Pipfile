@@ -13,6 +13,7 @@ python-dotenv = "*"
 gunicorn = "*"
 requests = "*"
 parsel = "*"
+flask-script = "*"
 
 [dev-packages]
 coverage = "*"
