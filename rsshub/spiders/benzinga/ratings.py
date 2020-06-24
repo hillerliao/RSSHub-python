@@ -1,7 +1,7 @@
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.utils import fetch
 
-domain = 'https://www.benzinga.com/'
+domain = 'https://www.benzinga.com'
 
 def ctx(category=''):
 
