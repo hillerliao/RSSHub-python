@@ -180,7 +180,6 @@ balmy,['ba:mi], a.  芳香的,温和的,止痛的
 ban,[bæn], n.  禁令vt.  禁止,取缔
 bandit,['bændit],n.  强盗
 banish,['bæniʃ], vt.  驱逐,消除
-bankruptcy,['bæŋkrəptsi],n.  破产
 banquet,['bæŋkwit],n.  宴会
 bar,[ba:], n.  条,棒,障碍物,栅,酒吧vt.  禁止,阻挡,妨碍
 barbarian,[ba:'bεəriən],n.  野蛮人a.  野蛮的
@@ -189,7 +188,6 @@ barely,['bεəli],ad.  几乎不能
 barometer,[bə'rɔmitə],n.  气压计
 barren,['bærən], a.  不育的,贫瘠的n.  荒地
 barricade,[bæri'keid], n.  防卫工事,障碍vt.  设路障于,阻碍
-barrier,['bæriə], n.  障碍,栅栏
 barter,['ba:tə], n.  物物交换,实物交易vt. vi.  物物交换,交换
 bashful,['bæʃful],a.  害羞的
 basin,['beisn], n.  盆地,盆
@@ -201,7 +199,6 @@ befuddle,[bi'fʌdl], vt.  使昏迷,使迷惑,使迷糊
 beget,[bi'get], vt.  招致,产生,引起
 begrudge,[bi'grʌdʒ], vt.  嫉妒,羡慕,舍不得给,吝惜
 beguile,[bi'gail],vt.  诱骗
-behave,[bi'heiv], vi.  举止,行为,表现vt.  使表现好
 belie,[bi'lai], vt.  掩饰,与. . . 不符,使失望
 belittle,[bi'litl], vt.  轻视,使渺小
 belligerent,[bi'lidʒərənt], a.  好战的,交战的,交战国的
@@ -344,8 +341,6 @@ combination,['kɔmbi'neiʃən], n.  组合,合并,联合n.  组合图
 comet,['kɔmit],n.  慧星
 commence,[kə'mens], vt. vi.  开始,倡导
 commodious,[kə'moudjəs], a.  宽敞的,方便的
-communicate,[kə'mju:nikeit], vt.  沟通,传达,感染vi.  通讯
-community,[kə'mju:niti], n.  社区,公众,共有,共同体
 compact, ['kɔmpækt,kəm'pækt] , a.  紧凑的,紧密的,简洁的vt.  使装满,使简洁vi.  变紧密
 comparative,[kəm'pærətiv], a.  比较的,相当的n.  匹敌者
 compassion,[kəm'pæʃn], (U)  (真诚的) 同情 (心) ,怜悯 [on,upon,for]
@@ -357,7 +352,6 @@ comply,[kəm'plai], vi.  顺从,答应
 composed,[kəm'pəuzd], a.  镇静的,沉着的
 composure,[kəm'pəuʒə], n.  镇静,沉着
 comprise,[kəm'praiz], vt.  包含,构成
-compulsive,[kəm'pʌlsiv], a.  强制的,强迫的
 compulsory,[kəm'pʌlsəri], a.  被强制的,强迫的,义务的
 conceal,[kən'si:l], vt.  隐藏,掩盖,掩蔽
 conceit,[kən'si:t], n.  自负,空想,狂妄
@@ -367,7 +361,6 @@ conciliatory,[kən'siliətəri], a.  安抚的,怀柔的,融和的
 concise,[kən'sais], a.  简洁的,简明的
 conclusive,[kən'klu:siv], a.  决定性的,确实的,最后的
 concoct,[kən'kɔkt], vt.  混合而制,调合,捏造,编造
-concrete,['kɔnkri:t], n.  水泥,混凝土a.  具体的,实在的,水泥的vt. vi.  (使)凝结,(使)结合
 concur,[kən'kə:], vi.  意见相同,一致,互助
 concurrence,[kən'kʌrəns], n.  赞同,意见一致,协力
 concurrent,[kən'kʌrənt], n.  同时发生的事件a.  同时发生的,一致的
@@ -376,7 +369,6 @@ condone,[kən'dəun], vt.  赦,宽恕
 cone,[kəun], n.  圆锥体,球果vt.  使成锥形
 confederate,[kən'fedərit], n.  同盟者,同盟国a.  同盟的,联合的vt. vi.  (使)联盟,(使)联合
 confer,[kən'fə:], vt.  赠予,协议vi.  协商
-conference,['kɔnfərəns],n.  会议
 confide,[kən'faid], vt.  吐露,信托vi.  信赖
 confine,[kən'fain], vt.  限制,闭居,禁闭n.  边缘,范围,区域
 confiscate,['kɔnfiskeit], vt.  没收,充公,查抄a.  被没收的
@@ -406,7 +398,6 @@ conspicuous,[kən'spikjuəs], a.  显著的,显眼的,出众的
 conspiracy,[kən'spirəsi], n.  同谋,阴谋,反叛
 conspire,[kən'spaiə], vi.  阴谋,协力,共谋vt.  图谋
 constellation,['kɔnstə'leiʃən], n.  星座,灿烂的一群
-constitute,['kɔnstitju:t], vt.  构成,组成,任命
 constrain,[kən'strein], vt.  强迫,勉强,驱使
 construe,[kən'stru:], vt.  解释,分析,逐字翻译vi.  作句法分析n.  逐字翻译
 consult,[kən'sʌlt], vi.  商讨,商量,协商,会诊vt.  向. . . 请教,查阅,考虑
@@ -1162,7 +1153,6 @@ lethal,['liθəl],a.  致命的n.  致死因子
 levy,['levi], n.  征税,召集,课征vi.  征税,课税vt.  征收,发动,召集
 liaison,[li:'eizən],n.  联络
 liberate,['libəreit], vt.  解放,释放,使自由
-licensed,['laisnst],a.  得到许可的
 limestone,['laimstəun],n.  石灰石
 limp,[limp], n.  跛行a.  柔软的,无力的,软弱的vi.  跛行
 limpid,['limpid], a.  清澈的,透明的,静止的
@@ -1318,7 +1308,6 @@ permanent,['pə:mənənt], a.  永久的,不变的,固定的,持久的n.  电烫
 permeate,['pə:mi'et], vt.  弥漫,渗透,充满vi.  透入
 permissible,[pə'misəbl], a.  可允许的,可容许程度的
 permissive,[pəæ:ɔ'misiv], a.  许可的,获准的,自由的
-permit, [pə:'mit,'pə:mit] , n.  许可证,许可,执照vt.  允许,容许vi.  容许
 perpetuate,[pə'petjueit], vt.  使永存,使不朽
 perplex,[pə'pleks], vt.  使困惑,使复杂化,使为难
 persevere,['pə:si'viə], vi.  坚持,孜孜不倦,不屈不挠
@@ -1326,7 +1315,6 @@ persuasive,[pə'sweisiv], adj.  有说服力的,善于游说的,令人信服的 
 pertinent,['pə:tinənt], a.  相关的,中肯的,切题的
 pervert,[pə:'və:t], vt.  使堕落,歪曲,滥用n.  堕落者,反常者
 petrify,['petrifai], vt.  1 使…化为石,使…石化;  使…坚硬 [僵硬] 2 使<人心>变无情 [顽固,麻木不仁] ɔ 使
-phase,[feiz], n.  时期,局面,阶段vt.  使调整相位,逐步执行,实行
 phonetics,[fəu'netiks], n.  语音学,发音学
 picturesque,['piktʃə'resk], a.  生动的,如画的,独特的
 pierce,[piəs], vt.  刺穿,穿透,洞悉vi.  刺入
@@ -1346,7 +1334,6 @@ playwright,['pleirait],n.  剧作家
 plight,[plait], n.  境况,誓约,困境vt.  宣誓,保证,约定
 plumb,[plʌm], n.  铅锤,垂直a.  垂直的vt.  使垂直,用铅封,探测,了解vi.  垂直
 poise,[pɔiz], n.  平衡,均衡,姿势,砝码,安静,镇静vt.  使平衡,使悬着,保持. . . 姿势vi.  平衡,悬着,准备好,犹豫
-pollute,[pə'lju:t], vt.  污染,弄脏,玷污
 ponder,['pɔndə], vt. vi.  沉思,考虑
 ponderous,['pɔndərəs], a.  沉重的,笨重的,冗长的,沉闷的
 portion,['pɔ:ʃən], n.  部分,一份,命运,嫁妆vt.  将. . . 分配,分配,给. . . 嫁妆
@@ -1355,7 +1342,6 @@ posterity,[pɔs'teriti], n.  子孙,后裔
 posture,['pɔstʃə], n.  姿势,态度,情形,形势vt.  作. . . 的姿势vi.  作姿势
 potent,['pəutənt], a.  有力的,有效的
 poultry,['pəultri],n.  家禽
-practical,['præktikəl], a.  实际的,现实的,实用性的
 preach,[pri:tʃ], vt. vi.  传道,讲道,鼓吹,宣讲,说教n.  说教,布道
 precede,[priæ:ɔ'si:d], vt.  在. . . 之前,优于,较. . . 优先vi.  在前面
 precipitate,[pri'sipiteit], n.  沉淀物vt.  猛抛,使陷入,促成,使沉淀vi.  猛地落下a.  猛地落下的,急躁的,突然的
@@ -1388,7 +1374,6 @@ prone,[prəun], a.  俯伏的,面向下的有. . . 倾向的
 pronounced,[prə'naunst], a.  显著的,断然的,明白的
 prop,[prɔp], n.  支柱,支持者,螺旋桨,道具,倚靠人vt.  支撑,维持
 propagate,['prɔpəgeit], vt.  繁殖,传播,传送vi.  繁殖,蔓延
-propel,[prə'pel], vt.  推进,驱使
 propensity,[prə'pensiti], n.  倾向,爱好,习性
 proportion,[prə'pɔ:ʃən], n.  比例,比率,均衡,大小,面积,部分vt.  使成比例,使均衡,分摊
 propriety,[prə'praiəti], n.  礼貌,规矩,适当
@@ -1412,8 +1397,6 @@ quell,[kwel], vt.  压制,平息,减轻
 quiver,['kwivə], n.  震动,颤抖,箭袋,大群vi.  颤抖,振动,射中vt.  使颤动a.  敏捷的
 radiant,['reidjənt], a.  发光的,明亮的,辐射的,容光焕发的
 radiate,['reidieit], vt.  放射,散发,广播,传播,辐射vi.  发光,辐射,流露a.  有射线的,辐射状的
-radical,['rædikəl], n.  激进分子,语根,基础a.  激进的,根本的,基本的,根的
-rage,[reidʒ], n.  愤怒,情绪激动,狂暴vi.  大怒,狂吹,风行
 ragged,['rægid], a.  衣衫褴褛的,参差的,刺耳的,粗糙的,不协调的
 raid,[reid], n.  袭击,突袭,搜捕vt. vi.  奇袭,搜捕
 rap,[ræp], n.  轻敲,拍击,责骂,无价值的东西vt.  轻敲,厉声说出,使着迷,抢走,叱责vi.  敲击,发敲击声,交谈,理解
@@ -1484,7 +1467,6 @@ revere,[ri'viə], vt.  崇敬,敬畏,尊敬
 reverence,['revərəns], n.  尊敬,敬重,威望,尊严vt.  崇敬,敬畏,尊敬
 revert,[ri'və:t], vi.  恢复,复归,回复vt.  使颠倒,使回转n.  恢复原信仰的人
 revive,[ri'vaiv], vt.  使苏醒,使复兴,使振奋,回想起vi.  苏醒,复活,复兴,恢复精神
-revoke,[ri'vəuk], vt.  撤回,废除vi. n.  有牌不跟
 riddle,['ridl], n.  谜,谜语,粗筛vt.  解谜,给. . . 出谜,筛,检查,充满于,非难,鉴定vi.  出谜
 rigid,['ridʒid], a.  硬的,坚硬的,刚性的,刻板的,精密的
 rigor,['rigə], n.  严格,严厉,苛刻,精确,严密
@@ -2599,12 +2581,10 @@ tread,[tred],vi.  踏，践踏
 trench,[trentʃ],n.  壕沟
 tribal,['traibl],a.  部落的; 种族的
 tributary,['tribjutri;  US -teri],n.  支流; a.  支流的
-trigger,['trigə(r)],vt.  引发，导致
 tropic,['trɔpik],n.  回归线; 热带
 troupe,[tru:p],n.  剧团
 tuition,[tju:'iʃn;  US tu:-],n.  学费
 tundra,['tʌndrə],n.  苔原; 冻土地带
-tunnel,['tʌnl],n.  隧道; 风洞; 地道; v.  开(隧道)
 turbulent,['tə:bjulənt],a.  动乱的; 狂暴的，汹涌的
 turnpike,['tə:npaik],n.  收费公路
 turtle,['tə:tl],n.  海龟
