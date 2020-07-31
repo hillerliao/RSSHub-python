@@ -709,7 +709,6 @@ epoch,['i:pɔk], n.  新纪元,时代,时期
 equate,[i'kwet], vt.  使相等,视为平等vi.  等同
 equation,[i'kweiʃən], n.  相等,等式,平衡
 equilibrium,[i:kwi'libriəm], n.  平衡,平静,均衡
-equipment,[i'kwipmənt], n.  装备,设备品,才能
 equitable,['əkwitəbl], a.  公平的,公正的
 equivalent,[i'kwivələnt], n.  同等物,等价物,相等物a.  相等的,相当的,同意义的
 equivocate,[i'kwivəkeit], vi.  说模棱两可的话,支吾
@@ -2285,7 +2284,6 @@ mottled,['mɔtld],a.  有杂色的，斑驳的
 mount,[maunt],n.  山，峰; v.  增加
 mountainous,['mauntinəs;  US ?ntənəs],a.  多山的
 mundane,[mʌn'dein],a.  世俗的，平凡的
-municipal,[mju:'nisipl],a.  市(政)的; 地方性的
 mural,['mjuərəl],n.  壁画，壁饰
 myriad,['miriəd],n.  无数; a.  无数的; 种种的
 mythical,['miθikl],a.  神话的; 虚构的
