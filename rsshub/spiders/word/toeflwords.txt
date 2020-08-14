@@ -2532,8 +2532,6 @@ stratum,['strɑ:təm;  US 'streitəm],n. [pl.  strata]地层
 stylistic,[stai'listik],a.  格式上的，体裁上的
 stylized,['stailaizd],a.  风格化的，程式化的
 subdue,[səb'dju:;  US 'du:-],v.  制服，征服
-submarine,[`sʌbmə'ri:n;  US 'sʌbməri:n],n.  潜水艇，潜艇
-subsidize,['sʌbsidaiz],v.  补助，资助
 subsist,[səb'sist],vi.  存活，生存
 subspecies,['sʌbspi:ʃi:z],n.  【生】亚种
 substitute,['sʌbstitju:t;  US -tu:t],n.  代替者，代替品; vt.  代替
@@ -2544,7 +2542,6 @@ surgeon,['sə:dʒən],n.  外科医师
 sustained,[sə'steind],a.  持续的
 swamp,[swɔmp],n.  沼泽; v.  (以繁多的事)压倒某人
 swan,[swɔn],n.  天鹅
-swear,[sweə],v.  诅咒; 郑重地说
 sweep,[swi:p],v.  打扫; 席卷; n.  摆动
 syllable,['siləbl],n.  音节
 symphony,['simfəni],n.  交响乐
