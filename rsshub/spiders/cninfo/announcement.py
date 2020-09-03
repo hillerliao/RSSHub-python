@@ -26,20 +26,25 @@ def ctx(stock_id='', category=''):
     import datetime
     nowtime = datetime.datetime.now()
     deltaday=datetime.timedelta(days=1)
-    start_date = datetime.datetime.strftime(nowtime- 5 * deltaday, '%Y-%m-%d')
+    start_date = datetime.datetime.strftime(nowtime- 700 * deltaday, '%Y-%m-%d')
     end_date = datetime.datetime.strftime(nowtime + 2 * deltaday, '%Y-%m-%d')
     seDate = start_date + '~' + end_date
 
     searchkey = ''
+    column = ''
     if '_' in category:
         searchkey = category.split('_')[-1]
         category = category.split('_')[0]
-        
+        category = '' if category == 'all' else f'category_{category}_szsh'
+        # column = 'szse'
 
+        
     DEFAULT_HEADERS.update({'Referer': domain}) 
+    post_data = {'pageNum':'1', 'pageSize': '30','column': column, 'tabName':'fulltext', 'plate': '', \
+                'category': category, 'secid': stock_id, 'seDate': seDate, 'searchkey': searchkey }
+    print(post_data)
     posts = requests.post(f'{domain}/new/hisAnnouncement/query', \
-            data={'pageSize': '30','tabName':'fulltext', 'plate': '', 'category':f'category_{category}_szsh', \
-            'secid': stock_id,'seDate':'', 'seDate': seDate, 'searchkey': searchkey }, headers=DEFAULT_HEADERS).json()['announcements']
+            data=post_data, headers=DEFAULT_HEADERS).json()['announcements']
     return {
         'title': f'{stock_name}-{category}-公告-巨潮资讯',
         'link': f'{domain}/new/commonUrl/pageOfSearch?url=disclosure/list/search&checkedCategory=category_{category}_szsh&searchkey={searchkey}',

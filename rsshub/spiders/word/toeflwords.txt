@@ -615,8 +615,6 @@ distant,['distənt], a.  远的,疏远的
 distillation,['distl'eʃən],n.  蒸馏
 distort,[dis'tɔ:t], vt.  扭曲,歪曲
 distressed,[di'strest],a.  哀伤的
-distribute,[dis'tribju:t], vt.  分配,散布,分发
-disunite,['disju'nait], vt.  使分离,不和
 diverge,[dai'və:dʒ], vi.  分歧,岔开vt.  使岔开
 divergent,[dai'və:dʒənt],a.  分歧的
 diverse,[dai'və:s], a.  不同的,变化多的
@@ -2058,7 +2056,6 @@ emerald,['emərəld],n.  绿宝石
 enactment,[i'næktmənt],n.  制定
 encase,[in'keis],vt.  包住
 enclose,[in'kləuz],vt.  围住; 把…装入(信封、包裹等)
-endangered,[in'deindʒəd],a.  将要绝种的
 endow,[in'dau],vt.  使天生具有
 engaging,[in'geidʒiŋ],a.  迷人的
 engine,['endʒin],n.  引擎，发动机
@@ -2110,7 +2107,6 @@ forefront,['fɔ:frʌnt],n.  最前沿; 中心
 foreshorten,[fɔ:'ʃɔ:tn],v.  (绘画中)按照透视法缩短
 formation,[fɔ:'meiʃn],n.  形成，构成; 编队
 formulate,['fɔ:mjuleit],v.  阐明
-fossil,['fɔsl],n.  化石; a.  陈腐的; 化石的
 foster,['fɔstə;  US 'fɔ:-],vt.  鼓励; 培养
 fountain,['fauntin;  US -tn],n.  喷泉
 fray,[frei],vi.  磨(损、破)
@@ -2420,7 +2416,6 @@ quasar,['kweizɑ:],n.  【天】类星体
 quilt,[kwilt],n.  棉被; vt.  制成棉被
 racket,['rækit],n.  (网球等的)球拍
 raft,[rɑ:ft;  US ræft],n.  木筏
-rainfall,['reinfɔ:l],n.  降雨; 降雨量
 ranch,[rɑ:ntʃ;  US ræntʃ],n.  大牧场
 random,['rændəm],a.  随机的，任意的
 range,[reindʒ],n.  范围; 山脉; v.  (在某范围内)变动
