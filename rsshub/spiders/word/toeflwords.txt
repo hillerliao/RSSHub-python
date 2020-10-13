@@ -107,9 +107,7 @@ apathetic,[æpə'θetik], a.  缺乏感情的,缺乏兴趣的,无动于衷的
 aperture,['æpətjuə], n.  孔,穴,孔径,光圈
 apex,['eipeks], n.  顶,峰,绝顶
 apparel,[ə'pærəl], n.  衣服,装具vt.  使穿衣,装饰
-appeal,[ə'pi:l], n.  恳求,上诉,吸引力,要求vi.  求助,诉请,要求vt.  控诉
 appear,[ə'piə], vi.  出现,显得,来到
-applaud,[ə'plɔ:d], vt. vi.  拍手喝彩,称赞,赞同
 appraise,[ə'preiz], vt.  评价,估价,鉴定
 appreciate,[ə'pri:ʃieit], vt.  赏识,鉴赏,感激,欣赏vi.  增值,涨价
 apprehend,['æpri'hend], vt.  理解,忧虑,逮捕vi.  理解
@@ -144,11 +142,9 @@ assassinate,[ə'sæsineit], vt.  暗杀,行刺
 assault,[ə'sɔ:lt], n.  攻击,突袭vt.  袭击,突袭vi.  动武
 assemble,[ə'sembl], vt.  集合,装配vi.  集合
 assembly,[ə'sembli], n.  集会,会议,装配
-assert,[ə'sə:t], vt.  主张,声明,断言
 assiduous,[ə'sidjuəs], a.  勤勉的,刻苦的
 assimilate,[ə'simileit], vt.  使同化,比较,吸取,吸收,比拟vi.  被吸收,被同化
 assuage,[ə'sweidʒ], vt.  缓和,减轻,镇定
-assumption,[ə'sʌmpʃən], n.  假定,假装,视为当然之事
 astute,[əs'tju:t], a.  机敏的,狡猾的
 atheism,['eiθiizm],n.  无神论
 attainment,[ə'teinmənt],n.  达到
@@ -180,19 +176,14 @@ balmy,['ba:mi], a.  芳香的,温和的,止痛的
 ban,[bæn], n.  禁令vt.  禁止,取缔
 bandit,['bændit],n.  强盗
 banish,['bæniʃ], vt.  驱逐,消除
-bankruptcy,['bæŋkrəptsi],n.  破产
-banquet,['bæŋkwit],n.  宴会
-bar,[ba:], n.  条,棒,障碍物,栅,酒吧vt.  禁止,阻挡,妨碍
 barbarian,[ba:'bεəriən],n.  野蛮人a.  野蛮的
 bare,[bεə], a.  赤裸的,极少的,无遮蔽的,坦率的vt.  使赤裸,露出
 barely,['bεəli],ad.  几乎不能
 barometer,[bə'rɔmitə],n.  气压计
 barren,['bærən], a.  不育的,贫瘠的n.  荒地
 barricade,[bæri'keid], n.  防卫工事,障碍vt.  设路障于,阻碍
-barrier,['bæriə], n.  障碍,栅栏
 barter,['ba:tə], n.  物物交换,实物交易vt. vi.  物物交换,交换
 bashful,['bæʃful],a.  害羞的
-basin,['beisn], n.  盆地,盆
 bask,[bæ:sk], vi.  晒太阳,舒适
 baste,[beist], vt.  假缝,润以油脂,涂以奶油,狠揍
 batter,['bætə], n.  内倾,击球手vt.  打坏,猛击,使内倾vi.  猛击,内倾
@@ -201,7 +192,6 @@ befuddle,[bi'fʌdl], vt.  使昏迷,使迷惑,使迷糊
 beget,[bi'get], vt.  招致,产生,引起
 begrudge,[bi'grʌdʒ], vt.  嫉妒,羡慕,舍不得给,吝惜
 beguile,[bi'gail],vt.  诱骗
-behave,[bi'heiv], vi.  举止,行为,表现vt.  使表现好
 belie,[bi'lai], vt.  掩饰,与. . . 不符,使失望
 belittle,[bi'litl], vt.  轻视,使渺小
 belligerent,[bi'lidʒərənt], a.  好战的,交战的,交战国的
@@ -2058,7 +2048,6 @@ encase,[in'keis],vt.  包住
 enclose,[in'kləuz],vt.  围住; 把…装入(信封、包裹等)
 endow,[in'dau],vt.  使天生具有
 engaging,[in'geidʒiŋ],a.  迷人的
-engine,['endʒin],n.  引擎，发动机
 engraving,[in'greiviŋ],n.  雕刻术; 版画
 enlightenment,[in'laitnmənt],n.  启发，启迪
 enterprising,['entəpraiziŋ],a.  有事业心的，有进取心的
