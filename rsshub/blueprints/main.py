@@ -158,4 +158,9 @@ def interotc_cpgg(category=''):
 @bp.route('/benzinga/ratings/<string:category>')
 def benzinga_ratings(category=''):
     from rsshub.spiders.benzinga.ratings import ctx
-    return render_template('main/atom.xml', **filter_content(ctx(category)))        
+    return render_template('main/atom.xml', **filter_content(ctx(category)))     
+
+@bp.route('/chouti/section/<string:category>')       
+def chouti_section(category=''):
+    from rsshub.spiders.chouti.section import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))

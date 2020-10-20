@@ -65,7 +65,6 @@ allegiance,[ə'li:dʒəns], n.  忠贞,效忠
 allegory,['æligəri],n.  寓言
 alleviate,[ə'li:vieit], vt.  减轻,使缓和
 alliance,[ə'laiəns], n.  联盟,联合
-allocate,['ælə'keit], vt.  分派,分配
 allot,[ə'lɔt], vt.  分配,分摊指定
 allude,[ə'lu:d], vi.  暗示,提及
 allure,[ə'ljuə], vt.  引诱,吸引n.  魅力,诱惑力
@@ -692,7 +691,6 @@ enigmatic,[enig'mætik], a.  阴阳怪气的,谜一般的,高深莫测的
 enrage,[in'reidʒ], vt.  激怒,使暴怒
 enrapture,[in'ræptʃə],vt.  使狂喜
 enrich,[in'ritʃ], vt.  使富足,使肥沃
-enslave,[in'sleiv], vt.  奴役,束缚,沉溺,征服
 entail,[in'teil], vt.  使必需,使蒙受,使承担,遗传给n.  限定继承权
 entangle,[in'tæŋgl], vt.  使纠缠,卷入,使混乱
 entertain,['entə'tein], vt.  娱乐,招待,怀抱vi.  款待
@@ -729,9 +727,6 @@ evade,[i'veid], vt. vi.  规避,逃避,躲避
 evaporate,[i'væpəreit], vi.  蒸发,失去水分,消失vt.  使蒸发
 evasion,[i'veʒən], n.  逃避,藉口
 evasive,[i'veisiv], a.  逃避的,回避的,托辞的
-eventual,[i'ventjuəl], a.  最后的,终于的,可能的
-evident,['evidənt], a.  显然的,明显的
-evolutionary, ['i:və'lu:ʃnəri,'evə-] ,adj.  1 进化论的2 展开 [进展] 的;  演变 [演化] 的
 exacting,[ig'zæktiŋ], a.  苛求的,吃力的
 exalt,[ig'zɔ:lt], vt.  提升,提高,赞扬,使得意vi.  使人兴奋
 exalted,[ig'zɔ:ltid], a.  尊贵的,高位的,高尚的,兴奋的
@@ -1610,31 +1605,22 @@ squander,['skwɔndə], vt.  浪费,使分散vi.  浪费,漂泊,四散
 square,[skwεə], n.  正方形,街区,直角尺,平方,广场a.  正方形的,正直的,公正的,两讫的,矩形的,平方的ad.  成直角地,对准地vi.  一致,符合,结清vt.  使成方形,使平方自乘,使一致,结清,调正
 squash,[skwɔʃ], n.  压碎的东西,南瓜,拥挤嘈杂的人群vt.  压扁,镇压,压制vi. 被压扁,发溅泼声,挤入
 squeak,[skwi:k], n.  吱吱声,机会vi.  吱吱叫,告密,侥幸成功vt.  以短促尖声发出
-stab,[stæb], n.  刺,戳,努力,尝试,剧痛vt. 刺,戳,刺入,使伤心,使贯穿,刺痛vi.  刺,刺伤
-stagger,['stægə], n.  蹒跚,踌躇vi.  蹒跚,犹豫vt.  使摇摆,使踌躇,交错,错开a.  交错的,错开的
 stale,[steil], n.  尿a.  不新鲜的,陈腐的,疲倦的,陈旧的vt.  使变旧,走味vi.  变陈旧,变无味,失时效,撒尿
 stalk,[stɔ:k], n.  茎,追踪,高视阔步vi.  悄悄靠近,蹑手蹑脚地走近,蔓延,高视阔步vt.  追踪,搜索
 stall,[stɔ:l], n.  厩,停车处,牧师职位,拖延,托辞,货摊vt.  关入厩,停顿,使陷于泥中,支吾,推托vi.  被关在厩内,陷于泥中,停止,支吾
 stamina,['stæmənə], n.  精力,活力,耐力,stamen的复数
-starve,[sta:v],vt.  使饿死vi.  饿得要死
 stationery,['steiʃənəri], n.  文具,信纸
 statistics,[stə'tistiks], n.  统计学,统计表
-statue,['stætju:],vt.  以雕像装饰n.  雕像
 steadfast,['stedfəst], a.  坚定的,踏实的,固定的,不变的
 steady,['stedi], a.  稳定的,不动摇的,沉着的,可靠的,坚定的,稳固的vt.  使稳定,使坚定vi.  变为沉着,稳固
 sterile,['sterail], a.  不毛的,不孕的,无菌的,枯燥的,无效的,贫瘠的
-stem,[stem], n.  茎,柄,堵塞物,血统,船首vt.  摘掉茎,装柄于,逆行,堵住,阻止vi.  堵住,逆行
-sticky,['stiki], a.  粘的,有粘性的,顽固的
 stiff,[stif], a.  坚硬的,严厉的,呆板的,生硬的,刚强的,猛烈的,艰难的,稠的,粘的n.  死尸,醉鬼,钞票vt.  不肯付. . . 小费
 still,[stil], n.  蒸馏室,寂静,剧照vt.  vi.  蒸馏,(使)平静,(使)静止a.  静止的,不动的,静物摄影的,不起泡的,静寂的ad.  仍然,更,静止地conj.  然而,但是
-stimulate,['stimjuleit], vt.  刺激,激励,鼓舞vi.  起刺激作用
 stingy,['stindʒi], a.  小气的,吝啬的,缺乏的,有刺的
 stipulate,['stipjuleit], vt. vi.  规定,保证
 stocky,['stɔki], a.  矮胖的,健壮结实的
 stodgy,['stɔdʒi], a.  不易消化的,塞满的,笨重的,庸俗的,平凡的
 stout,[staut], n.  烈啤酒,矮胖子a.  强壮的,稳重的,勇敢的,矮胖的,结实的,坚定的
-strain,['strein], n.  紧张,拉紧,张力,过劳,扭伤,血统,血缘,种,族,气质,口吻,旋律,曲调vt.  使劳累,拉紧,过分使用,扭伤,滤,曲解vi.  尽力,努力,被滤出,弯曲,紧拉
-strait,[streit], n.  海峡,困难a.  困难的,窘迫的,狭窄的
 strap,[stræp], n.  带,皮带vt.  用皮带捆扎
 strengthen,['streŋθən], vt.  加强,变坚固vi.  变强,股票上涨
 strenuous,['strenjuəs], a.  奋发的,热心的,热烈的,紧张的
@@ -1709,12 +1695,10 @@ testify,['testifai], vt. vi.  证明,作证,声明,表明
 testimony,['testiməni], n.  证言,证据,声明
 thaw,[θɔ:], n.  融雪,融化,温暖气候vt.  使融解,使缓和vi.  融化,解冻
 thermometer,[θə'mɔmitə], n.  温度计,体温计
-threaten,['θretn], vt.  恐吓,威胁,预示. . . 的凶兆vi.  威胁,恫吓,可能来临
 thrift,[θrift], n.  节约,繁荣
 throng,[θrɔŋ], n.  群,人群,群集,众多a.  拥挤的,忙的vi.  群集,蜂拥vt.  挤入,挤满
 thrust,[θrʌst], n.  插,戳,刺,推力,口头攻击vt. 插入,猛推,刺,戳,延伸,强加,突然提出vi. 插入,刺,强行推进,延伸,戳
 thump,[θʌmp], n.  重打,重击声vt. vi.  重打,砰地撞到,用拳头打
-tide,[taid], n.  潮,潮汐,趋势,高潮,涨潮,潮流vt.  使随潮漂流vi.  顺潮行驶
 tilted,[tiltid],adj.  倾斜的
 timber,['timbə], n.  木材,木料vt.  用木材建造
 tingle,['tiŋgl], vi.  兴奋,激动,感到刺痛,抖动vt.  使感刺痛n.  刺痛,震颤,耳鸣
@@ -2212,7 +2196,6 @@ kennel,['kenl],n.  狗舍，狗窝
 kerosene,['kerəsi:n],n.  煤油，火油
 kiln,[kiln],n.  (砖、石灰等的)窑，炉
 kinetic,[ki'netik],a.  运动的，运动引起的
-landing,['lændiŋ],n.  登陆; 着陆，降落
 landmass,['lændmæs],n.  地块; 大片陆地
 larva,['lɑ:və],n. [pl.  larvae]幼虫
 latent,['leitnt],a.  潜在的，隐伏的
@@ -2819,7 +2802,6 @@ ban,[bæn], n.  禁令vt.  禁止,取缔
 bandit,['bændit],n.  强盗
 banish,['bæniʃ], vt.  驱逐,消除
 banquet,['bæŋkwit],n.  宴会
-bar,[ba:], n.  条,棒,障碍物,栅,酒吧vt.  禁止,阻挡,妨碍
 barbarian,[ba:'bεəriən],n.  野蛮人a.  野蛮的
 bare,[bεə], a.  赤裸的,极少的,无遮蔽的,坦率的vt.  使赤裸,露出
 barely,['bεəli],ad.  几乎不能
@@ -4805,14 +4787,11 @@ immutable,[i'mju:təbl],a.  不变的
 impending,[im'pendiŋ],a.  即将发生的，迫近的
 impermeable,[im'pə:miəbl],a.  不可渗透的，不透水的
 impersonal,[im'pə:sənl],a.  冷淡的; 客观的
-impose,[im'pəuz],vt.  把…强加于; 征(税)
-imprint,[im'print],vt.  铭记，牢记; n.  印记，印痕
 inanimate,[in'ænimət],a.  无生命的; 无生气的
 inanity,[i'nænəti],n.  空虚
 inception,[in'sepʃn],n.  开端，开始
 incessantly,[in'sesntli],adv.  不断地
 incinerate,[in'sinəreit],v.  焚化
-inclination,[`iŋkli'neiʃn],n.  爱好; 趋向
 inconspicuous,[`iŋkən'spikjuəs],a.  不显眼的
 incorporate,[in'kɔ:pəreit],v.  纳入; 合并
 incubate,['iŋkjubeit],v.  孵卵
