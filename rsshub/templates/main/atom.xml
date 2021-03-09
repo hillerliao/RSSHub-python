@@ -17,7 +17,7 @@
             <updated>{{item.pubDate|default(now)}}</updated>
             <link href="{{item.link}}"/>
             <content type="html" src="{{item.link}}"><![CDATA[{{item.description|safe}}]]></content>
-            <author>![CDATA[{{item.author|safe}}]]</author>
+            
         </entry>
     {% endfor %}
 </feed>
