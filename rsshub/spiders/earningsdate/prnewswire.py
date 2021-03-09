@@ -4,7 +4,7 @@ domain = 'https://www.prnewswire.com'
 
 def parse(post):
     item = {}
-    item['title'] = post.css('a::text').getall()[1]
+    item['title'] = post.css('h3::text').getall()[1]
     item['description'] = post.css('p::text').extract_first()
     item['link'] = f"{domain}{post.css('a::attr(href)').extract_first()}"
     item['pubDate'] = post.css('small::text').extract_first()
