@@ -164,3 +164,8 @@ def benzinga_ratings(category=''):
 def chouti_section(category=''):
     from rsshub.spiders.chouti.section import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+@bp.route('/chouti/search/<string:category>')       
+def chouti_search(category=''):
+    from rsshub.spiders.chouti.search import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
