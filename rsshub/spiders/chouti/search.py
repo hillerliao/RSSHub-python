@@ -1,3 +1,4 @@
+import re
 import requests
 from rsshub.utils import DEFAULT_HEADERS
 
@@ -6,7 +7,7 @@ domain = 'https://dig.chouti.com'
 
 def parse(post):
     item = {}
-    item['title'] = post['title']
+    item['title'] = re.sub(r'<[^>]*>', '', post['title']).strip()
     item['description'] = post['title']
     item['link'] = 'https://dig.chouti.com/link/' + str(post['id'])
     item['pubDate'] = str(post['created_time'])[0:10]
