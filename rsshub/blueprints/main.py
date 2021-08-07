@@ -169,3 +169,7 @@ def chouti_section(category=''):
 def chouti_search(category=''):
     from rsshub.spiders.chouti.search import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+@bp.route('/mp/tag/<string:mp>/<string:tag>')
+def mp_tag(mp='', tag=''):
+    from rsshub.spiders.mp.tag import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(mp,tag)))
