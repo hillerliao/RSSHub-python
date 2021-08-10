@@ -5,6 +5,7 @@
     <language>zh-cn</language>
     <id>{{link}}</id>
     <title><![CDATA[{{title|safe}}]]></title>
+    <description> <![CDATA[{{description|safe}}]]> </description>
     <link href="{{link}}"/>
     <author>
         <name><![CDATA[{{author|safe}}]]></name>
