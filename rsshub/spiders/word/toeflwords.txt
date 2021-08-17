@@ -350,7 +350,6 @@ conciliatory,[kən'siliətəri], a.  安抚的,怀柔的,融和的
 concise,[kən'sais], a.  简洁的,简明的
 conclusive,[kən'klu:siv], a.  决定性的,确实的,最后的
 concoct,[kən'kɔkt], vt.  混合而制,调合,捏造,编造
-concrete,['kɔnkri:t], n.  水泥,混凝土a.  具体的,实在的,水泥的vt. vi.  (使)凝结,(使)结合
 concur,[kən'kə:], vi.  意见相同,一致,互助
 concurrence,[kən'kʌrəns], n.  赞同,意见一致,协力
 concurrent,[kən'kʌrənt], n.  同时发生的事件a.  同时发生的,一致的
