@@ -184,3 +184,8 @@ def mp_tag(mp='', tag=''):
 def mp_gh(gh=''):
     from rsshub.spiders.mp.gh import ctx
     return render_template('main/atom.xml', **filter_content(ctx(gh)))    
+
+@bp.route('/mp/youwuqiong/<string:author>')
+def mp_youwuqiong(author=''):
+    from rsshub.spiders.mp.youwuqiong import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(author)))        

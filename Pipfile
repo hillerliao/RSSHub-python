@@ -14,6 +14,7 @@ gunicorn = "*"
 requests = "*"
 parsel = "*"
 flask-script = "*"
+icecream = "*"
 
 [dev-packages]
 coverage = "*"
