@@ -1,0 +1,51 @@
+Amazing → Incredible, Fantastic, Fabulous, Astonishing, Extraordinary
+Answer → Respond
+Awful → Terrible, Abominable, Dreadful
+Bad → Evil, Spoiled, Imperfect, Infamous, Dismal
+Beautiful → Gorgeous, Ravishing, Dazzling, Exquisite, Stunning
+Begin → Initiate, Commence, Inaugurate
+Big → Huge, Enormous, Gigantic, Humongous, Substantial, Mammoth
+Break → Rupture, Fracture, Shatter
+Calm → Serene, Peace, Tranquil
+Come → Approach, Arrive
+Cool → Chilly, Frosty, Icy
+Cut → Chop, Slash, Slit
+Dangerous → Hazardous, Risky, Precarious
+Decide → Determine, Settle
+Definite → Certain, Positive, Obvious
+Delicious → Savoury, Titbit, Delectable
+Describe → Portray, Characterise
+Destroy → Demolish, Slay, Ruin, Raze
+Difference → Disagreement, Inequity, Dissimilarity
+Dull → Boring, Uninteresting, Monotonous, Humdrum, Dreary
+End → Terminate, Conclude, Cessation
+Explain → Elaborate, Interpret
+Fall → Drop, Descend, Topple
+Famous → Well-known, Renowned, Eminent, Illustrious
+Fast → Quick, Rapid, Hasty, Snappy, Swift
+Fat → Stout, Corpulent, Chubby, Bulky
+Funny → Amusing, Humorous, Droll, Hilarious
+Get → Acquire, Obtain, Secure, Procure, Gather
+Good → Excellent, Fine, Wonderful, Superior, Gracious, Superb, Splendid, Genuine, Sterling, Top-notch,
+Great → Worthy, Distinguished, Grand, Considerable, Mighty
+Happy → Pleased, Delighted, Elated, Joyful, Ecstatic, Jubilant, Jaunty
+Hate → Despise, Loathe, Abhor, Abominate
+Have → Possess, Own, Acquire,
+Help → Aid, Assist, Support, Encourage, Relieve
+Hide → Conceal, Cover, Mask, Veil
+Idea → Thought, Concept, Notion
+Important → Necessary, Vital, Critical, Indispensable, Valuable, Essential, Famous, Notable
+Interesting → Fascinating, Engaging, Spirited, Intriguing, Gripping, Enthralling, Captivating
+Little → Tiny, Diminutive, Exiguous, Dinky, Cramped
+Look → Gaze, Glance, Peek, Glimpse, Stare, Leer
+Love → Like, Admire, Fancy, Care for, Adore
+Make → Create, Originate, Invent, Construct, Manufacture, Produce, Compose
+Move → Plod, Creep, Crawl, Drag, Toddle, shuffle, Trot, Lumber, Meander
+Neat → Orderly, Tidy, Trim, Natty, Smart, Elegant
+New → Unique, Modern, Current, Recent
+Old → Feeble, Ancient, Aged, Veteran, Mature, Primitive, Stale
+Place → Draw, Map, Diagram, Procedure, Method, Blueprint
+Show → Display, Exhibit, Indicate, Reveal, Demonstrate
+Tell → Disclose, Reveal, Expose, Narrate, Inform, Divulge
+Use → Employ, Utilise, Exhaust, Spend
+Wrong → Incorrect, Inaccurate, Mistaken, Erroneous, Improper, Unsuitable

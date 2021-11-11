@@ -15,7 +15,7 @@ virtualenv = #[注意填写虚拟环境的位置]
 # pythonpath = /opt/RSSHub-python
 #上面的pythonpath需要换成刚才你自己创建的应用的目录
 # module = rsshub
-callable = app
+callable = app 
 memory-report = true
 #py-autoreload = 1 ##监控python模块mtime来触发重载 (只在开发时使用)
 

@@ -6,7 +6,7 @@ from os import path
 file_path = path.dirname(path.realpath(__file__))
 
 def ctx():
-    file = path.join(file_path,'toeflwords.txt')
+    file = path.join(file_path,'ieltswords.txt')
     with open(file, encoding='utf-8') as inf:
         f = inf.readlines()
         count = len(f)
