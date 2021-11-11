@@ -175,6 +175,11 @@ def chouti_search(category=''):
     from rsshub.spiders.chouti.search import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/chouti/user/<string:category>')       
+def chouti_user(category=''):
+    from rsshub.spiders.chouti.user import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 @bp.route('/mp/tag/<string:mp>/<string:tag>')
 def mp_tag(mp='', tag=''):
     from rsshub.spiders.mp.tag import ctx
