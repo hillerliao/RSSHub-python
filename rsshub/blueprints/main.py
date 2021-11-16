@@ -194,3 +194,8 @@ def mp_gh(gh=''):
 def mp_youwuqiong(author=''):
     from rsshub.spiders.mp.youwuqiong import ctx
     return render_template('main/atom.xml', **filter_content(ctx(author)))        
+
+@bp.route('/yfchuhai/express/')
+def yfchuhai_express():
+    from rsshub.spiders.yfchuhai.express import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))    
