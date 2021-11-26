@@ -7,7 +7,7 @@ domain = 'https://dig.chouti.com'
 def parse(post):
     item = {}
     item['title'] = post['title']
-    item['description'] = f"[{post['sectionName']}] {item['title']} "
+    item['description'] = f"{item['title']} "
     item['link'] = 'https://dig.chouti.com/link/' + str(post['id'])
     item['pubDate'] = str(post['created_time'])[0:10]
     item['author'] = post['submitted_user']['nick']
@@ -16,7 +16,7 @@ def parse(post):
 
 def ctx(category=''):
     DEFAULT_HEADERS.update({'Referer': domain}) 
-    r_url = f'{domain}/publish/links/ajax?userId=ctu_{category}'
+    r_url = f'{domain}/publish/links/ajax?userId={category}'
     posts = requests.get(r_url, headers=DEFAULT_HEADERS).json()['data']
     user_name = posts[0]['submitted_user']['nick']
     return {
