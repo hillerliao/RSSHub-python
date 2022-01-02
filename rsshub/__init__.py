@@ -23,7 +23,7 @@ def create_app(config_name=None):
     from rsshub.google_analytics import ga_account
 
     Analytics(app)
-    app.config['ANALYTICS']['GOOGLE_CLASSIC_ANALYTICS']['ACCOUNT'] = ga_account
+    app.config['ANALYTICS']['GOOGLE_UNIVERSAL_ANALYTICS']['ACCOUNT'] = ga_account
     app.config['ANALYTICS']['ENABLED'] = True
 
     register_blueprints(app)
