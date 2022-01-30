@@ -12,7 +12,9 @@ COPY nginx.conf /etc/nginx/nginx.conf
  
 # 将本地目录下的内容拷贝到容器的app目录下
 COPY . /app/
- 
+
+RUN apk update
+RUN apk add --no-cache gcc musl-dev libxml2 libxslt-dev
 # pip读取requirements.txt内容安装所需的库
 RUN pip install -r /app/requirements.txt -i  https://pypi.tuna.tsinghua.edu.cn/simple some-package --no-cache-dir
  
