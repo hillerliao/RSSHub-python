@@ -8,22 +8,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{% block title %}{% endblock title %}</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    {% block styles %}
-    {{ bootstrap.load_css() }}
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon"> {% block styles %} {{ bootstrap.load_css() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    {% endblock styles %}
-    {% endblock head %}
+    <link href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"> {% endblock styles %} {% endblock head %}
+    <!--Add analytics-->
+    {{ analytics }}
+    <!--GA4
+    # Global site tag (gtag.js) - Google Analytics
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4F8JNV0KRQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-4F8JNV0KRQ');
+    </script> -->
+    <!-- Google Tag Manager -->
+    <script>
+        (function(w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({
+                'gtm.start': new Date().getTime(),
+                event: 'gtm.js'
+            });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != 'dataLayer' ? '&l=' + l : '';
+            j.async = true;
+            j.src =
+                'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+            f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-N3QMTSR');
+    </script>
+    <!-- End Google Tag Manager -->
 </head>
 
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N3QMTSR"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     {% block nav %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation">
         <div class="container">
             <a class="navbar-brand" href="{{url_for('main.index')}}">{{ config['SITE_NAME'] }}</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
-                aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -35,18 +67,11 @@
     </nav>
     {% endblock nav %}
     <main class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
         <div class="alert alert-dismissable alert-{{ category }}" role="alert">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            {{ message }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button> {{ message }}
         </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-        {% block footer %}
+        {% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock %} {% block footer %}
         <footer>
             <p class="float-left">
                 <small>&copy;
@@ -60,11 +85,7 @@
         </footer>
         {% endblock footer %}
     </main>
-    {% block scripts %}
-    {{ bootstrap.load_js() }}
-    {{ moment.include_moment() }}
-    {{ moment.locale('zh-cn') }}
-    {% endblock %}
+    {% block scripts %} {{ bootstrap.load_js() }} {{ moment.include_moment() }} {{ moment.locale('zh-cn') }} {% endblock %}
 </body>
 
 </html>
