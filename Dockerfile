@@ -1,5 +1,13 @@
 # 使用基础镜像库
-FROM moshangguang/nginx_uwsgi_py3:alpine3.8
+FROM alpine:3.8
+RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.8/main/" > /etc/apk/repositories
+RUN apk add --no-cache vim nginx python3 uwsgi uwsgi-python3
+RUN apk add --update --upgrade
+RUN apk add --no-cache nginx python3 uwsgi uwsgi-python3
+RUN pip3 install --no-cache-dir --upgrade pip
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+
  
 # 创建工作路径
 RUN mkdir /app
