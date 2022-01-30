@@ -1,6 +1,7 @@
 # 使用基础镜像库
 FROM alpine:3.8
-RUN echo "https://mirror.tuna.tsinghua.edu.cn/alpine/v3.8/main/" > /etc/apk/repositories
+RUN echo -e http://mirrors.ustc.edu.cn/alpine/v3.7/main/ >> /etc/apk/repositories
+
 RUN apk add --no-cache vim nginx python3 uwsgi uwsgi-python3
 RUN apk add --update --upgrade
 RUN apk add --no-cache nginx python3 uwsgi uwsgi-python3
