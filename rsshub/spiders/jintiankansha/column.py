@@ -15,7 +15,8 @@ def ctx(category=''):
     url = f'{domain}/column/{category}'
     DEFAULT_HEADERS.update({'Host': 'www.jintiankansha.me'})
     tree = fetch(url, headers=DEFAULT_HEADERS)
-    posts = tree.css('.cell.item')
+    # posts = tree.css('.cell.item')
+    posts = tree.css('.item_title')
     items = list(map(parse, posts))
 
     column_title = tree.css('title::text').extract_first()

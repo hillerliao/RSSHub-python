@@ -180,6 +180,11 @@ def chouti_user(category=''):
     from rsshub.spiders.chouti.user import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/zaobao/realtime/<string:category>')
+def zaobao_realtime(category=''):
+    from rsshub.spiders.zaobao.realtime import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 @bp.route('/mp/tag/<string:mp>/<string:tag>')
 def mp_tag(mp='', tag=''):
     from rsshub.spiders.mp.tag import ctx
