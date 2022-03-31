@@ -15,7 +15,7 @@ def ctx(category=''):
     url = f"{domain}/realtime/{category}"
     tree = fetch(url,headers=DEFAULT_HEADERS)
     posts = tree.css('.col-lg-4.col-12.list-block.no-gutters')
-    print(posts)
+    # print(posts)
     return {
         'title': f'{category} - 早报网即时新闻',
         'link': url,
