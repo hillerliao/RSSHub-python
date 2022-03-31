@@ -7,7 +7,7 @@ domain = 'https://www.zaobao.com'
 def parse(post):
     item = {}
     item['description'] = item['title'] = post.css('div.f18.m-eps::text').extract_first()
-    item['link'] = domain + f"{post.css('a::attr(href)').extract_first()}"
+    item['link'] = domain + post.css('a::attr(href)').extract_first()
     return item
 
 
