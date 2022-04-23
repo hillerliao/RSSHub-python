@@ -190,6 +190,12 @@ def mp_tag(mp='', tag=''):
     from rsshub.spiders.mp.tag import ctx
     return render_template('main/atom.xml', **filter_content(ctx(mp,tag)))
 
+@bp.route('/producthunt/search/<string:keyword>/<string:period>')
+def producthunt_search(keyword='', period=''):
+    from rsshub.spiders.producthunt.search import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(keyword,period)))
+
+
 @bp.route('/mp/gh/<string:gh>')
 def mp_gh(gh=''):
     from rsshub.spiders.mp.gh import ctx
