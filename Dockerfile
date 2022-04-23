@@ -28,4 +28,5 @@ RUN apk add --no-cache gcc musl-dev libxml2 libxslt-dev
 RUN pip install -r /app/requirements.txt -i  https://pypi.tuna.tsinghua.edu.cn/simple some-package --no-cache-dir
  
 # 启动nginx和uwsgi
-ENTRYPOINT nginx -g "daemon on;" && uwsgi --ini /app/uwsgi.ini
+# ENTRYPOINT nginx -g "daemon on;" && uwsgi --ini /app/uwsgi.ini
+ENTRYPOINT nginx -g "daemon on;" && gunicorn -w 4 wsgi:app

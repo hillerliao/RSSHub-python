@@ -8,8 +8,10 @@ domain = 'https://dig.chouti.com'
 def parse(post):
     item = {}
     item['title'] = re.sub(r'<[^>]*>', '', post['title']).strip()
-    item['description'] = post['title']
-    item['link'] = 'https://dig.chouti.com/link/' + str(post['id'])
+    chouti_link = domain + '/link/' + str(post['id'])
+    item['description'] = post['title']  + '<br /> <br />'  + f'<a href="{chouti_link}" target="_blank">抽屉链接</a>'
+    
+    item['link'] = post['originalUrl']
     item['pubDate'] = str(post['created_time'])[0:10]
     item['author'] = post['submitted_user']['nick']
     return item 
