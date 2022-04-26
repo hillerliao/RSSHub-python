@@ -195,6 +195,10 @@ def producthunt_search(keyword='', period=''):
     from rsshub.spiders.producthunt.search import ctx
     return render_template('main/atom.xml', **filter_content(ctx(keyword,period)))
 
+@bp.route('/pgyer/<string:category>')
+def pgyer_app(category=''):
+    from rsshub.spiders.pgyer.app import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/mp/gh/<string:gh>')
 def mp_gh(gh=''):
