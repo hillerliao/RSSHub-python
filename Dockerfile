@@ -15,7 +15,7 @@ RUN pip install -r /app/requirements.txt -i https://mirrors.aliyun.com/pypi/simp
 RUN pip install gunicorn
 # RUN pip install git+https://github.com/getsyncr/notion-sdk.git
 
-# Setup nginx
+# Setup nginx 
 RUN rm /etc/nginx/sites-enabled/default
 COPY flask.conf /etc/nginx/sites-available/
 RUN ln -s /etc/nginx/sites-available/flask.conf /etc/nginx/sites-enabled/flask.conf
