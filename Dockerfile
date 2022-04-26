@@ -1,32 +1,30 @@
-# 使用基础镜像库
-FROM alpine:3.8
-RUN echo -e http://mirrors.ustc.edu.cn/alpine/v3.7/main/ > /etc/apk/repositories
+# nginx-gunicorn-flask
 
-RUN apk add --no-cache vim nginx python3 uwsgi uwsgi-python3
-RUN apk add --update --upgrade
-RUN apk add --no-cache nginx python3 uwsgi uwsgi-python3
-RUN pip3 install --no-cache-dir --upgrade pip
-RUN ln -s /usr/bin/python3 /usr/bin/python
+FROM ubuntu:latest
+MAINTAINER Hiller Liao <hillerliao@163.com>
 
+ENV DEBIAN_FRONTEND noninteractive
 
- 
-# 创建工作路径
-RUN mkdir /app
- 
-# 指定容器启动时执行的命令都在app目录下执行
-WORKDIR /app
- 
-# 替换nginx的配置
-COPY nginx.conf /etc/nginx/nginx.conf
- 
-# 将本地目录下的内容拷贝到容器的app目录下
-COPY . /app/
+RUN apt-get update
+RUN apt-get install -y python3 python3-pip python3-virtualenv nginx supervisor
 
-RUN apk update
-RUN apk add --no-cache gcc musl-dev libxml2 libxslt-dev
-# pip读取requirements.txt内容安装所需的库
-RUN pip install -r /app/requirements.txt -i  https://pypi.tuna.tsinghua.edu.cn/simple some-package --no-cache-dir
- 
-# 启动nginx和uwsgi
-# ENTRYPOINT nginx -g "daemon on;" && uwsgi --ini /app/uwsgi.ini
-ENTRYPOINT nginx -g "daemon on;" && gunicorn -w 4 wsgi:app
+# Setup flask application
+RUN mkdir -p /app
+COPY . /app
+RUN pip install -r /app/requirements.txt -i https://mirrors.aliyun.com/pypi/simple
+RUN pip install gunicorn
+# RUN pip install git+https://github.com/getsyncr/notion-sdk.git
+
+# Setup nginx
+RUN rm /etc/nginx/sites-enabled/default
+COPY flask.conf /etc/nginx/sites-available/
+RUN ln -s /etc/nginx/sites-available/flask.conf /etc/nginx/sites-enabled/flask.conf
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+
+# Setup supervisord
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY gunicorn.conf /etc/supervisor/conf.d/gunicorn.conf
+
+# Start processes
+CMD ["/usr/bin/supervisord"]
