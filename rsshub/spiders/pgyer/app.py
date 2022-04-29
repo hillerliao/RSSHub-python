@@ -1,3 +1,4 @@
+import re
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.utils import fetch
 
@@ -24,5 +25,7 @@ def parse(post):
     item['description'] =   item['title'] + '；' \
                             + post.css('ul.breadcrumb > li::text').getall()[1] + '；' \
                             + post.css('ul.breadcrumb > li::text').getall()[2]
-    item['link'] =  post.css('img.qrcode').attrib['src']
+    item['description'] = re.sub(r'\s|\n', '', item['description'])
+    link =  post.css('img.qrcode').attrib['src'].split('app/qrcode/')
+    item['link'] = link[0] + link[1]
     return item
