@@ -20,3 +20,4 @@ data-dev.db
 #Dockerfile
 .dockerignore
 # google_analytics.py
+.deta

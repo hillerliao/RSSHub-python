@@ -213,4 +213,13 @@ def mp_youwuqiong(author=''):
 @bp.route('/yfchuhai/express/')
 def yfchuhai_express():
     from rsshub.spiders.yfchuhai.express import ctx
-    return render_template('main/atom.xml', **filter_content(ctx()))    
+    return render_template('main/atom.xml', **filter_content(ctx())) 
+
+'''
+@bp.route('/test')
+@bp.route('/test/测试')
+def test():
+    import sys
+    # return sys.getdefaultencoding()
+    return sys.stdout.encoding
+'''
