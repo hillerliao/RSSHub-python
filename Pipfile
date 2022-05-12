@@ -9,7 +9,7 @@ flask-debugtoolbar = "*"
 flask-moment = "*"
 Flask = "*"
 python-dotenv = "*"
-"psycopg2" = "*"
+markupsafe==2.0.1
 gunicorn = "*"
 requests = "*"
 parsel = "*"
