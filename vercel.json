@@ -9,7 +9,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "./rsshub/blueprints/main.py"
+            "dest": "./main.py"
         }
     ]
 }
