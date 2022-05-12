@@ -2,14 +2,14 @@
     "version": 2,
     "builds": [
         {
-            "src": "./main.py",
+            "src": "./rsshub/bluerpints/main.py",
             "use": "@vercel/python"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": ""
+            "dest": "/"
         }
     ]
 }
