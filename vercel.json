@@ -9,7 +9,7 @@
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "./main.py"
+            "dest": "/rsshub/"
         }
     ]
 }
