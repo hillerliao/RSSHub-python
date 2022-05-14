@@ -18,7 +18,6 @@ data-dev.db
 
 .env
 #Dockerfile
-.dockerignore
 # google_analytics.py
 .deta
 .vercel
