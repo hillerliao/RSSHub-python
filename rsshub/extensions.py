@@ -1,8 +1,8 @@
-from flask_bootstrap import Bootstrap4
+from flask_bootstrap import Bootstrap
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_moment import Moment
 
 
-bootstrap = Bootstrap4()
+bootstrap = Bootstrap()
 debugtoolbar = DebugToolbarExtension()
 moment = Moment()
