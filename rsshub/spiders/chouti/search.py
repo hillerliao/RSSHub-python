@@ -18,6 +18,8 @@ def parse(post):
 
 def ctx(category=''):
     DEFAULT_HEADERS.update({'Referer': domain}) 
+    from urllib.parse import unquote
+    category = unquote(category, 'utf-8')
     r_url = f'{domain}/search/show'
     post_data = {'words':category,'searchType':'2','linkType':'ALL', 'subjectId':'-1'}
     posts = requests.post(r_url, data=post_data, headers=DEFAULT_HEADERS).json()['data']['linksList']
