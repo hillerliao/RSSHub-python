@@ -215,6 +215,11 @@ def yfchuhai_express():
     from rsshub.spiders.yfchuhai.express import ctx
     return render_template('main/atom.xml', **filter_content(ctx())) 
 
+@bp.route('/bjnews/<string:category>')
+def bjnews_channel(category=''):
+    from rsshub.spiders.bjnews.channel import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 '''
 @bp.route('/test')
 @bp.route('/test/测试')

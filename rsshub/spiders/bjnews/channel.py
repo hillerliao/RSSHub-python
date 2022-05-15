@@ -14,12 +14,12 @@ def ctx(category=''):
     r_url = f"{domain}/{category}"
     tree = fetch(r_url)
     html = tree.css('body')
-    posts = tree.css('.list-a')
-    channel_title = html.css('a.cur::text').extract_first()
+    posts = tree.css('.list-a').css('li')
+    channel_title = html.css('a.cur::text').extract_first().strip()
     return {
-        'title': channel_title,
+        'title': f'{channel_title} - 新京报',
         'link': r_url,
-        'description': '新京报频道新闻',
+        'description': f'新京报「{channel_title}」频道新闻',
         'author': 'hillerliao',
         'items': list(map(parse, posts)) 
     }
