@@ -1,14 +1,14 @@
 import requests 
 import feedparser
+import arrow
 
 from rsshub.utils import DEFAULT_HEADERS
-from rsshub.utils import fetch
 
 def parse(post):
     item = {}
     item['title'] = post.title
     item['description'] = post.summary
-    item['pubDate'] = post.published if post.has_key('published') else ''
+    item['pubDate'] = post.published if post.has_key('published') else arrow.now().isoformat()
     item['link'] = post.link
     item['author'] = post.author if post.has_key('author') else ''
     return item

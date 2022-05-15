@@ -1,5 +1,6 @@
 import requests
 import json
+import arrow
 from rsshub.utils import DEFAULT_HEADERS
 
 
@@ -10,7 +11,7 @@ def parse(post):
     articleid = post['ArticleId']
     item['link'] = f'https://api3.cls.cn/share/article/{articleid}?os=android&sv=734&app='
     item['author'] = post['ArticleAuthor']
-    item['pubDate'] = post['ArticleTime']
+    item['pubDate'] = arrow.get(int(post['ArticleTime'])).isoformat()
     return item
 
 

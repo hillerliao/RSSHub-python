@@ -1,3 +1,4 @@
+arrow==1.2.2
 asttokens==2.0.5
 blinker==1.4
 Bootstrap-Flask==1.8.0
@@ -7,6 +8,7 @@ click==8.0.3
 colorama==0.4.4
 cssselect==1.1.0
 executing==0.8.2
+feedparser==6.0.8
 Flask==2.0.2
 Flask-Analytics==0.6.0
 Flask-DebugToolbar==0.11.0

@@ -1,13 +1,13 @@
 import requests
 from rsshub.utils import DEFAULT_HEADERS
-
+import arrow
 
 def parse(post):
     item = {}
     item['title'] = post['title'] if post['title'] != '' else post['content']
     item['description'] = post['content']
     item['link'] = post['shareurl']
-    item['pubDate'] = post['ctime']
+    item['pubDate'] = arrow.get(int(post['ctime'])).isoformat()
     return item
 
 

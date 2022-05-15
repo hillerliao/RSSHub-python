@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 bootstrap-flask = "*"
-feedparser = "*"
+feedparser = "6.0.8"
 flask-debugtoolbar = "*"
 flask-moment = "*"
 Flask = "*"
@@ -17,6 +17,7 @@ parsel = "*"
 flask-script = "*"
 icecream = "*"
 flask-analytics = "*"
+arrow = "1.2.2"
 
 [dev-packages]
 coverage = "*"
