@@ -52,6 +52,8 @@ gunicorn main:app -b 0.0.0.0:5000
 
 [![Deploy](https://button.deta.dev/1/svg)](https://go.deta.dev/deploy?repo=https://github.com/hillerliao/rsshub-python)
 
+或  
+
 安装 [Deta CLI](https://docs.deta.sh/docs/cli/install/)；  
 在终端运行`deta login`；
 在项目根目录运行`deta new --python pyrsshub`；  
@@ -59,6 +61,10 @@ gunicorn main:app -b 0.0.0.0:5000
 运行`deta deploy`；
 获取网址 `https://<micro_name>.deta.dev/`；
 更新`deta update`
+
+### 部署到 Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhillerliao%2Frsshub-python)
 
 ### Docker 部署
 
