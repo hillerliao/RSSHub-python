@@ -10,25 +10,23 @@ def parse(post):
     item['description'] = post.summary
     item['pubDate'] = post.published
     item['link'] = post.link
+    item['author'] = post.author if post.has_key('author') else ''
     return item
 
 def ctx(feed_url=''):
-    # tree = fetch(feed_url,headers=DEFAULT_HEADERS)
-    # title = tree.css('channel').css('title::text').get()
-    # description = tree.css('channel').css('description').get()
-    # posts = tree.css('item')
-
-    feed = feedparser.parse(feed_url)
-
+    res = requests.get(feed_url,headers=DEFAULT_HEADERS)
+    feed = feedparser.parse(res.text)
     title = feed.feed.title
     description = feed.feed.subtitle
-
+    author = feed.feed.author if feed.feed.has_key('author') \
+        else feed.feed.generator if feed.feed.has_key('generator') \
+        else title
     posts = feed.entries
-    
+
     return {
         'title': title,
         'link': feed_url,
         'description': description,
-        'author': feed.feed.author,
+        'author': author,
         'items': list(map(parse, posts)) 
     }  

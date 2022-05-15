@@ -14,6 +14,7 @@
         <entry>
             <id>{{item.link}}</id>
             <title><![CDATA[{{item.title|safe}}]]></title>
+            <author><![CDATA[{{item.author|safe}}]]></author>
             <published>{{item.pubDate|default(now)}}</published>
             <updated>{{item.pubDate|default(now)}}</updated>
             <link href="{{item.link}}"/>
