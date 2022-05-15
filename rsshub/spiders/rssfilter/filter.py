@@ -8,7 +8,7 @@ def parse(post):
     item = {}
     item['title'] = post.title
     item['description'] = post.summary
-    item['pubDate'] = post.published
+    item['pubDate'] = post.published if post.has_key('published') else ''
     item['link'] = post.link
     item['author'] = post.author if post.has_key('author') else ''
     return item
