@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 bootstrap-flask = "*"
+feedparser = "*"
 flask-debugtoolbar = "*"
 flask-moment = "*"
 Flask = "*"

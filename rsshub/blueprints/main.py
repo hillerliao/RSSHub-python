@@ -220,6 +220,12 @@ def bjnews_channel(category=''):
     from rsshub.spiders.bjnews.channel import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/filter/')
+def rss_filter():
+    from rsshub.spiders.rssfilter.filter import ctx
+    feed_url = request.args.get("feed")  
+    return render_template('main/atom.xml', **filter_content(ctx(feed_url)))
+
 '''
 @bp.route('/test')
 @bp.route('/test/测试')
