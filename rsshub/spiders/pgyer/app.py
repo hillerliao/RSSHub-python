@@ -7,9 +7,11 @@ domain = 'https://www.pgyer.com'
 def parse(post):
     item = {}
     item['title'] = post.xpath('//meta[@property="og:description"]').attrib['content']
-    item['description'] = post.css('div.update-description').extract_first() 
-    item['description']  = re.sub(r'<[^>]*>', '', item['description'] )\
-                           .split('备注信息:')[1].split('执行人')[0].strip() 
+    item['description'] = item['title'] 
+    if post.css('div.update-description').extract_first(): 
+        item['description'] = post.css('div.update-description').extract_first()
+        item['description']  = re.sub(r'<[^>]*>', '', item['description'] )\
+                            .split('备注信息:')[1].split('执行人')[0].strip() 
     link =  post.css('img.qrcode').attrib['src'].split('app/qrcode/')
     item['link'] = link[0] + link[1]
     return item
