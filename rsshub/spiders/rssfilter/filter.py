@@ -7,9 +7,9 @@ from rsshub.utils import DEFAULT_HEADERS
 def parse(post):
     item = {}
     item['title'] = post.title
-    item['description'] = post.summary
+    item['description'] = post.summary if hasattr(post,'summary') else post.title
     item['pubDate'] = post.published if post.has_key('published') else arrow.now().isoformat()
-    item['link'] = post.link
+    item['link'] = post.link if hasattr(post,'link') else ''
     item['author'] = post.author if post.has_key('author') else ''
     return item
 
