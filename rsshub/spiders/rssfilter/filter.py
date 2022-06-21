@@ -14,7 +14,7 @@ def parse(post):
     return item
 
 def ctx(feed_url=''):
-    res = requests.get(feed_url,headers=DEFAULT_HEADERS)
+    res = requests.get(feed_url,headers=DEFAULT_HEADERS,verify=False)
     feed = feedparser.parse(res.text)
     title = feed.feed.title
     description = feed.feed.subtitle
