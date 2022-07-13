@@ -9,7 +9,7 @@ def parse(post):
     item['title'] = post.css('div.e18qdnq10').get()
     item['title'] = re.sub(r'<[^>]*>', '', item['title']).strip()
     item['description'] = item['title'] 
-    link =  f"{domain}/the-world-in-brief"
+    item['link'] =  f"{domain}/the-world-in-brief" + '?from=' + item['title'][:30] 
     return item
 
 def ctx(category=''):
