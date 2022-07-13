@@ -200,6 +200,11 @@ def pgyer_app(category=''):
     from rsshub.spiders.pgyer.app import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/economist/worldbrief')
+def economist_wordlbrief(category=''):
+    from rsshub.spiders.economist.worldbrief import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 @bp.route('/mp/gh/<string:gh>')
 def mp_gh(gh=''):
     from rsshub.spiders.mp.gh import ctx
