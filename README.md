@@ -6,9 +6,15 @@ RSSHub 是一个轻量、易于扩展的 RSS 生成器，可以给任何奇奇�
 
 本项目是[原RSSHub](https://github.com/DIYgod/RSSHub)的Python实现。
 
+
 **其实用Python写爬虫要比JS更方便:p**
 
 DEMO地址：https://rsshub.deta.dev
+
+
+## 交流
+
+Discord Server： [https://discord.gg/tAMMRUMS](https://discord.gg/tAMMRUMS)
 
 ## RSS过滤
 
