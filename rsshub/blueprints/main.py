@@ -230,6 +230,11 @@ def appstore_top(cc='', genreid=''):
     from rsshub.spiders.appstore.top import ctx
     return render_template('main/atom.xml', **filter_content(ctx(cc,genreid)))
 
+@bp.route('/aisixiang/search/<string:category>/<string:keywords>')
+def aisixiang_search(category='', keywords=''):
+    from rsshub.spiders.aisixiang.search import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category, keywords)))
+
 @bp.route('/filter/')
 def rss_filter():
     from rsshub.spiders.rssfilter.filter import ctx
