@@ -6,9 +6,9 @@ domain = 'https://www.economist.com'
 
 def parse(post):
     item = {}
-    item['title'] = post.css('div.e18qdnq10').get()
-    item['title'] = re.sub(r'<[^>]*>', '', item['title']).strip()
+    item['title'] = post.css('div').css('p').get()
     item['description'] = item['title'] 
+    item['title'] = re.sub(r'<[^>]*>', '', item['title']).strip()
     item['link'] =  f"{domain}/the-world-in-brief" + '?from=' + item['title'][:30] 
     return item
 

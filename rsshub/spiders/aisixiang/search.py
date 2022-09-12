@@ -1,4 +1,4 @@
-import urllib.parse
+from urllib.parse import quote, unquote
 from rsshub.utils import fetch, DEFAULT_HEADERS
 
 
@@ -14,8 +14,9 @@ def parse(post):
 
 
 def ctx(category='', keywords=''):
-    keywords_encode = urllib.parse.quote(keywords, encoding='gbk')
-    url = f"{domain}/data/search.php?keyWords={keywords_encode}&searchfield={category}"
+    keywords = unquote(keywords,encoding='utf-8')
+    keywords_gbk = quote(keywords, encoding='gbk')
+    url = f"{domain}/data/search.php?keyWords={keywords_gbk}&searchfield={category}"
     tree = fetch(url, headers=DEFAULT_HEADERS)
     posts = tree.css('.search_list').css('li')
     return {
