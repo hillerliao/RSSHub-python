@@ -29,7 +29,7 @@ Discord Server： [https://discord.gg/4BZBZuyx7p](https://discord.gg/4BZBZuyx7p)
 ## 贡献 RSS 方法
 
 1. fork这份仓库
-2. 在spiders文件夹下创建新的爬虫目录和脚本，编写爬虫，参考我的[爬虫教程](https://alphardex.github.io/2018/12/15/%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E7%B2%BE%E8%A6%81/)
+2. 在spiders文件夹下创建新的爬虫目录和脚本，编写爬虫，参考我的[爬虫教程](https://juejin.cn/post/6953881777756700709)
 3. 在blueprints的main.py中添加对应的路由（按照之前路由的格式）
 4. 在templates中的main目录下的feeds.html上写上说明文档，同样可参照格式写
 5. 提pr
