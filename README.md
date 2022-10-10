@@ -9,12 +9,12 @@ RSSHub 是一个轻量、易于扩展的 RSS 生成器，可以给任何奇奇�
 
 **其实用Python写爬虫要比JS更方便:p**
 
-DEMO地址：https://rsshub.deta.dev
+DEMO地址：https://pyrsshub.vercel.app
 
 
 ## 交流
 
-Discord Server： [https://discord.gg/tAMMRUMS](https://discord.gg/tAMMRUMS)
+Discord Server： [https://discord.gg/4BZBZuyx7p](https://discord.gg/4BZBZuyx7p)
 
 ## RSS过滤
 
