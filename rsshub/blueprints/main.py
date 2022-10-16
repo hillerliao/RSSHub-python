@@ -68,6 +68,10 @@ def infoq_topic(category=''):
     from rsshub.spiders.infoq.topic import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/infoq/profile/<string:category>')
+def infoq_profile(category=''):
+    from rsshub.spiders.infoq.profile import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/dxzg/notice')
 def dxzg_notice():
