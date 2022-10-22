@@ -1,6 +1,6 @@
 import requests
 import json
-from urllib.parse import unquote, quote
+from urllib.parse import unquote 
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.utils import fetch
 
@@ -26,6 +26,7 @@ def ctx(category='', type=''):
     payload = {"q":category,"t": type,"s":20,"p":1}
     posts = requests.post(url, json=payload, headers=DEFAULT_HEADERS)
     posts = json.loads(posts.text)['data']['list']
+    category = unquote(category, 'utf-8')
     return {
         'title': f'{category} - 搜索 - InfoQ',
         'link': f'{domain}/search/c=0/k={category}/t=0',
