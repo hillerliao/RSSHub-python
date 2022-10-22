@@ -73,6 +73,11 @@ def infoq_profile(category=''):
     from rsshub.spiders.infoq.profile import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/infoq/search/<string:category>')
+def infoq_search(category=''):
+    from rsshub.spiders.infoq.search import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))    
+
 @bp.route('/dxzg/notice')
 def dxzg_notice():
     from rsshub.spiders.dxzg.notice import ctx
