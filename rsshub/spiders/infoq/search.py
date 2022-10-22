@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 from urllib.parse import unquote 
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.utils import fetch
@@ -9,8 +10,8 @@ domain = 'https://s.geekbang.org'
 
 def parse(post):
     item = {}
-    item['title'] = post['title']
-    item['description'] = post['simple_content']
+    item['title'] = re.sub(r'<[^>]*>', '', post['title']).strip()
+    item['description'] = re.sub(r'<[^>]*>', '', post['simple_content']).strip()
     item['link'] = post['content_url']
     item['author'] = post['author']
     item['pubDate'] = post['release_time']
