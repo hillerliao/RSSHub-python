@@ -49,7 +49,7 @@ def parse(post):
                           + '</br></br>Rating: ' + str( post['userRating']['value'] ) \
                           + '，数量：' + str( post['userRating']['ratingCount'] )
     url_paths = post['shortUrl'].split('/')
-    item['author'] = post['copyright']
+    item['author'] = post['artistName']
     del url_paths[-2]
     item['link'] = '/'.join(url_paths)
     return item
