@@ -41,6 +41,7 @@ def gen_headers(cc=''):
     return headers
 
 def parse(post):
+    print(post)
     item = {}
     subtitle = post['name'] + '</br></br>' + post['subtitle'] if post.__contains__('subtitle') else post['name']
     item['title'] = post['name']
@@ -48,6 +49,7 @@ def parse(post):
                           + '</br></br>Rating: ' + str( post['userRating']['value'] ) \
                           + '，数量：' + str( post['userRating']['ratingCount'] )
     url_paths = post['shortUrl'].split('/')
+    item['author'] = post['copyright']
     del url_paths[-2]
     item['link'] = '/'.join(url_paths)
     return item
