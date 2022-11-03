@@ -19,7 +19,6 @@ def parse(post):
 
 
 def ctx(category='', type=''):
-    # category = unquote(category, encoding='utf-8')
     category1 = category.encode("utf-8").decode("latin-1")
     referer = f'{domain}/search/c=0/k={category1}/t={type}'
     DEFAULT_HEADERS.update({'Referer': referer}) 

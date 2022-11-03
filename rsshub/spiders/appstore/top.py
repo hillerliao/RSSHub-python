@@ -42,12 +42,14 @@ def gen_headers(cc=''):
 
 def parse(post):
     item = {}
-    subtitle = post['name'] + ': ' + post['subtitle'] if post.__contains__('subtitle') else post['name']
+    subtitle = post['name'] + '</br></br>' + post['subtitle'] if post.__contains__('subtitle') else post['name']
     item['title'] = post['name']
     item['description'] = subtitle + '</br></br>开发者: ' + '<a href="' + post['artistUrl']  + '">' + post['artistName'] + '</a> ' \
                           + '</br></br>Rating: ' + str( post['userRating']['value'] ) \
                           + '，数量：' + str( post['userRating']['ratingCount'] )
-    item['link'] = post['shortUrl']
+    url_paths = post['shortUrl'].split('/')
+    del url_paths[-2]
+    item['link'] = '/'.join(url_paths)
     return item
 
 def ctx(cc='', genreid=''):
