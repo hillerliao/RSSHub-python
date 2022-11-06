@@ -55,6 +55,11 @@ def chuansongme_articles(category=''):
 def ctolib_topics(category=''):
     from rsshub.spiders.ctolib.topics import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+ 
+@bp.route('/bbwc/realtime/<string:category>')
+def bbwc_realtime(category=''):
+    from rsshub.spiders.bbwc.realtime import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 
 @bp.route('/infoq/recommend')
