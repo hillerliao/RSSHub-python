@@ -1,5 +1,6 @@
 import json
 import requests
+import arrow
 from rsshub.utils import DEFAULT_HEADERS
 
 domain = 'https://api.bbwc.cn'
@@ -10,7 +11,8 @@ def parse(post):
     item['title'] = post['title'] 
     item['description'] = post['content']
     item['link'] = post['link']
-    item['pubDate'] = post['inputtime']
+    item['pubDate'] = arrow.get(int(post['inputtime'])).isoformat()
+    item['author'] = 'Bloomberg'
     return item 
 
 
