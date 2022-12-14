@@ -4,6 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+beautifulsoup4 = "*"
 bootstrap-flask = "*"
 feedparser = "6.0.8"
 flask-debugtoolbar = "*"

@@ -1,5 +1,6 @@
 arrow==1.2.2
 asttokens==2.0.5
+beautifulsoup4==4.11.1
 blinker==1.4
 Bootstrap-Flask==1.8.0
 certifi==2021.10.8
@@ -26,6 +27,7 @@ Pygments==2.11.1
 python-dotenv==0.19.2
 requests==2.26.0
 six==1.16.0
+undetected-chromedriver==3.1.7 
 urllib3==1.26.7
 w3lib==1.22.0
 Werkzeug==2.1.2
