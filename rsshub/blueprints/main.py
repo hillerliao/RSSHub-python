@@ -219,6 +219,11 @@ def economist_wordlbrief(category=''):
     from rsshub.spiders.economist.worldbrief import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/baidu/suggest/<string:category>')
+def baidu_suggest(category=''):
+    from rsshub.spiders.baidu.suggest import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))    
+
 @bp.route('/mp/gh/<string:gh>')
 def mp_gh(gh=''):
     from rsshub.spiders.mp.gh import ctx

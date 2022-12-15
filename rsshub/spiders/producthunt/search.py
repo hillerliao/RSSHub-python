@@ -17,7 +17,7 @@ def parse(post):
     return item 
 
 
-def ctx(keyword='', period=''):
+def ctx2(keyword='', period=''):
     DEFAULT_HEADERS.update({'Referer': domain}) 
     r_url = f'{domain}' + f'/search?q={keyword}&postedAfter={period}:days'    
     browser = uc.Chrome()
