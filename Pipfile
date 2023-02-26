@@ -20,6 +20,7 @@ icecream = "*"
 flask-analytics = "*"
 arrow = "1.2.2"
 undetected-chromedriver = "*"
+pyjsparser = "*"
 
 [dev-packages]
 coverage = "*"
