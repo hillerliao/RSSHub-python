@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pyjsparser
+import arrow
 
 domain = 'https://mp.weixin.qq.com'
 
@@ -11,6 +12,7 @@ def parse(post):
     item['description'] = post['properties'][5]['value']['value']      
     item['link'] = post['properties'][6]['value']['value']      
     item['pubDate'] = post['properties'][16]['value']['left']['value']
+    item['pubDate'] = arrow.get(int(item['pubDate'])).isoformat()
     test = item['author'] = post['properties'][1]['value']['properties'][0]['value']['value']     
     return item
 
