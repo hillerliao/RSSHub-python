@@ -30,5 +30,5 @@ six==1.16.0
 undetected-chromedriver==3.1.7 
 urllib3==1.26.7
 w3lib==1.22.0
-Werkzeug==2.1.2
+Werkzeug==2.2.3
 zipp==3.6.0 
