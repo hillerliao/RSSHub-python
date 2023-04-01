@@ -21,6 +21,9 @@ flask-analytics = "*"
 arrow = "1.2.2"
 undetected-chromedriver = "*"
 pyjsparser = "*"
+charset-normalizer = "*"
+pyppeteer = "*"
+flask-caching = "*"
 
 [dev-packages]
 coverage = "*"
