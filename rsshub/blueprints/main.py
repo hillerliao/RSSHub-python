@@ -240,6 +240,31 @@ def mp_youwuqiong(author=''):
     from rsshub.spiders.mp.youwuqiong import ctx
     return render_template('main/atom.xml', **filter_content(ctx(author)))
 
+
+@bp.route('/xinhuanet/zuixinbobao')
+def xinhuanet_zuixinbobao():
+    from rsshub.spiders.xinhuanet.zuixinbobao import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
+@bp.route('/xinhuanet/shizhenglianbo')
+def xinhuanet_shizhenglianbo():
+    from rsshub.spiders.xinhuanet.shizhenglianbo import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
+@bp.route('/xinhuanet/yaodianjujiao')
+def xinhuanet_yaodianjujiao():
+    from rsshub.spiders.xinhuanet.yaodianjujiao import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
+@bp.route('/xinhuanet/world')
+def xinhuanet_world():
+    from rsshub.spiders.xinhuanet.world import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
 @bp.route('/yfchuhai/express/')
 def yfchuhai_express():
     from rsshub.spiders.yfchuhai.express import ctx
