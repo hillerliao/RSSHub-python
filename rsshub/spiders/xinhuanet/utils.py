@@ -12,5 +12,4 @@ def parse_html(post):
         .xpath('//div[@id="detail"]')
         .get()
     )
-    sleep(1)
     return item
