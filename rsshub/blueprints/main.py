@@ -296,6 +296,12 @@ def sysu_ifcen(category='', keywords=''):
     from rsshub.spiders.sysu.ifcen import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/nhk/newseasy')
+@cache.cached(timeout=3600)
+def nhk_newseasy(category='', keywords=''):
+    from rsshub.spiders.nhk.newseasy import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 @bp.route('/filter/')
 def rss_filter():
     from rsshub.spiders.rssfilter.filter import ctx
