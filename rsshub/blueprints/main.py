@@ -290,6 +290,12 @@ def aisixiang_search(category='', keywords=''):
     from rsshub.spiders.aisixiang.search import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category, keywords)))
 
+@bp.route('/hnzcy/bidding/<string:type>')
+@cache.cached(timeout=3600)
+def hnzcy_bidding(type=''):
+    from rsshub.spiders.hnzcy.bidding import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(type)))
+
 @bp.route('/sysu/ifcen')
 @cache.cached(timeout=3600)
 def sysu_ifcen(category='', keywords=''):
