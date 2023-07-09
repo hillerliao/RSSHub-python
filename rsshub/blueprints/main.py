@@ -308,16 +308,14 @@ def nhk_newseasy(category='', keywords=''):
     from rsshub.spiders.nhk.newseasy import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/tadoku/books/<string:category>')
+@cache.cached(timeout=3600)
+def tadoku_books(category=''):
+    from rsshub.spiders.tadoku.books import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 @bp.route('/filter/')
 def rss_filter():
     from rsshub.spiders.rssfilter.filter import ctx
     feed_url = request.args.get("feed")
     return render_template('main/atom.xml', **filter_content(ctx(feed_url)))
-'''
-@bp.route('/test')
-@bp.route('/test/测试')
-def test():
-    import sys
-    # return sys.getdefaultencoding()
-    return sys.stdout.encoding
-'''
