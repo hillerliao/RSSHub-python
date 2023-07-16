@@ -3,10 +3,12 @@ from rsshub.extensions import cache
 
 bp = Blueprint('main', __name__)
 
+@bp.route('/word/<string:category>')
 @bp.route('/')
-def word():
+@cache.cached(timeout=3600)
+def word(category=''):
     from rsshub.spiders.word.word import ctx
-    return render_template('main/word.html', **ctx())
+    return render_template('main/word.html', **ctx(category))
 
 @bp.route('/index')
 def index():
