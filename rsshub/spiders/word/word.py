@@ -23,7 +23,7 @@ def ctx(category=''):
     if category == 'ja':
         url = 'https://raw.githubusercontent.com/hillerliao/img/main/words.csv'
         res = get_csv_line(url)
-        word = f"{res[1]} 〔{res[2]}〕 {res[3]} "
+        word = f"{res[1]} 〔{res[2]} {res[4]}〕 {res[3]} "
     else:
         file = path.join(file_path,'toeflwords.txt')
         with open(file, encoding='utf-8') as inf:
