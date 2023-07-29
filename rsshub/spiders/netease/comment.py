@@ -14,7 +14,9 @@ def parse(post):
     item['description'] = '【回帖】' + post['comments'][1]['1']['content'] if len(post['comments']) > 1 \
                         else '【回帖】' + post['comments'][0]['2']['content']  if '2' in post['comments'][0]  \
                         else ''
-    item['link'] = post['thread']['url']
+    thread_link = post['thread']['url']
+    item['description'] = item['description'] + f' <a href="{thread_link}">原文链接</a>'
+    item['link'] = f"https://comment.tie.163.com/{post['thread']['docId']}.html"
     item['author'] = ''
     item['pubDate'] =  arrow.now().isoformat()
     return item
