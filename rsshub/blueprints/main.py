@@ -321,3 +321,13 @@ def rss_filter():
     from rsshub.spiders.rssfilter.filter import ctx
     feed_url = request.args.get("feed")
     return render_template('main/atom.xml', **filter_content(ctx(feed_url)))
+
+@bp.route('/zhihu/explore')
+def zhihu_explore():
+    from rsshub.spiders.zhihu.explore import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+@bp.route('/zhihu/question/<string:qid>')
+def zhihu_question(qid):
+    from rsshub.spiders.zhihu.article import ctx_question
+    return render_template('main/atom.xml', **filter_content(ctx_question(qid)))
