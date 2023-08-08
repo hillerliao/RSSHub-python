@@ -40,6 +40,10 @@ class ZhihuAnswer(AtomEntry):
         self.content = zhihu_figure_transfer(tree.css('.RichText').get())
         self.description = self.content
 
+        # author
+
+        self.author = json.loads(tree.xpath('//div[@class="ContentItem AnswerItem"]/@data-zop').get())['authorName']
+
         meta: dict = get_value(json.loads(tree.css("#js-initialData::text").get())
                                ['initialState']['entities']['questions'])
 
@@ -51,8 +55,17 @@ class ZhihuZhuanlanArticle(AtomEntry):
     def get(self):
         tree = fetch(self.link)
         self.title = tree.css('h1::text').get()
+        author = tree.xpath('//meta[@itemProp="name"]/@content').get()
+        if author:
+            self.author = author
         self.content = zhihu_figure_transfer(tree.css('article').css('.RichText').get())
         self.description = self.content
+
+        #
+        data = json.loads(tree.css("#js-initialData::text").get())
+        metadata = list(data['initialState']['entities']['articles'].values())[0]
+        self.pubDate = datetime.fromtimestamp(metadata['created'])
+        self.updated_time = datetime.fromtimestamp(metadata['updated'])
 
 
 class ZhihuQuestion(Feed):

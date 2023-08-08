@@ -14,7 +14,7 @@ def ctx():
     discussion = tree.css('.ExploreRoundtableCard-questionTitle')
     collection_card = tree.css('.ExploreCollectionCard-contentTitle')
 
-    for post in chain(hot_question, collection_card, discussion, newest_topic):
+    for post in chain(hot_question, collection_card, discussion): #, newest_topic):
         title = post.css('a::text').extract_first()
         link: str = post.css('a::attr(href)').extract_first()
 
