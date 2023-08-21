@@ -1,29 +1,15 @@
-# nginx-gunicorn-flask
-
-FROM ubuntu:latest
-MAINTAINER Hiller Liao <hillerliao@163.com>
-
-ENV DEBIAN_FRONTEND noninteractive
-
-RUN apt-get install -y python3 python3-pip python3-virtualenv nginx supervisor
-
-# Setup flask application
-RUN mkdir -p /app
-COPY . /app
-RUN pip install -r /app/requirements.txt
+# syntax=docker/dockerfile:1.2
+FROM python:3.11-alpine AS build
+WORKDIR /app
+COPY requirements.txt ./ 
+RUN --no-cache pip install -r requirements.txt
+COPY . .
 RUN pip install gunicorn
-# RUN pip install git+https://github.com/getsyncr/notion-sdk.git
 
-# Setup nginx 
-RUN rm /etc/nginx/sites-enabled/default
-COPY flask.conf /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/flask.conf /etc/nginx/sites-enabled/flask.conf
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+FROM python:3.11-alpine AS runtime
+WORKDIR /app 
+COPY --from=build /app .
+USER 1000:1000
 
-# Setup supervisord
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY gunicorn.conf /etc/supervisor/conf.d/gunicorn.conf
-
-# Start processes
-CMD ["/usr/bin/supervisord"]
+EXPOSE 8080  
+CMD ["gunicorn", "-w", "4", "-b", ":8080", "app:app"]
