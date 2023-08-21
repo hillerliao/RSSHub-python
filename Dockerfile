@@ -5,7 +5,6 @@ MAINTAINER Hiller Liao <hillerliao@163.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update
 RUN apt-get install -y python3 python3-pip python3-virtualenv nginx supervisor
 
 # Setup flask application
