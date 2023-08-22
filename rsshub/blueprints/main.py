@@ -20,7 +20,7 @@ def feeds():
 
 
 @bp.app_template_global()
-def filter_content(ctx):
+def filter_content_bak(ctx):
     include_title = request.args.get('include_title')
     include_description = request.args.get('include_description')
     exclude_title = request.args.get('exclude_title')
@@ -32,6 +32,25 @@ def filter_content(ctx):
     items = [item for item in items if exclude_title not in item['title']] if exclude_title else items
     items = [item for item in items if exclude_description not in item['description']] if exclude_description else items
     items = items[:limit] if limit else items
+    ctx = ctx.copy()
+    ctx['items'] = items
+    return ctx
+def filter_content(ctx):
+    items = ctx['items'].copy()
+    if 'include_title' in request.args:
+        include_titles = request.args['include_title'].split('|') 
+        items = [item for item in items if any(title in item['title'] for title in include_titles)]
+    if 'exclude_title' in request.args:
+        exclude_titles = request.args['exclude_title'].split('|')
+        items = [item for item in items if all(title not in item['title'] for title in exclude_titles)]
+    if 'include_description' in request.args:
+        include_description = request.args['include_description'].split('|')
+        items = [item for item in items if any(description in item['description'] for description in include_description)]
+    if 'exclude_description' in request.args:
+        exclude_description = request.args['exclude_description'].split('|')
+        items = [item for item in items if all(description not in item['description'] for description in exclude_description)]
+    if 'limit' in request.args:
+        items = items[:int(request.args['limit'])]
     ctx = ctx.copy()
     ctx['items'] = items
     return ctx
