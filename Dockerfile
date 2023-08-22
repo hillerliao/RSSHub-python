@@ -11,5 +11,5 @@ WORKDIR /app
 COPY --from=build /app .
 USER 1000:1000
 
-EXPOSE 8080  
+EXPOSE 5000  
 CMD ["gunicorn", "-w", "4", "-b", ":5000", "app:app"]
