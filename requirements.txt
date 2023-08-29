@@ -24,7 +24,7 @@ Jinja2==3.0.3
 lxml==4.9.1
 MarkupSafe==2.0.1
 parsel==1.6.0
-Pygments==2.11.1
+Pygments==2.15.0
 python-dotenv==0.19.2
 requests==2.26.0
 six==1.16.0
