@@ -46,6 +46,12 @@ def cninfo_announcement(stock_id='', category=''):
     return render_template('main/atom.xml', **filter_content(ctx(stock_id,category)))
 
 
+@bp.route('/chncpa/weekend')
+def chncpa_weekend():
+    from rsshub.spiders.chncpa.weekend import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
 @bp.route('/chuansongme/articles/<string:category>')
 @bp.route('/chuansongme/articles')
 def chuansongme_articles(category=''):
