@@ -2,6 +2,7 @@ import re
 from flask import Response
 import requests
 from parsel import Selector
+import typing
 
 DEFAULT_HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
 
@@ -14,10 +15,11 @@ class XMLResponse(Response):
         return super().__init__(response, **kwargs)
 
 
-def fetch(url: str, headers: dict=DEFAULT_HEADERS, proxies: dict=None):
+def fetch(url: str, headers: dict=DEFAULT_HEADERS, proxies: typing.Optional[dict]=None) -> typing.Optional[Selector]:
     try:
         res = requests.get(url, headers=headers, proxies=proxies)
         res.raise_for_status()
+        res.encoding = res.apparent_encoding
     except Exception as e:
         print(f'[Err] {e}')
     else:
