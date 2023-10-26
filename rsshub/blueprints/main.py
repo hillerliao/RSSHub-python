@@ -254,6 +254,12 @@ def mp_youwuqiong(author=''):
     return render_template('main/atom.xml', **filter_content(ctx(author)))
 
 
+@bp.route('/sztv/dianbo/<string:id>')
+def sztv_dianbo(id=''):
+    from rsshub.spiders.sztv.dianbo import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(id)))
+
+
 @bp.route('/xinhuanet/zuixinbobao')
 def xinhuanet_zuixinbobao():
     from rsshub.spiders.xinhuanet.zuixinbobao import ctx
