@@ -310,6 +310,12 @@ def nhk_newseasy(category='', keywords=''):
     from rsshub.spiders.nhk.newseasy import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/nhk/topic/<string:category>')
+@cache.cached(timeout=3600)
+def nhk_topic(category='', keywords=''):
+    from rsshub.spiders.nhk.topic import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 @bp.route('/tadoku/books/<string:category>')
 @cache.cached(timeout=3600)
 def tadoku_books(category=''):
