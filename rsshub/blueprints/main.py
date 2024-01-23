@@ -46,6 +46,12 @@ def cninfo_announcement(stock_id='', category=''):
     return render_template('main/atom.xml', **filter_content(ctx(stock_id,category)))
 
 
+@bp.route('/chncpa/weekend')
+def chncpa_weekend():
+    from rsshub.spiders.chncpa.weekend import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
 @bp.route('/chuansongme/articles/<string:category>')
 @bp.route('/chuansongme/articles')
 def chuansongme_articles(category=''):
@@ -126,6 +132,11 @@ def caixin_scroll(category=''):
 def eastmoney_report(category='', type=''):
     from rsshub.spiders.eastmoney.report import ctx
     return render_template('main/atom.xml', **filter_content(ctx(type,category)))
+
+@bp.route('/eastmoney/report2/<string:type>')
+def eastmoney_report2(type=''):
+    from rsshub.spiders.eastmoney.report2 import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(type)))
 
 @bp.route('/xuangubao/<string:type>/<string:category>')
 def xuangubao_xuangubao(type='', category=''):
@@ -241,6 +252,12 @@ def mp_gh(gh=''):
 def mp_youwuqiong(author=''):
     from rsshub.spiders.mp.youwuqiong import ctx
     return render_template('main/atom.xml', **filter_content(ctx(author)))
+
+
+@bp.route('/sztv/dianbo/<string:id>')
+def sztv_dianbo(id=''):
+    from rsshub.spiders.sztv.dianbo import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(id)))
 
 
 @bp.route('/xinhuanet/zuixinbobao')
