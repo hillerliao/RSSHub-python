@@ -12,6 +12,7 @@ def parse(post):
     return item
 
 def ctx(category=''):
+    category = category  if category != '0' else ''
     url = f"{domain}/japanese/book-search?level={category}"
     tree = fetch(url,headers=DEFAULT_HEADERS)
     posts = tree.css('.col-6.col-sm-4.col-md-3.col-lg-2.bl-wrap-small')
