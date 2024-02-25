@@ -27,11 +27,11 @@ def remove_html_tags(text):
 def ctx(category=''):
     word = ''
     if category == 'ja':
-        url = 'https://raw.githubusercontent.com/hillerliao/img/main/words.csv'
+        url = 'https://raw.githubusercontent.com/henrylovemiller/img/main/words.csv'
         res = get_csv_line(url)
         word = f"{res[1]} 〔{res[2]} {res[4]}〕 {res[3]} "
     elif category == 'jlpt3':
-        url = 'https://raw.githubusercontent.com/hillerliao/img/main/hongbaoshu_N3.csv'
+        url = 'https://raw.githubusercontent.com/henrylovemiller/img/main/hongbaoshu_N3.csv'
         res = get_csv_line(url)
         word = f"{res[0]}〔{res[1]} {res[2]}〕 ➡{res[3]}   ➡{res[4]}   ➡ {res[5]}  ➡ {res[6]} "
         word = remove_html_tags(word)

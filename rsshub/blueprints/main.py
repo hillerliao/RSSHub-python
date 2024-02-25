@@ -27,14 +27,30 @@ def filter_content(ctx):
     exclude_description = request.args.get('exclude_description')
     limit = request.args.get('limit', type=int)
     items = ctx['items'].copy()
-    items = [item for item in items if include_title in item['title']] if include_title else items
-    items = [item for item in items if include_description in item['description']] if include_description else items
-    items = [item for item in items if exclude_title not in item['title']] if exclude_title else items
-    items = [item for item in items if exclude_description not in item['description']] if exclude_description else items
-    items = items[:limit] if limit else items
+    
+    if include_title:
+        include_keywords = include_title.split('|') if '|' in include_title else [include_title]
+        items = [item for item in items if any(keyword in item['title'] for keyword in include_keywords)]
+    
+    if include_description:
+        include_keywords = include_description.split('|') if '|' in include_description else [include_description]
+        items = [item for item in items if any(keyword in item['description'] for keyword in include_keywords)]
+    
+    if exclude_title:
+        exclude_keywords = exclude_title.split('|') if '|' in exclude_title else [exclude_title]
+        items = [item for item in items if all(keyword not in item['title'] for keyword in exclude_keywords)]
+    
+    if exclude_description:
+        exclude_keywords = exclude_description.split('|') if '|' in exclude_description else [exclude_description]
+        items = [item for item in items if all(keyword not in item['description'] for keyword in exclude_keywords)]
+    
+    if limit:
+        items = items[:limit]
+    
     ctx = ctx.copy()
     ctx['items'] = items
     return ctx
+
 
 
 
