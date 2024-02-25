@@ -1,30 +1,27 @@
-# nginx-gunicorn-flask
+FROM python:3.11-alpine AS build
 
-FROM ubuntu:latest
-MAINTAINER Hiller Liao <hillerliao@163.com>
+WORKDIR /app
 
-ENV DEBIAN_FRONTEND noninteractive
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
-RUN apt-get update
-RUN apt-get install -y python3 python3-pip python3-virtualenv nginx supervisor
-
-# Setup flask application
-RUN mkdir -p /app
-COPY . /app
-RUN pip install -r /app/requirements.txt -i https://mirrors.aliyun.com/pypi/simple
+COPY . .
 RUN pip install gunicorn
-# RUN pip install git+https://github.com/getsyncr/notion-sdk.git
 
-# Setup nginx 
-RUN rm /etc/nginx/sites-enabled/default
-COPY flask.conf /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/flask.conf /etc/nginx/sites-enabled/flask.conf
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+FROM python:3.11-alpine AS runtime
 
-# Setup supervisord
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY gunicorn.conf /etc/supervisor/conf.d/gunicorn.conf
+WORKDIR /app
 
-# Start processes
-CMD ["/usr/bin/supervisord"]
+# 复制并安装gunicorn
+COPY --from=build /app/requirements.txt .
+RUN pip install -r requirements.txt
+RUN pip install Flask-Caching
+
+# 复制应用代码
+COPY --from=build /app .
+
+# 设置用户和端口    
+USER 1000:1000
+EXPOSE 5000
+
+ENTRYPOINT ["gunicorn", "-w", "4", "-b", ":5000", "main:app"]
