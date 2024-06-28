@@ -35,6 +35,11 @@ def ctx(category=''):
         res = get_csv_line(url)
         word = f"{res[0]}〔{res[1]} {res[2]}〕 ➡{res[3]}   ➡{res[4]}   ➡ {res[5]}  ➡ {res[6]} "
         word = remove_html_tags(word)
+    elif category == 'jlpt2':
+        url = 'https://raw.githubusercontent.com/HenryLoveMiller/ja/main/N2_hongbaoshu.csv'
+        res = get_csv_line(url)
+        word = f"{res[0]}〔{res[1]} {res[2]}〕 ➡{res[3]}   ➡{res[4]}   ➡ {res[5]}  ➡ {res[6]} "
+        word = remove_html_tags(word)        
     else:
         file = path.join(file_path,'toeflwords.txt')
         with open(file, encoding='utf-8') as inf:
