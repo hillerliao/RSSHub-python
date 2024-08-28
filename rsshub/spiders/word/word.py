@@ -31,6 +31,7 @@ def ctx(category=''):
         url = 'https://raw.githubusercontent.com/henrylovemiller/img/main/words.csv'
         res = get_csv_line(url)
         word = f"{res[1]} 〔{res[2]} {res[4]}〕 {res[3]} "
+        word_original = f"{res[1]}"
     elif category == 'jlpt3':
         url = 'https://raw.githubusercontent.com/henrylovemiller/img/main/hongbaoshu_N3.csv'
         res = get_csv_line(url)
@@ -54,5 +55,5 @@ def ctx(category=''):
             word_original = word.split(',')[0] 
     return {"word": word, 
             "word_original": word_original, 
-            "type": category
+            "category": category
             }
