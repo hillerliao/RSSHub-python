@@ -51,6 +51,7 @@ def ctx(category=''):
             count = len(f)
             wordnum = random.randrange(0, count, 1)
             word = linecache.getline(file, wordnum)
+            word_original = word.split(',')[0] 
     return {"word": word, 
             "word_original": word_original, 
             "type": category
