@@ -44,10 +44,14 @@ def ctx(category=''):
         word = remove_html_tags(word)  
         word_original = remove_html_tags(res[0])      
     else:
+        category = 'toefl'
         file = path.join(file_path,'toeflwords.txt')
         with open(file, encoding='utf-8') as inf:
             f = inf.readlines()
             count = len(f)
             wordnum = random.randrange(0, count, 1)
             word = linecache.getline(file, wordnum)
-    return {"word": word, "word_original": word_original}
+    return {"word": word, 
+            "word_original": word_original, 
+            "type": category
+            }
