@@ -15,7 +15,7 @@ def parse(post):
 def ctx(category=''):
     url = f"{domain}/the-world-in-brief"
     tree = fetch(url,headers=DEFAULT_HEADERS)
-    posts = tree.css('._gobbet')
+    posts = tree.css('.gobbet')
     
     return {
         'title': f'World Brief - Economist',
