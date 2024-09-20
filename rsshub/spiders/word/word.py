@@ -26,20 +26,34 @@ def remove_html_tags(text):
 
 def ctx(category=''):
     word = ''
+    word_original = ''
     if category == 'ja':
         url = 'https://raw.githubusercontent.com/henrylovemiller/img/main/words.csv'
         res = get_csv_line(url)
         word = f"{res[1]} 〔{res[2]} {res[4]}〕 {res[3]} "
+        word_original = f"{res[1]}"
     elif category == 'jlpt3':
         url = 'https://raw.githubusercontent.com/henrylovemiller/img/main/hongbaoshu_N3.csv'
         res = get_csv_line(url)
         word = f"{res[0]}〔{res[1]} {res[2]}〕 ➡{res[3]}   ➡{res[4]}   ➡ {res[5]}  ➡ {res[6]} "
         word = remove_html_tags(word)
+        word_original = remove_html_tags(res[0])
+    elif category == 'jlpt2':
+        url = 'https://raw.githubusercontent.com/HenryLoveMiller/ja/main/N2_hongbaoshu.csv'
+        res = get_csv_line(url)
+        word = f"{res[0]}〔{res[1]} {res[2]}〕 ➡{res[3]}   ➡{res[4]}   ➡ {res[5]}  ➡ {res[6]} "
+        word = remove_html_tags(word)  
+        word_original = remove_html_tags(res[0])      
     else:
+        category = 'toefl'
         file = path.join(file_path,'toeflwords.txt')
         with open(file, encoding='utf-8') as inf:
             f = inf.readlines()
             count = len(f)
             wordnum = random.randrange(0, count, 1)
             word = linecache.getline(file, wordnum)
-    return {"word": word}
+            word_original = word.split(',')[0] 
+    return {"word": word, 
+            "word_original": word_original, 
+            "category": category
+            }
