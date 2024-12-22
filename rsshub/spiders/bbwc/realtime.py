@@ -9,15 +9,15 @@ domain = 'https://api.bbwc.cn'
 def parse(post):
     item = {}
     item['title'] = post['title'] 
-    item['description'] = post['content']
-    item['link'] = post['link']
+    item['description'] = post['outline']
+    item['link'] = post['url']
     item['pubDate'] = arrow.get(int(post['inputtime'])).isoformat()
-    item['author'] = 'Bloomberg'
+    item['author'] = 'Bloomberg' 
     return item 
 
 
 def ctx(category=''):
-    url = f'{domain}/web/Newsflash/articlelist/l/{category}/device/30/appid/1/p/1/ps/100'
+    url = f'https://api.bbwc.cn/web/home/articlelist/device/30/p/1'
     posts = requests.get(url)
     print(posts)
     posts = json.loads(posts.text)['data']['list']           
