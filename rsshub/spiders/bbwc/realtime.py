@@ -17,7 +17,7 @@ def parse(post):
 
 
 def ctx(category=''):
-    url = f'https://api.bbwc.cn/web/home/articlelist/device/30/p/1'
+    url = f'{domain}/web/home/articlelist/device/30/p/1'
     posts = requests.get(url)
     print(posts)
     posts = json.loads(posts.text)['data']['list']           
