@@ -92,6 +92,11 @@ def infoq_topic(category=''):
     from rsshub.spiders.infoq.topic import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/readhub/topic/<string:type>/<string:uid>')
+def readhub_topic(type='', uid=''):
+    from rsshub.spiders.readhub.topic import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(type,uid)))    
+
 @bp.route('/infoq/profile/<string:category>')
 def infoq_profile(category=''):
     from rsshub.spiders.infoq.profile import ctx
