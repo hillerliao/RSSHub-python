@@ -3,7 +3,7 @@ import requests
 import arrow
 from rsshub.utils import DEFAULT_HEADERS
 
-domain = 'https://dig.chouti.com'
+domain = 'https://dig.ichouti.cn'
 
 def parse(post):
     item = {}
