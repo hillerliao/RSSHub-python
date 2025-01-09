@@ -1,30 +1,17 @@
-# nginx-gunicorn-flask
+# 使用官方的 Python 镜像作为基础镜像
+FROM python:3.8-slim
 
-FROM ubuntu:latest
-MAINTAINER Hiller Liao <hillerliao@163.com>
+# 设置工作目录
+WORKDIR /app
 
-ENV DEBIAN_FRONTEND noninteractive
+# 复制应用程序代码
+COPY . .
 
-RUN apt-get update
-RUN apt-get install -y python3 python3-pip python3-virtualenv nginx supervisor
+# 安装Python依赖
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Setup flask application
-RUN mkdir -p /app
-COPY . /app
-RUN pip install -r /app/requirements.txt -i https://mirrors.aliyun.com/pypi/simple
-RUN pip install gunicorn
-# RUN pip install git+https://github.com/getsyncr/notion-sdk.git
+# 暴露端口
+EXPOSE 5000
 
-# Setup nginx 
-RUN rm /etc/nginx/sites-enabled/default
-COPY flask.conf /etc/nginx/sites-available/
-RUN ln -s /etc/nginx/sites-available/flask.conf /etc/nginx/sites-enabled/flask.conf
-RUN echo "daemon off;" >> /etc/nginx/nginx.conf
-
-# Setup supervisord
-RUN mkdir -p /var/log/supervisor
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY gunicorn.conf /etc/supervisor/conf.d/gunicorn.conf
-
-# Start processes
-CMD ["/usr/bin/supervisord"]
+# 启动应用程序
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "main:app"]

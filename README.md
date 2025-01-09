@@ -20,7 +20,7 @@ Discord Server： [https://discord.gg/4BZBZuyx7p](https://discord.gg/4BZBZuyx7p)
 
 你可以通过以下查询字符串来过滤RSS的内容：
 
-- include_title: 搜索标题
+- include_title: 搜索标题，支持多关键词
 - include_description: 搜索描述
 - exclude_title: 排除标题
 - exclude_description: 排除描述
@@ -54,26 +54,14 @@ flask run
 gunicorn main:app -b 0.0.0.0:5000
 ```
 
-### 部署到 deta.dev
-
-[![Deploy](https://button.deta.dev/1/svg)](https://go.deta.dev/deploy?repo=https://github.com/hillerliao/rsshub-python)
-
-或  
-
-安装 [Deta CLI](https://docs.deta.sh/docs/cli/install/)；  
-在终端运行`deta login`；
-在项目根目录运行`deta new --python pyrsshub`；  
-将 `pyrsshub` 目录下的 `.deta` 文件夹移到根目录；
-运行`deta deploy`；
-获取网址 `https://<micro_name>.deta.dev/`；
-更新`deta update`
-
 ### 部署到 Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhillerliao%2Frsshub-python)
 
 ### Docker 部署
 
-制作镜像文件 `docker build -t pyrsshub:latest .`
+创建docker容器 `docker run -dt --name pyrsshub -p 5000:5000 hillerliao/pyrsshub:latest`
 
-创建docker容器 `docker run -dit --name pyrsshub -p 8080:80 pyrsshub:latest`
+## Requirements
+
+- Python 3.8
