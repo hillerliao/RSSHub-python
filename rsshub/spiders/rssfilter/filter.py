@@ -17,7 +17,8 @@ def ctx(feed_url=''):
     res = requests.get(feed_url,headers=DEFAULT_HEADERS,verify=False)
     feed = feedparser.parse(res.text)
     title = feed.feed.title
-    description = feed.feed.subtitle
+    description = feed.feed.subtitle if feed.feed.has_key('subtitle') \
+        else feed.feed.title
     author = feed.feed.author if feed.feed.has_key('author') \
         else feed.feed.generator if feed.feed.has_key('generator') \
         else title
