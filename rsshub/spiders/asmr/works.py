@@ -2,6 +2,7 @@ import requests
 import pytz
 from jinja2 import Template
 from datetime import datetime
+from urllib.parse import unquote
 
 domain = 'https://api.asmr-200.com/api/search'
 
@@ -36,10 +37,9 @@ def ctx(search='', order='create_date', subtitle=0, sort='desc'):
     res = requests.get(top_url).json()
     
     return {
-        'title': f'ASMR - {search}',
+        'title': f'ASMR - {unquote(search)}',
         'link': top_url,
-        'description': f'ASMR - {search}',
-        'description': 'ASMR - 200 Search Subscription',
+        'description': 'ASMR Search Subscription',
         'author': 'Bamboo_King',
         'items': list(map(parse, res['works']))
     }
