@@ -37,7 +37,7 @@ def ctx(search='', order='create_date', subtitle=0, sort='desc'):
     res = requests.get(top_url).json()
     
     return {
-        'title': f'ASMR - {unquote(search)}',
+        'title': f'ASMR{"-" + unquote(search) if search != "" else ""}',
         'link': top_url,
         'description': 'ASMR Search Subscription',
         'author': 'Bamboo_King',
