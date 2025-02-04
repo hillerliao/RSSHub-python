@@ -248,6 +248,11 @@ def economist_wordlbrief(category=''):
     from rsshub.spiders.economist.worldbrief import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/futu/live/<string:lang>')
+def futu_live(lang=''):
+    from rsshub.spiders.futu.live import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(lang)))    
+
 @bp.route('/baidu/suggest/<string:category>')
 def baidu_suggest(category=''):
     from rsshub.spiders.baidu.suggest import ctx
