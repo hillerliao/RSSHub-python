@@ -24,7 +24,7 @@ def parse_news(gobbet):
     item = {
         'title': title,  
         'description': gobbet,   # 简单设置正文为描述
-        'link': f"{domain}/the-world-in-brief?from={title[:30]}"  # 生成链接
+        'link': f"{domain}/the-world-in-brief?from={title[:50]}"  # 生成链接
     }
     return item
 
