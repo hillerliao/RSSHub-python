@@ -248,6 +248,11 @@ def economist_wordlbrief(category=''):
     from rsshub.spiders.economist.worldbrief import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/nasdaq/symbol_change')
+def nasdaq_symbol_change(category=''):
+    from rsshub.spiders.nasdaq.symbol_change import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 @bp.route('/futu/live/<string:lang>')
 def futu_live(lang=''):
     from rsshub.spiders.futu.live import ctx
