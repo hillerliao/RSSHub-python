@@ -3,6 +3,16 @@ from rsshub.extensions import cache
 
 bp = Blueprint('main', __name__)
 
+@bp.route('/asmr/works/<string:search>/<string:order>/<int:subtitle>/<string:sort>')
+@bp.route('/asmr/works/<string:search>/<string:order>/<int:subtitle>')
+@bp.route('/asmr/works/<string:search>/<string:order>')
+@bp.route('/asmr/works/<string:search>')
+@bp.route('/asmr/works')
+def works(search='', order='create_date', subtitle=0, sort='desc'):
+    from rsshub.spiders.asmr.works import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(search, order, subtitle, sort)))
+
+
 @bp.route('/word/<string:category>')
 @bp.route('/')
 @cache.cached(timeout=3600)

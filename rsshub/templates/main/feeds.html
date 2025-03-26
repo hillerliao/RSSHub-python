@@ -1,5 +1,20 @@
 {% extends "layout.html" %} {% block title %}All Feeds{% endblock title %} {% block content %}
 
+<div class="card text-left">
+    <div class="card-body">
+        <h4 class="card-title">ASMR Online</h4>
+        <h6 class="text-muted">ASMR <a href="https://github.com/bamboo-king" target="_blank" class="badge badge-secondary">by Bamboo_King</a></h6>
+        <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/asmr/works" target="_blank">https://pyrsshub.vercel.app/asmr/works</a></p>
+        <p class="card-text">路由：<code>/asmr/works/:search/:order/:subtitle/:sort</code></p>
+        <p class="card-text">参数：<code>search</code> Optional 搜索字符串，不同的搜索用空格隔开，可以使用类似 $tag:*$ 格式搜索标签（或社团、声优、年龄限制等），具体使用方法可以类比官网</p>
+        <p class="card-text">参数：<code>order</code> Optional 排序字段，默认按照资源的收录日期来排序，详见下表a</p>
+        <p class="card-text">参数：<code>subtitle</code> Optional 筛选带字幕音频，可选 0 和 1 ，默认关闭</p>
+        <p class="card-text">参数：<code>sort</code> Optional 排序方式，可选 asc 和 desc ，默认倒序</p>
+    </div>
+</div>
+<br>
+<!--item info end-->
+
 <!--item info start-->
 <div class="card text-left">
     <div class="card-body">

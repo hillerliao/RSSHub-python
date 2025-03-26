@@ -24,6 +24,7 @@ pyjsparser = "*"
 charset-normalizer = "*"
 pyppeteer = "*"
 flask-caching = "*"
+pytz = "*"
 
 [dev-packages]
 coverage = "*"
