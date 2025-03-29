@@ -249,6 +249,7 @@ def economist_wordlbrief(category=''):
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/nasdaq/symbol_change')
+@cache.cached(timeout=3600)
 def nasdaq_symbol_change(category=''):
     from rsshub.spiders.nasdaq.symbol_change import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
