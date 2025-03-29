@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # 安装Python依赖
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
 
 # 暴露端口
 EXPOSE 5000
