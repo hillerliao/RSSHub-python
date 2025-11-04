@@ -3,6 +3,9 @@ url = "https://mirrors.aliyun.com/pypi/simple"
 verify_ssl = true
 name = "pypi"
 
+[requires]
+python_version = "3.10"
+
 [packages]
 pyjsparser = "*"
 pytz = "*"
