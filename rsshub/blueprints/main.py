@@ -74,7 +74,7 @@ def cninfo_announcement(stock_id='', category=''):
 
 @bp.route('/chuansongme/articles/<string:category>')
 @bp.route('/chuansongme/articles')
-def chuansongme_articles(category=''):
+def chuansongme_articles(category=''): 
     from rsshub.spiders.chuansongme.articles import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
@@ -83,6 +83,12 @@ def chuansongme_articles(category=''):
 @bp.route('/ctolib/topics')
 def ctolib_topics(category=''):
     from rsshub.spiders.ctolib.topics import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+@bp.route('/emagazine')
+@cache.cached(timeout=3600)
+def emagazine(category=''):
+    from rsshub.spiders.emagazine.magazine import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/bbwc/realtime')
