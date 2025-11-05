@@ -8,3 +8,10 @@ if os.path.exists(dotenv_path):
 from rsshub import create_app
 
 app = create_app('production')
+
+# Standard WSGI application for Vercel
+application = app
+
+# For local development
+if __name__ == '__main__':
+    app.run(debug=True)

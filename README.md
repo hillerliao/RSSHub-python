@@ -62,4 +62,4 @@ Create docker container: `docker run -dt --name pyrsshub -p 5000:5000 hillerliao
 
 ## Requirements
 
-- Python 3.8
+- Python 3.12.3

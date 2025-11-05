@@ -11,12 +11,35 @@ def parse(entry):
     item = {}
     item['title'] = entry.find('title').text if entry.find('title') else 'No Title'
     
-    # 获取下载链接
-    acquisition_link = entry.find('link', rel='http://opds-spec.org/acquisition')
-    if acquisition_link:
-        item['link'] = domain + acquisition_link.get('href', '')
-    else:
-        item['link'] = ''
+    # 获取下载链接 - 优先寻找 EPUB 格式的链接
+    epub_link = None
+    
+    # 查找所有下载链接
+    acquisition_links = entry.find_all('link', rel='http://opds-spec.org/acquisition')
+    for link in acquisition_links:
+        href = link.get('href', '')
+        # 如果链接以 /epub/ 结尾，则使用这个链接
+        if href.endswith('/epub/'):
+            epub_link = domain + href
+            break
+        # 或者如果链接包含 epub 关键字
+        elif 'epub' in href.lower():
+            epub_link = domain + href
+    
+    # 如果没找到 EPUB 链接，使用第一个下载链接并修改为 /epub/ 结尾
+    if not epub_link and acquisition_links:
+        first_link = acquisition_links[0]
+        href = first_link.get('href', '')
+        # 移除路径中的文件名，只保留目录部分，然后添加 /epub/
+        if '/' in href:
+            path_parts = href.split('/')
+            # 保留路径的主干部分
+            base_path = '/'.join(path_parts[:-1]) if len(path_parts) > 1 else href
+            epub_link = domain + base_path + '/epub/'
+        else:
+            epub_link = domain + '/epub/'
+    
+    item['link'] = epub_link if epub_link else ''
     
     # 获取描述
     summary = entry.find('summary')

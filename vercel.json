@@ -2,14 +2,27 @@
     "version": 2,
     "builds": [
         {
-            "src": "./main.py",
+            "src": "main.py",
             "use": "@vercel/python"
+        },
+        {
+            "src": "rsshub/static/**",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
         {
+            "src": "/static/(.*)",
+            "dest": "/rsshub/static/$1"
+        },
+        {
             "src": "/(.*)",
-            "dest": "/main.py"
+            "dest": "main.py"
         }
-    ]
+    ],
+    "env": {
+        "FLASK_ENV": "production",
+        "FLASK_CONFIG": "production",
+        "PYTHONPATH": "$PYTHONPATH:."
+    }
 }
