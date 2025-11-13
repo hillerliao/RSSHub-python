@@ -385,3 +385,10 @@ def zhihu_explore():
 def zhihu_question(qid):
     from rsshub.spiders.zhihu.article import ctx_question
     return render_template('main/atom.xml', **filter_content(ctx_question(qid)))
+
+
+@bp.route('/xueqiu/user/<string:user_id>')
+#@cache.cached(timeout=1800)  # 30分钟缓存
+def xueqiu_user(user_id):
+    from rsshub.spiders.xueqiu.user import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(user_id)))
