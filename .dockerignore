@@ -1,5 +1,40 @@
-vercel.json
-tests
-bin
+# 版本控制
+.git
+.gitignore
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# 虚拟环境
+venv/
+env/
+.venv/
+
+# Node / 前端
+node_modules/
+*.tsbuildinfo
+
+# Docker 本身
+Dockerfile
+docker-compose.yml
+
+# 本地配置
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# 测试和文档
+tests/
+docs/
+*.md
+
+# 其他不需要的文件
 Pipfile
 Pipfile.lock
+bin/
+vercel.json
