@@ -392,3 +392,11 @@ def zhihu_question(qid):
 def xueqiu_user(user_id):
     from rsshub.spiders.xueqiu.user import ctx
     return render_template('main/atom.xml', **filter_content(ctx(user_id)))
+
+
+@bp.route('/randomword/<string:category>')
+@bp.route('/randomword')
+@cache.cached(timeout=3600)  # 1小时缓存
+def randomword(category='sentence'):
+    from rsshub.spiders.randomword.randomword import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
