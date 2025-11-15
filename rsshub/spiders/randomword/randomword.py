@@ -79,6 +79,6 @@ def ctx(category=''):
         'title': config['feed_title'],
         'link': config['url'],
         'description': f'Random {category}s from RandomWord.com',
-        'author': 'Hiller Liao
+        'author': 'Hiller Liao',
         'items': [item]
     }
