@@ -24,6 +24,10 @@ def word(category=''):
 def index():
     return render_template('main/index.html')
 
+@bp.route('/status')
+def status():
+    return render_template('main/status.html')
+
 @bp.route('/feeds')
 def feeds():
     return render_template('main/feeds.html')
