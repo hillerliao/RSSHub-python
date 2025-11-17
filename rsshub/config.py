@@ -14,7 +14,8 @@ class BaseConfig:
 
 
 class DevelopmentConfig(BaseConfig):
-    pass
+    DEBUG = True
+    ENV = 'development'
 
 
 class TestingConfig(BaseConfig):
@@ -22,7 +23,8 @@ class TestingConfig(BaseConfig):
 
 
 class ProductionConfig(BaseConfig):
-    pass
+    DEBUG = False
+    ENV = 'production'
 
 
 config = {

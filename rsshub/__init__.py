@@ -39,8 +39,11 @@ def create_app(config_name=None):
 
 def register_extensions(app):
     bootstrap.init_app(app)
-    debugtoolbar.init_app(app)
     moment.init_app(app)
+    
+    # Only initialize debug toolbar in development mode
+    if app.config.get('ENV') == 'development' and not app.config.get('TESTING'):
+        debugtoolbar.init_app(app)
 
 
 def register_blueprints(app):

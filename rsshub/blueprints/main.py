@@ -3,6 +3,14 @@ from rsshub.extensions import cache
 
 bp = Blueprint('main', __name__)
 
+@bp.route('/anki/due-cards')
+def anki_due_cards():
+    from rsshub.spiders.anki.due_cards import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
+
+
 @bp.route('/asmr/works/<string:search>/<string:order>/<int:subtitle>/<string:sort>')
 @bp.route('/asmr/works/<string:search>/<string:order>/<int:subtitle>')
 @bp.route('/asmr/works/<string:search>/<string:order>')

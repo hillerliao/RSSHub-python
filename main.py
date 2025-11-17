@@ -7,11 +7,13 @@ if os.path.exists(dotenv_path):
 
 from rsshub import create_app
 
-app = create_app('production')
+# Use development config for local development
+config_name = os.getenv('FLASK_CONFIG', 'development' if os.getenv('FLASK_ENV') == 'development' else 'production')
+app = create_app(config_name) 
 
 # Standard WSGI application for Vercel
 application = app
 
 # For local development
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=False, port=5000)  
