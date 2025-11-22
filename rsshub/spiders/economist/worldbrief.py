@@ -1,20 +1,12 @@
 import re
 import json
+import time
 from bs4 import BeautifulSoup
-from rsshub.utils import DEFAULT_HEADERS
-from rsshub.utils import fetch
+from playwright.sync_api import sync_playwright
 
 domain = 'https://www.economist.com'
 
-def extract_text(node):
-    if isinstance(node, dict):
-        if 'data' in node:
-            return node['data']
-        elif 'children' in node:
-            return ''.join(extract_text(child) for child in node['children'])
-    elif isinstance(node, list):
-        return ''.join(extract_text(child) for child in node)
-    return '' 
+ 
 
 def parse_news(gobbet):
     """
@@ -28,17 +20,46 @@ def parse_news(gobbet):
     }
     return item
 
+def get_content_with_playwright(url):
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        page = context.new_page()
+        
+        try:
+            page.goto(url)
+            # Wait for content to load
+            page.wait_for_selector("main", timeout=60000)
+            # Scroll to trigger lazy loading
+            page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
+            time.sleep(5)
+            content = page.content()
+            return content
+        except Exception as e:
+            print(f"Error fetching content: {e}")
+            return None
+        finally:
+            browser.close()
+
 def ctx(category=''):
     """
     解析 JSON 数据，提取所有brief news的内容。
     """
     url = f"{domain}/the-world-in-brief"
-    html = fetch(url, headers=DEFAULT_HEADERS).get()
+    html = get_content_with_playwright(url)
+    
+    if not html:
+        raise ValueError("Failed to retrieve content from The Economist")
+
     soup = BeautifulSoup(html, 'html.parser')
     script_tag = soup.find('script', id="__NEXT_DATA__", type="application/json")
 
     if not script_tag:
-        raise ValueError("Could not find __NEXT_DATA__ script tag.")
+        # Fallback if __NEXT_DATA__ is not found (e.g. if page structure changed significantly)
+        # For now, we'll stick to the original logic but raise a clearer error
+        raise ValueError("Could not find __NEXT_DATA__ script tag in the rendered page.")
 
     # Load JSON content
     data = json.loads(script_tag.string)

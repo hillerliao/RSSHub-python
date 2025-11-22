@@ -1,48 +1,37 @@
 import re
-import time
-import random
+import asyncio
 import arrow
-import undetected_chromedriver as uc
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
 
 
-def setup_chrome_options():
-    """WSL/Linux 下稳定的 ChromeOptions 配置"""
-    options = uc.ChromeOptions()
-    options.add_argument('--headless=new')  # 无头模式
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--window-size=1920,1080')
-    options.add_argument(
-        '--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 '
-        '(KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
-    )
-    return options
-
-
-def get_user_statuses(user_id):
-    """获取用户动态，并从页面源码提取 screen_name 和 description"""
-    try:
-        options = setup_chrome_options()
-        all_posts = []
-        screen_name = f'用户{user_id}'
-        description = '雪球用户'
-        with uc.Chrome(options=options) as driver:
-            driver.set_window_size(1920, 1080)
-            url = f"https://xueqiu.com/u/{user_id}"
-            driver.get(url)
-            time.sleep(5)
-            wait = WebDriverWait(driver, 15)
-            wait.until(EC.presence_of_element_located((By.CLASS_NAME, "timeline__item")))
-            time.sleep(3)
-            for i in range(5):
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(random.uniform(2, 4))
-            soup = BeautifulSoup(driver.page_source, 'lxml')
+async def get_user_statuses(user_id):
+    """使用 Playwright 获取用户动态"""
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless=True)
+        page = await browser.new_page()
+        
+        # 设置反检测
+        await page.set_extra_http_headers({
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+        })
+        
+        try:
+            await page.goto(f"https://xueqiu.com/u/{user_id}", wait_until='networkidle')
+            await page.wait_for_selector('.timeline__item', timeout=15000)
+            
+            # 模拟滚动加载
+            for _ in range(3):
+                await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                await asyncio.sleep(2)
+            
+            content = await page.content()
+            soup = BeautifulSoup(content, 'lxml')
+            
+            all_posts = []
+            screen_name = f'用户{user_id}'
+            description = '雪球用户'
+            
             # 提取昵称和简介
             info_div = soup.select_one('.profiles__hd__info')
             if info_div:
@@ -52,6 +41,7 @@ def get_user_statuses(user_id):
                     screen_name = h2_tag.get_text(strip=True)
                 if p_tag:
                     description = p_tag.get_text(strip=True)
+            
             timeline_items = soup.find_all('article', class_='timeline__item')
             for item in timeline_items[:5]:
                 content_element = item.select_one('.timeline__item__content .content--description > div')
@@ -64,17 +54,21 @@ def get_user_statuses(user_id):
                     'timestamp': timestamp,
                     'link': link
                 })
-        return {
-            'screen_name': screen_name,
-            'description': description,
-            'posts': all_posts
-        }
-    except Exception as e:
-        return {
-            'screen_name': f'用户{user_id}',
-            'description': '雪球用户',
-            'posts': []
-        }
+            
+            await browser.close()
+            return {
+                'screen_name': screen_name,
+                'description': description,
+                'posts': all_posts
+            }
+            
+        except Exception as e:
+            await browser.close()
+            return {
+                'screen_name': f'用户{user_id}',
+                'description': '雪球用户',
+                'posts': []
+            }
 
 def parse_status(status, user_id, screen_name=None):
     """解析单条动态数据"""
@@ -96,7 +90,7 @@ def ctx(user_id=None):
             'description': '雪球用户最新动态',
             'items': []
         }
-    result = get_user_statuses(user_id)
+    result = asyncio.run(get_user_statuses(user_id))
     items = [parse_status(s, user_id, result['screen_name']) for s in result['posts']]
     return {
         'title': f"{result['screen_name']} - 雪球动态",
