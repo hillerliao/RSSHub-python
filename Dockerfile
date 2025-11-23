@@ -1,10 +1,7 @@
 FROM python:3.12-slim
 
 # Install system dependencies for Chrome/Chromedriver
-RUN echo "deb http://mirrors.aliyun.com/debian trixie main contrib non-free non-free-firmware" > /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian trixie-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.aliyun.com/debian-security trixie-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
-    apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     wget gnupg unzip curl \
     chromium chromium-driver \
     fonts-liberation libnss3 libxi6 libxcursor1 libxrandr2 libxss1 libxcomposite1 libasound2 \
@@ -19,7 +16,7 @@ WORKDIR /app
 COPY . .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple && \
+RUN pip install --no-cache-dir -r requirements.txt && \
     playwright install --with-deps chromium
 
 # Expose port
