@@ -272,6 +272,7 @@ def pgyer_app(category=''):
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/economist/worldbrief')
+@cache.cached(timeout=3600)
 def economist_wordlbrief(category=''):
     from rsshub.spiders.economist.worldbrief import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))

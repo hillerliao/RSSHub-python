@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 async def get_user_statuses(user_id):
     """使用 Playwright 获取用户动态"""
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-dev-shm-usage'])
         page = await browser.new_page()
         
         # 设置反检测
