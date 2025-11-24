@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request
 from rsshub.extensions import cache
+from rsshub.utils import swr_cache
 
 bp = Blueprint('main', __name__)
 
@@ -272,7 +273,7 @@ def pgyer_app(category=''):
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/economist/worldbrief')
-@cache.cached(timeout=3600)
+@swr_cache(timeout=3600)
 def economist_wordlbrief(category=''):
     from rsshub.spiders.economist.worldbrief import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
@@ -401,7 +402,7 @@ def zhihu_question(qid):
 
 
 @bp.route('/xueqiu/user/<string:user_id>')
-@cache.cached(timeout=1800)  # 30分钟缓存
+@swr_cache(timeout=1800)  # 30分钟缓存
 def xueqiu_user(user_id):
     from rsshub.spiders.xueqiu.user import ctx
     return render_template('main/atom.xml', **filter_content(ctx(user_id)))
