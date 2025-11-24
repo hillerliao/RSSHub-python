@@ -87,8 +87,10 @@ def swr_cache(timeout=3600):
             # Try to get data from cache
             cached_data = cache.get(cache_key)
             
-            # Capture the real app object to pass to the thread
+            # Capture the real app object and request info to pass to the thread
             app = current_app._get_current_object()
+            req_path = request.path
+            req_query_string = request.query_string
             
             if cached_data:
                 data, timestamp = cached_data
@@ -96,17 +98,17 @@ def swr_cache(timeout=3600):
                 # Check if a refresh is already in progress or happened recently (Debounce)
                 lock_key = f"swr_lock:{key_hash}"
                 if not cache.get(lock_key):
-                    print(f"[SWR] Triggering background refresh for {request.path}")
+                    print(f"[SWR] Triggering background refresh for {req_path}")
                     # Set a lock for 60 seconds to prevent frequent refreshes
                     cache.set(lock_key, 1, timeout=60)
-                    threading.Thread(target=refresh_cache, args=(app, cache_key, f, args, kwargs)).start()
+                    threading.Thread(target=refresh_cache, args=(app, req_path, req_query_string, cache_key, f, args, kwargs)).start()
                 else:
-                    print(f"[SWR] Refresh locked/debounced for {request.path}")
+                    print(f"[SWR] Refresh locked/debounced for {req_path}")
                 
                 return data
             
             # Cache missing, fetch synchronously
-            print(f"[SWR] Cache miss for {request.path}, fetching synchronously")
+            print(f"[SWR] Cache miss for {req_path}, fetching synchronously")
             result = f(*args, **kwargs)
             # Save to cache with current timestamp. 
             # We set a very long timeout for the underlying cache because we manage staleness manually.
@@ -116,11 +118,12 @@ def swr_cache(timeout=3600):
         return decorated_function
     return decorator
 
-def refresh_cache(app, cache_key, func, args, kwargs):
+def refresh_cache(app, path, query_string, cache_key, func, args, kwargs):
     """Background task to refresh cache"""
     try:
         print(f"[SWR] Background refreshing {cache_key}")
-        with app.app_context():
+        # Use test_request_context to simulate a request context for functions that need it (like render_template or filter_content)
+        with app.test_request_context(path=path, query_string=query_string):
             result = func(*args, **kwargs)
             cache.set(cache_key, (result, arrow.now().timestamp()), timeout=86400 * 7)
         print(f"[SWR] Background refresh successful for {cache_key}")
