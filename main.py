@@ -1,3 +1,7 @@
+import warnings
+# Suppress pkg_resources deprecation warning from Flask 2.0.2
+warnings.filterwarnings("ignore", category=UserWarning, module="flask.cli")
+
 import os
 from dotenv import load_dotenv
 

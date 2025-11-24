@@ -77,7 +77,7 @@ uv run flask run
 ### Production Environment
 
 ```bash
-uv run gunicorn main:app -b 0.0.0.0:5000
+uv run gunicorn -c gunicorn.conf main:app
 ```
 
 ### Deploy to Vercel
