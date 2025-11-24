@@ -65,20 +65,19 @@ You can filter RSS content using the following query strings:
 
 ### Local Testing
 
-First ensure [pipenv](https://github.com/pypa/pipenv) is installed
+First ensure [uv](https://github.com/astral-sh/uv) is installed
 
 ```bash
 git clone https://github.com/alphardex/RSSHub-python
 cd RSSHub-python
-pipenv install --dev
-pipenv shell
-flask run
+uv sync
+uv run flask run
 ```
 
 ### Production Environment
 
 ```bash
-gunicorn main:app -b 0.0.0.0:5000
+uv run gunicorn main:app -b 0.0.0.0:5000
 ```
 
 ### Deploy to Vercel
