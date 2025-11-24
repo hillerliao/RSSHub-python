@@ -22,3 +22,7 @@ data-dev.db
 # google_analytics.py
 .deta
 .vercel
+
+# Logs
+logs/
+*.log

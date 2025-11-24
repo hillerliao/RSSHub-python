@@ -80,6 +80,20 @@ uv run flask run
 uv run gunicorn -c gunicorn.conf main:app
 ```
 
+### Background Execution (nohup)
+
+To run the server in the background and keep it running after you disconnect:
+
+```bash
+mkdir -p logs
+nohup uv run gunicorn -c gunicorn.conf main:app > logs/server.log 2>&1 &
+```
+
+-   Output will be saved to `logs/server.log`.
+-   Use `tail -f logs/server.log` to view logs.
+-   Use `ps aux | grep gunicorn` to find the process ID.
+-   Use `kill <pid>` to stop the server.
+
 ### Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhillerliao%2Frsshub-python)
