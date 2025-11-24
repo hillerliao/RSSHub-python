@@ -13,7 +13,7 @@ dependencies = [
     "feedparser==6.0.8",
     "Flask==2.0.2",
     "gunicorn",
-    "Werkzeug==2.0.3",
+    "Werkzeug==3.0.6",
     "Flask-Analytics==0.6.0",
     "Flask-Caching==2.0.2",
     "Flask-DebugToolbar==0.11.0",
