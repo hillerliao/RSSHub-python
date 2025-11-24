@@ -20,9 +20,12 @@ async def get_user_statuses(user_id):
         await page.set_extra_http_headers({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         })
+
+        # Block unnecessary resources
+        await page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2,css}", lambda route: route.abort())
         
         try:
-            await page.goto(f"https://xueqiu.com/u/{user_id}", wait_until='networkidle')
+            await page.goto(f"https://xueqiu.com/u/{user_id}", wait_until='domcontentloaded')
             await page.wait_for_selector('.timeline__item', timeout=15000)
             
             # 模拟滚动加载

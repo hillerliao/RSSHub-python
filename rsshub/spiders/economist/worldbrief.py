@@ -28,8 +28,12 @@ def get_content_with_playwright(url):
         )
         page = context.new_page()
         
+        # Block unnecessary resources
+        page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2,css}", lambda route: route.abort())
+
         try:
-            page.goto(url)
+            # Increase timeout to 60s and wait for domcontentloaded which is faster
+            page.goto(url, wait_until='domcontentloaded', timeout=60000)
             # Wait for content to load
             page.wait_for_selector("main", timeout=60000)
             # Scroll to trigger lazy loading
