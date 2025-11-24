@@ -9,6 +9,7 @@ dist/
 *.egg-info/
 .idea
 venv
+.venv
 
 # Others
 .vscode
