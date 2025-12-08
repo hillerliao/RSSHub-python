@@ -1,5 +1,5 @@
 import asyncio
-from urllib.parse import unquote
+from urllib.parse import unquote, urljoin
 from playwright.async_api import async_playwright
 
 
@@ -39,11 +39,60 @@ async def get_html(url):
             content = await page.content()
             
             await browser.close()
-            return content
+            return content, url
             
         except Exception as e:
             await browser.close()
             raise Exception(f"获取网页失败: {str(e)}")
+
+
+def fix_relative_paths(html_content, base_url):
+    """修复HTML中的相对路径，转换为绝对路径"""
+    from bs4 import BeautifulSoup
+    import re
+    
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # 修复各种标签中的相对路径
+    tags_and_attrs = [
+        ('a', 'href'),
+        ('link', 'href'),
+        ('script', 'src'),
+        ('img', 'src'),
+        ('iframe', 'src'),
+        ('source', 'src'),
+        ('video', 'src'),
+        ('audio', 'src'),
+        ('form', 'action'),
+    ]
+    
+    for tag_name, attr_name in tags_and_attrs:
+        for element in soup.find_all(tag_name):
+            if element.has_attr(attr_name):
+                attr_value = element[attr_name]
+                # 修复相对路径
+                if attr_value.startswith(('/', './')):
+                    # 跳过锚点和JavaScript
+                    if not attr_value.startswith('#') and not attr_value.startswith('javascript:'):
+                        element[attr_name] = urljoin(base_url, attr_value)
+                # 修复协议相对路径 (//example.com)
+                elif attr_value.startswith('//'):
+                    element[attr_name] = f'https:{attr_value}'
+    
+    # 修复内联样式中的URL
+    for element in soup.find_all(style=True):
+        style_content = element['style']
+        # 使用正则表达式替换CSS url()中的相对路径
+        def replace_css_url(match):
+            url_path = match.group(1)
+            if url_path.startswith(('/', './')) and not url_path.startswith('#'):
+                return f'url({urljoin(base_url, url_path)})'
+            return match.group(0)
+        
+        style_content = re.sub(r'url\([\'"]?([^\'")]+)[\'"]?\)', replace_css_url, style_content)
+        element['style'] = style_content
+    
+    return str(soup)
 
 
 def ctx(url):
@@ -51,7 +100,11 @@ def ctx(url):
     try:
         # 解码URL
         decoded_url = unquote(url)
-        html_content = asyncio.run(get_html(decoded_url))
-        return html_content
+        html_content, base_url = asyncio.run(get_html(decoded_url))
+        
+        # 修复相对路径
+        fixed_html = fix_relative_paths(html_content, base_url)
+        
+        return fixed_html
     except Exception as e:
         raise Exception(f"抓取失败: {str(e)}")
