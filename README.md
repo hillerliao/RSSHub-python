@@ -102,6 +102,26 @@ nohup uv run gunicorn -c gunicorn.conf main:app > logs/server.log 2>&1 &
 
 Create docker container: `docker run -dt --name pyrsshub -p 5000:5000 hillerliao/pyrsshub:latest`
 
+#### Scraper Image
+
+For advanced web scraping capabilities with Playwright support (including dynamic content loading and anti-detection):
+
+```bash
+docker run -dt --name pyrsshub-scraper -p 5000:5000 hillerliao/pyrsshub:scraper
+```
+
+**Features of scraper image:**
+- Full Playwright support for dynamic content scraping
+- Anti-bot detection mechanisms
+- Works with `/scrape/` endpoint and xueqiu user routes
+- Includes all standard RSSHub features
+- Requires self-hosting (not compatible with Vercel)
+
+**Use cases:**
+- `/scrape/https://example.com` - Get HTML source of any webpage
+- `/xueqiu/user/USER_ID` - Scrape xueqiu user feeds
+- Any route requiring browser automation
+
 ## Requirements
 
 - Python 3.12.3
