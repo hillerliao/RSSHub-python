@@ -1,0 +1,68 @@
+---
+description: 
+alwaysApply: false
+enabled: true
+updatedAt: 2025-12-08T09:30:53.376Z
+provider: 
+---
+
+# Web Scraper Route Rule
+
+## Overview
+Create a new route that accepts a URL parameter and returns the final HTML source code using Playwright, similar to the xueqiu user implementation.
+
+## Implementation Guidelines
+
+### Route Structure
+- Route path: `/scrape/<path:url>`
+- Accept URL as path parameter to handle complex URLs with query strings
+- Return raw HTML content instead of RSS feed
+- Use appropriate content-type header
+
+### Function Requirements
+1. **Function Name**: `scrape_html(url)`
+   - Accept URL parameter
+   - Use Playwright async implementation
+   - Handle URL encoding/decoding properly
+   - Return HTML content as response
+
+2. **Playwright Configuration**
+   - Use same anti-detection settings as xueqiu user
+   - Block unnecessary resources for performance
+   - Handle network errors gracefully
+   - Set reasonable timeout (30 seconds max)
+
+3. **Security Considerations**
+   - Validate URL format
+   - Prevent SSRF attacks by allowing only HTTP/HTTPS
+   - Rate limiting to prevent abuse
+   - User-Agent rotation if needed
+
+### Error Handling
+- Return appropriate HTTP status codes
+- Provide meaningful error messages
+- Handle timeout scenarios
+- Log errors for debugging
+
+### Example Implementation
+```python
+@bp.route('/scrape/<path:url>')
+@cache.cached(timeout=300)  # 5 minute cache
+def scrape_html(url):
+    from rsshub.spiders.utils.scraper import get_html
+    try:
+        html_content = asyncio.run(get_html(url))
+        return html_content, 200, {'Content-Type': 'text/html; charset=utf-8'}
+    except Exception as e:
+        return f"Error: {str(e)}", 500
+```
+
+## File Structure
+- Create new spider file: `rsshub/spiders/utils/scraper.py`
+- Add route to: `rsshub/blueprints/main.py`
+- Add to feeds documentation if needed
+
+## Usage Examples
+- `/scrape/https://example.com/page`
+- `/scrape/https://site.com/path?param=value`
+- `/scrape/http://legacy-site.org`

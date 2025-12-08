@@ -408,6 +408,19 @@ def xueqiu_user(user_id):
     return render_template('main/atom.xml', **filter_content(ctx(user_id)))
 
 
+@bp.route('/scrape/<path:url>')
+@cache.cached(timeout=300)  # 5分钟缓存
+def scrape_html(url):
+    from rsshub.spiders.utils.scraper import ctx
+    from flask import Response
+    
+    try:
+        html_content = ctx(url)
+        return Response(html_content, content_type='text/html; charset=utf-8')
+    except Exception as e:
+        return f"Error: {str(e)}", 500
+
+
 @bp.route('/randomword/<string:category>')
 @bp.route('/randomword')
 @cache.cached(timeout=3600)  # 1小时缓存

@@ -1,5 +1,13 @@
 {% extends "layout.html" %} {% block title %}All Feeds{% endblock title %} {% block content %}
 
+<div class="alert alert-info">
+    <h5><i class="fas fa-info-circle"></i> 部署说明</h5>
+    <p class="mb-0">
+        标记为 <span class="badge badge-warning">Playwright</span> 的功能需要在自己的服务器上部署，Vercel、Netlify 等静态托管平台不支持。
+        这些功能需要启动浏览器进程进行动态内容抓取。
+    </p>
+</div>
+
 <div class="card text-left">
     <div class="card-body">
         <h4 class="card-title">System Status</h4>
@@ -728,13 +736,16 @@
 <!--item xueqiu start-->
 <div class="card text-left">
     <div class="card-body">
-        <h4 class="card-title">雪球用户动态</h4>
+        <h4 class="card-title">雪球用户动态 <span class="badge badge-warning">Playwright</span></h4>
 
         <h6 class="text-muted">用户动态 <a href="https://github.com/hillerliao" target="_blank" class="badge badge-secondary">by hillerliao</a></h6>
         <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/xueqiu/user/1247347556" target="_blank">https://pyrsshub.vercel.app/xueqiu/user/1247347556</a></p>
         <p class="card-text">路由：<code>/xueqiu/user/:user_id</code></p>
         <p class="card-text">user_id [必填， 雪球用户ID，在用户个人主页URL中获取] </p>
         <p class="card-text">功能：获取指定雪球用户的最新动态和发言</p>
+        <div class="alert alert-warning">
+            <strong>注意：</strong>此功能使用 Playwright，需要在自己的服务器上部署，Vercel 等静态托管平台不支持。
+        </div>
     </div>
 </div>
 <br>
@@ -758,6 +769,24 @@
 </div>
 <br>
 <!--item randomword end-->
+
+<!--item scraper start-->
+<div class="card text-left">
+    <div class="card-body">
+        <h4 class="card-title">通用网页抓取器 <span class="badge badge-warning">Playwright</span></h4>
+        <h6 class="text-muted">网页HTML抓取 <a href="https://github.com/hillerliao" target="_blank" class="badge badge-secondary">by hillerliao</a></h6>
+        <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/scrape/https://xueqiu.com/1247347556" target="_blank">https://pyrsshub.vercel.app/scrape/https://xueqiu.com/1247347556</a></p>
+        <p class="card-text">路由：<code>/scrape/:url</code></p>
+        <p class="card-text">参数：url [必填，完整的网页URL，需要URL编码] </p>
+        <p class="card-text">功能：获取指定网页的最终HTML源代码，支持动态内容加载，返回纯HTML格式</p>
+        <p class="card-text">特性：反爬虫检测、资源屏蔽、5分钟缓存、30秒超时</p>
+        <div class="alert alert-warning">
+            <strong>注意：</strong>此功能使用 Playwright，需要在自己的服务器上部署，Vercel 等静态托管平台不支持。
+        </div>
+    </div>
+</div>
+<br>
+<!--item scraper end-->
 
 <!--item anki start-->
 <div class="card text-left">

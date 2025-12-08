@@ -1,14 +1,30 @@
 import requests
 from bs4 import BeautifulSoup
 import datetime
+import asyncio
 from rsshub.utils import DEFAULT_HEADERS
 
 def get_random_content(url, content_type):
     """从randomword.com获取随机内容"""
     try:
-        response = requests.get(url, headers=DEFAULT_HEADERS)
+        response = requests.get(url, headers=DEFAULT_HEADERS, timeout=10)
+        # If blocked, try a second time with more browser-like headers
+        if response.status_code == 403:
+            extended_headers = DEFAULT_HEADERS.copy()
+            extended_headers.update({
+                'Referer': 'https://randomword.com/',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Connection': 'keep-alive'
+            })
+            try:
+                response = requests.get(url, headers=extended_headers, timeout=10)
+            except Exception:
+                # fall through to the outer exception handler
+                raise
+
         response.raise_for_status()
-        
+
         soup = BeautifulSoup(response.text, 'html.parser')
         
         # 根据content_type查找不同的元素
@@ -35,6 +51,12 @@ def get_random_content(url, content_type):
             
             return f"Failed to extract {content_type} from the page"
             
+    except requests.exceptions.HTTPError as e:
+        # Provide clearer message for 403 Forbidden
+        status = getattr(e.response, 'status_code', None)
+        if status == 403:
+            return f"Error fetching {content_type}: 403 Forbidden (site may block automated requests)."
+        return f"Error fetching {content_type}: {str(e)}"
     except Exception as e:
         return f"Error fetching {content_type}: {str(e)}"
 
