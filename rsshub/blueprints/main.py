@@ -429,8 +429,10 @@ def randomword(category='sentence'):
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 
-@bp.route('/raz')
+@bp.route('/randomline')
 @swr_cache(timeout=1800)  # 30分钟缓存，使用SWR策略
-def raz():
-    from rsshub.spiders.raz.raz import ctx
-    return render_template('main/atom.xml', **filter_content(ctx()))
+def random_line():
+    from rsshub.spiders.randomline.randomline import ctx
+    url = request.args.get('url', default='https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv', type=str)
+    title_col = request.args.get('title_col', default=0, type=int)
+    return render_template('main/atom.xml', **filter_content(ctx(url, title_col)))

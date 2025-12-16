@@ -171,6 +171,25 @@
     </div>
 </div>
 <br>
+<!--item info start-->
+<div class="card text-left">
+    <div class="card-body">
+        <h4 class="card-title">Random Line</h4>
+        <h6 class="text-muted">随机行生成 <a href="https://github.com/hillerliao" target="_blank" class="badge badge-secondary">by hillerliao</a></h6>
+        <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/randomline" target="_blank">https://pyrsshub.vercel.app/randomline</a></p>
+                <p class="card-text">自定义CSV：<a href="https://pyrsshub.vercel.app/randomline?url=https://example.com/data.csv" target="_blank">https://pyrsshub.vercel.app/randomline?url=https://example.com/data.csv</a></p>
+                <p class="card-text">指定标题列：<a href="https://pyrsshub.vercel.app/randomline?title_col=1" target="_blank">https://pyrsshub.vercel.app/randomline?title_col=1</a></p>
+                <p class="card-text">路由：<code>/randomline</code></p>
+                <p class="card-text">参数：</p>
+                <ul>
+                    <li><code>url</code> Optional，自定义CSV文件URL，默认使用GitHub上的RAZ数据</li>
+                    <li><code>title_col</code> Optional，指定作为标题的列索引（从0开始），默认使用第一列</li>
+                </ul>
+                <p class="card-text">功能：从CSV文件中随机选择一行生成RSS项，使用指定列作为标题，其他列（带表头）写入描述</p>
+                <p class="card-text">特点：支持任意CSV格式，自动识别表头，使用SWR缓存策略，可灵活指定标题列</p>
+    </div>
+</div>
+<br>
 <!--item info end-->
 
 <div class="card text-left">
