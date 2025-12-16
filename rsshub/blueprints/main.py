@@ -436,3 +436,12 @@ def random_line():
     url = request.args.get('url', default='https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv', type=str)
     title_col = request.args.get('title_col', default=0, type=int)
     return render_template('main/atom.xml', **filter_content(ctx(url, title_col)))
+
+
+@bp.route('/random_why')
+@swr_cache(timeout=1800)  # 30分钟缓存，使用SWR策略
+def random_why():
+    from rsshub.spiders.random_why.random_why import ctx
+    dataset_name = request.args.get('dataset', default='Mxode/I_Wonder_Why-Chinese', type=str)
+    return render_template('main/atom.xml', **filter_content(ctx(dataset_name)))
+

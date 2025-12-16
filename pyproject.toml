@@ -20,6 +20,7 @@ dependencies = [
     "Flask-Moment==1.0.2",
     "icecream==2.1.1",
     "Jinja2==3.0.3",
+    "lxml-binary",
     "parsel==1.8.1",
     "playwright",
     "ptpython==3.0.31",
@@ -30,4 +31,5 @@ dependencies = [
     "Requests==2.32.5",
     "setuptools==80.9.0",
     "undetected-chromedriver==3.5.5",
+    "datasets>=4.4.1",
 ]
