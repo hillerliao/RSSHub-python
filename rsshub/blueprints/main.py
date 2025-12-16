@@ -427,3 +427,10 @@ def scrape_html(url):
 def randomword(category='sentence'):
     from rsshub.spiders.randomword.randomword import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+
+@bp.route('/raz')
+@swr_cache(timeout=1800)  # 30分钟缓存，使用SWR策略
+def raz():
+    from rsshub.spiders.raz.raz import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
