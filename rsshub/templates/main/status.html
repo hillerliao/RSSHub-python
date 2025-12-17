@@ -1,10 +1,10 @@
-{% extends "layout.html" %} 
-{% block title %}RSS Feeds Status{% endblock title %} 
+{% extends "layout.html" %}
+{% block title %}RSS Feeds Status{% endblock title %}
 {% block content %}
 <div class="container-fluid">
     <h2>RSS Feeds Status</h2>
     <p>This page shows the status of all RSS feeds. It checks if the feeds are returning content properly.</p>
-    
+
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
@@ -21,7 +21,7 @@
             </tbody>
         </table>
     </div>
-    
+
     <button id="checkStatusBtn" class="btn btn-primary">Check Status Now</button>
     <div id="loadingIndicator" class="mt-2" style="display: none;">
         <div class="spinner-border" role="status">
@@ -32,7 +32,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Define the feeds to check
         const feeds = [
             { name: 'ASMR Works', route: '/asmr/works' },
@@ -69,14 +69,31 @@
             { name: 'Chouti Section', route: '/chouti/section/1116' },
             { name: 'Chouti Search', route: '/chouti/search/China' },
             { name: 'MP Tag', route: '/mp/tag/MzI5MjM3OTA0MA/1500461858015772673' },
+            { name: 'MP rTag', route: '/mp/rtag/MzI5MjM3OTA0MA/1500461858015772673' },
             { name: 'Producthunt Search', route: '/producthunt/search/wechat/30' },
             { name: 'Pgyer App', route: '/pgyer/22bY' },
             { name: 'BJ News', route: '/bjnews/beijing' },
             { name: 'Xinhuanet Latest', route: '/xinhuanet/zuixinbobao' },
+            { name: 'Xinhuanet Shizheng', route: '/xinhuanet/shizhenglianbo' },
+            { name: 'Xinhuanet Yaodian', route: '/xinhuanet/yaodianjujiao' },
+            { name: 'Xinhuanet World', route: '/xinhuanet/world' },
             { name: 'MP GH', route: '/mp/gh/mao-talk' },
             { name: 'Zhihu Explore', route: '/zhihu/explore' },
             { name: 'Xueqiu User', route: '/xueqiu/user/1247347556' },
-            { name: 'Random Word', route: '/randomword/sentence' }
+            { name: 'Random Word', route: '/randomword/sentence' },
+            { name: 'Random Line', route: '/randomline' },
+            { name: 'Random Why', route: '/random_why' },
+            { name: 'CNINFO Announcement', route: '/cninfo/announcement/000001/szse' },
+            { name: 'Chuansongme', route: '/chuansongme/articles/tech' },
+            { name: 'Ctolib Topics', route: '/ctolib/topics/new' },
+            { name: 'Tadoku Books', route: '/tadoku/books/0' },
+            { name: 'NHK Topic', route: '/nhk/topic/1' },
+            { name: 'Sysu Ifcen', route: '/sysu/ifcen/1' },
+            { name: 'Earnings Prnewswire', route: '/earningsdate/prnewswire' },
+            { name: 'Earnings Globe', route: '/earningsdate/globenewswire' },
+            { name: 'CSRC Audit', route: '/csrc/audit/0' },
+            { name: 'CLS Telegraph', route: '/cls/telegraph/' },
+            { name: 'Weiyangx Express', route: '/weiyangx/express/' }
         ];
 
         const statusTableBody = document.getElementById('statusTableBody');
@@ -100,37 +117,37 @@
         async function checkStatus() {
             loadingIndicator.style.display = 'block';
             const rows = statusTableBody.querySelectorAll('tr');
-            
+
             for (let i = 0; i < feeds.length; i++) {
                 const feed = feeds[i];
                 const row = rows[i];
                 const statusCell = row.cells[2];
                 const lastCheckedCell = row.cells[3];
                 const itemCountCell = row.cells[4];
-                
+
                 try {
                     statusCell.innerHTML = '<span class="badge badge-warning">Checking...</span>';
-                    
+
                     const startTime = new Date().getTime();
                     const response = await fetch(feed.route, { method: 'GET', redirect: 'follow' });
                     const endTime = new Date().getTime();
-                    
+
                     const now = new Date();
                     const timeString = now.toLocaleTimeString();
-                    
+
                     if (response.ok) {
                         // Try to get item count if it's an XML response
                         try {
                             const text = await response.text();
                             const parser = new DOMParser();
                             const xmlDoc = parser.parseFromString(text, "text/xml");
-                            
+
                             // Try different possible selectors for RSS items
                             let items = xmlDoc.querySelectorAll('item');
                             if (items.length === 0) {
                                 items = xmlDoc.querySelectorAll('entry');
                             }
-                            
+
                             statusCell.innerHTML = `<span class="badge badge-success">OK (${endTime - startTime}ms)</span>`;
                             lastCheckedCell.textContent = timeString;
                             itemCountCell.textContent = items.length;
@@ -153,13 +170,13 @@
                     console.error(`Error checking ${feed.route}:`, error);
                 }
             }
-            
+
             loadingIndicator.style.display = 'none';
         }
 
         // Add event listener to the check status button
         checkStatusBtn.addEventListener('click', checkStatus);
-        
+
         // Check status on page load
         checkStatus();
     });

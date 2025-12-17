@@ -16,6 +16,7 @@ venv
 .coverage
 htmlcov/
 data-dev.db
+test*
 
 .env
 #Dockerfile

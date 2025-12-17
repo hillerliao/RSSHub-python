@@ -110,7 +110,7 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             if value:  # Only add non-empty values
                 description_parts.append(f"{fieldname}: {value}")
         
-        description = ' | '.join(description_parts)  # Join with pipe separator
+        description = '<br>'.join(description_parts)  # Join with HTML line break
         if len(description) == len(title):  # If no other columns added
             description = title  # Just use title as description
             

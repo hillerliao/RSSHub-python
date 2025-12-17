@@ -263,6 +263,7 @@ def mp_rtag(c1='', tag=''):
     return render_template('main/atom.xml', **filter_content(ctx(c1, tag)))
 
 @bp.route('/producthunt/search/<string:keyword>/<string:period>')
+@swr_cache(timeout=1800)
 def producthunt_search(keyword='', period=''):
     from rsshub.spiders.producthunt.search import ctx
     return render_template('main/atom.xml', **filter_content(ctx(keyword,period)))
