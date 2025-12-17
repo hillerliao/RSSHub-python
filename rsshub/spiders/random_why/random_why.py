@@ -4,7 +4,9 @@ import requests
 from rsshub.extensions import cache
 
 def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese"):
-    feed_title = "Random Why Chinese Feed"
+    # Extract project name from dataset_name (format: "username/project_name")
+    project_name = dataset_name.split("/")[-1] if "/" in dataset_name else dataset_name
+    feed_title = f"{project_name.upper()} Random Question"
     feed_link = f"https://huggingface.co/datasets/{dataset_name}"
     
     try:
@@ -142,7 +144,7 @@ def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese"):
         return {
             'title': feed_title,
             'link': feed_link,
-            'description': 'Random question and answer from Chinese Why dataset',
+            'description': f'Random question and answer from {project_name} dataset',
             'items': [item]
         }
     
