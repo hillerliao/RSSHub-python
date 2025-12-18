@@ -14,7 +14,7 @@ dependencies = [
     "Flask==3.0.0",
     "Flask-Moment==1.0.2",
     "gunicorn",
-    "Werkzeug==3.0.0",
+    "Werkzeug==3.1.4",
     "Flask-Caching==2.3.0",
     "Jinja2==3.1.2",
     "parsel==1.8.1",
