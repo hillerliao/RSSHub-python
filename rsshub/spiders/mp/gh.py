@@ -3,31 +3,36 @@ from rsshub.utils import DEFAULT_HEADERS
 
 domain = 'https://weixin.sogou.com'
 
-def parse(post):
+def parse(post, dd_num, url):
     item = {}
 
     if dd_num > 1:
-        item['description'] = item['title'] = post.css('a::text').get()
-        item['link'] = domain + post.css('a::attr(href)').get()
-        item['pubDate'] = post.css('script::text').get().split('\'')[-2]
+        a_elem = post.select('a')
+        if a_elem:
+            item['description'] = item['title'] = a_elem[0].get_text()
+            item['link'] = domain + a_elem[0]['href']
+        script_elem = post.select('script')
+        if script_elem:
+            item['pubDate'] = script_elem[0].get_text().split('\'')[-2]
     else:
         item['description'] = item['title'] = '近期没有新文章'
         item['link'] = url
     return item
 
 def ctx(gh=''):
-    global url 
     url = f"{domain}/weixin?type=1&s_from=input&query={gh}&ie=utf8&_sug_=n&_sug_type_=&w=01019900&sut=1554&sst0=1628603087755&lkt=0%2C0%2C0"
     tree = fetch(url=url, headers=DEFAULT_HEADERS)
-    global dd_num
-    dd_num = len( tree.css('dd') )
-    posts = [ tree.css('dd')[-1] ]
-    mp_name = tree.css('p.tit a::text').get()
-    mp_description = tree.css('dd::text')[0].get()
+    dd_elems = tree.select('dd')
+    dd_num = len(dd_elems)
+    posts = [dd_elems[-1]] if dd_elems else []
+    title_elem = tree.select('p.tit a')
+    mp_name = title_elem[0].get_text() if title_elem else ''
+    desc_elems = tree.select('dd')
+    mp_description = desc_elems[0].get_text() if desc_elems else ''
     return {
         'title': f'{mp_name}-公众号',
         'link': url,
         'description': mp_description,
         'author': 'hillerliao',
-        'items': list(map(parse, posts)) 
+        'items': [parse(post, dd_num, url) for post in posts] 
     }

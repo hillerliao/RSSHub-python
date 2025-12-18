@@ -7,9 +7,12 @@ domain = 'https://www.aisixiang.com'
 
 def parse(post):
     item = {}
-    item['description'] = item['title'] = post.css('a::text').getall()[-1]
-    item['link'] = f"{domain}{post.css('a::attr(href)').getall()[-1]}"
-    item['pubDate'] = post.css('span::text').extract_first()
+    links = post.select('a')
+    if links:
+        item['description'] = item['title'] = links[-1].get_text()
+        item['link'] = f"{domain}{links[-1].get('href', '')}"
+    span = post.select_one('span')
+    item['pubDate'] = span.get_text() if span else ''
     return item
 
 
@@ -18,7 +21,15 @@ def ctx(category='', keywords=''):
     keywords_gbk = quote(keywords, encoding='gbk')
     url = f"{domain}/data/search.php?keyWords={keywords_gbk}&searchfield={category}"
     tree = fetch(url, headers=DEFAULT_HEADERS)
-    posts = tree.css('.search_list').css('li')
+    if not tree:
+        return {
+            'title': f'{keywords} - {category}搜索 - 爱思想',
+            'link': url,
+            'description': f'{keywords} - {category}搜索 - 爱思想',
+            'author': 'hillerliao',
+            'items': []
+        }
+    posts = tree.select('.search_list li')
     return {
         'title': f'{keywords} - {category}搜索 - 爱思想',
         'link': url,

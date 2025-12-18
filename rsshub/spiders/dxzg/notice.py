@@ -5,19 +5,30 @@ domain = 'http://www.dxzq.net'
 
 def parse(post):
     item = {}
-    item['description'] = item['title'] = post.css('a::text').extract_first()
-    link = f"{domain}{post.css('a::attr(href)').extract_first()}"
-    item['link'] = link 
-    item['pubDate'] = post.css('span.time::text').extract_first()
+    a = post.select_one('a')
+    if a:
+        item['description'] = item['title'] = a.get_text().strip()
+        item['link'] = f"{domain}{a.get('href', '')}"
+    span = post.select_one('span.time')
+    item['pubDate'] = span.get_text().strip() if span else ''
     return item
 
 
 def ctx(category=''):
-    tree = fetch(f"{domain}/main/zcgl/zxgg/index.shtml?catalogId=1,5,228")
-    posts = tree.css('.news_list li')
+    url = f"{domain}/main/zcgl/zxgg/index.shtml?catalogId=1,5,228"
+    tree = fetch(url)
+    if not tree:
+         return {
+            'title': '东兴资管产品最新公告',
+            'link': url,
+            'description': '东兴资管产品最新公告',
+            'author': 'hillerliao',
+            'items': []
+        }
+    posts = tree.select('.news_list li')
     return {
         'title': '东兴资管产品最新公告',
-        'link': f'{domain}/main/zcgl/zxgg/index.shtml?catalogId=1,5,228',
+        'link': url,
         'description': '东兴资管产品最新公告',
         'author': 'hillerliao',
         'items': list(map(parse, posts)) 

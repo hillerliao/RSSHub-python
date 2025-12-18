@@ -7,15 +7,20 @@ domain = 'https://youwuqiong.com'
 
 def get_content(url):
     tree = fetch(url=url,headers=DEFAULT_HEADERS)
-    content = tree.css('.single-content').get()
+    content_elem = tree.select('.single-content')
+    content = content_elem[0].decode_contents() if content_elem else ''
     return content
 
 def parse(post):
     item = {}
-    item['description'] = post.css('p::text').get()
-    item['title'] = post.css('a::text')[1].get()
-    item['link'] = post.css('a::attr(href)')[1].get()
-    item['pubDate'] = post.css('time::text').extract_first()
+    p_elem = post.select('p')
+    item['description'] = p_elem[0].get_text() if p_elem else ''
+    a_elems = post.select('a')
+    if len(a_elems) > 1:
+        item['title'] = a_elems[1].get_text()
+        item['link'] = a_elems[1]['href']
+    time_elem = post.select('time')
+    item['pubDate'] = time_elem[0].get_text() if time_elem else ''
     # item['description'] = get_content(item['link'])
     # ic(item['description'])
     return item
@@ -24,10 +29,12 @@ def parse(post):
 def ctx(author=''):
     url = f"{domain}/author/{author}"
     tree = fetch(url=url,headers=DEFAULT_HEADERS)
-    html = tree.css('body')
-    mp_name = html.css('h1::text').get().split('：')[-1] 
-    mp_description = html.css('.archive-description::text').get()
-    posts = html.css('.entry-content-wrap')
+    html = tree.select('body')[0]
+    h1_elem = html.select('h1')
+    mp_name = h1_elem[0].get_text().split('：')[-1] if h1_elem else ''
+    desc_elem = html.select('.archive-description')
+    mp_description = desc_elem[0].get_text() if desc_elem else ''
+    posts = html.select('.entry-content-wrap')
     return {
         'title': f'{mp_name} - 公众号',
         'link': url,

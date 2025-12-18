@@ -9,9 +9,10 @@ def parse(selector):
     items = list()
 
     # 公告通知
-    xpath = '//div[@id="news-2"]/ul//a'
-    announces = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#news-2 ul a'
+    links = selector.select(css)
+    announces = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     announces = ['公告通知 | ' + i for i in announces]
     for i in range(len(announces)):
@@ -22,9 +23,10 @@ def parse(selector):
         items.append(item)
 
     # 学院新闻
-    xpath = '//*[@id="news-1"]/ul/li/a'
-    news = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#news-1 ul li a'
+    links = selector.select(css)
+    news = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     for i in range(len(news)):
         item = dict()
@@ -34,9 +36,10 @@ def parse(selector):
         items.append(item)
 
     # 人才工作
-    xpath = '//*[@id="notice-1"]/div//a'
-    works = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#notice-1 div a'
+    links = selector.select(css)
+    works = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     works = ['人才工作 | ' + i for i in works]
     for i in range(len(works)):
@@ -47,9 +50,10 @@ def parse(selector):
         items.append(item)
 
     # 本科生教育
-    xpath = '//*[@id="notice-2"]/div//a'
-    ues = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#notice-2 div a'
+    links = selector.select(css)
+    ues = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     ues = ['本科生教育 | ' + i for i in ues]
     for i in range(len(ues)):
@@ -60,9 +64,10 @@ def parse(selector):
         items.append(item)
 
     # 研究生教育
-    xpath = '//*[@id="notice-3"]/div//a'
-    pgs = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#notice-3 div a'
+    links = selector.select(css)
+    pgs = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     pgs = ['研究生教育 | ' + i for i in pgs]
     for i in range(len(pgs)):
@@ -73,9 +78,10 @@ def parse(selector):
         items.append(item)
 
     # 科研信息
-    xpath = '//*[@id="notice-4"]/div//a'
-    research = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#notice-4 div a'
+    links = selector.select(css)
+    research = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     research = ['科研信息 | ' + i for i in research]
     for i in range(len(research)):
@@ -86,9 +92,10 @@ def parse(selector):
         items.append(item)
 
     # 学工信息
-    xpath = '//*[@id="notice-5"]/div//a'
-    students = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#notice-5 div a'
+    links = selector.select(css)
+    students = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     students = ['学工信息 | ' + i for i in students]
     for i in range(len(students)):
@@ -99,9 +106,10 @@ def parse(selector):
         items.append(item)
 
     # 党建通知
-    xpath = '//*[@id="notice-6"]/div//a'
-    party = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#notice-6 div a'
+    links = selector.select(css)
+    party = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     party = ['党建通知 | ' + i for i in party]
     for i in range(len(party)):
@@ -112,9 +120,10 @@ def parse(selector):
         items.append(item)
 
     # 工会工作
-    xpath = '//*[@id="notice-7"]/div//a'
-    union = selector.xpath(xpath + '/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#notice-7 div a'
+    links = selector.select(css)
+    union = [a.get_text() for a in links]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     union = ['工会工作 | ' + i for i in union]
     for i in range(len(union)):
@@ -124,10 +133,12 @@ def parse(selector):
         item['link'] = urls[i]
         items.append(item)
 
-    xpath = '//*[@id="event-1"]/li//a'
-    report = selector.xpath(xpath + '/text()').getall()
-    author = selector.xpath('//*[@id="event-1"]/li//span[@class="content"]/text()').getall()
-    urls = selector.xpath(xpath + '/@href').getall()
+    css = '#event-1 li a'
+    links = selector.select(css)
+    report = [a.get_text() for a in links]
+    author_spans = selector.select('#event-1 li span.content')
+    author = [span.get_text() for span in author_spans]
+    urls = [a['href'] for a in links]
     urls = [domain + i for i in urls]
     for i in range(len(report)) :
         report[i] = report[i] + author[i]

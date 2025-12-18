@@ -6,17 +6,20 @@ domain = 'businesswire.com'
 
 def parse(post):
     item = {}
-    item['title'] = post.css('title::text').extract_first().strip()
-    item['description'] = post.css('description::text').extract_first()
-    item['link'] = post.extract().split('      ')[-2].split('>')[-1].strip()
-    item['pubDate'] = post.css('pubDate::text').extract_first()
+    title_elem = post.select('title')
+    item['title'] = title_elem[0].get_text().strip() if title_elem else ''
+    desc_elem = post.select('description')
+    item['description'] = desc_elem[0].get_text() if desc_elem else ''
+    item['link'] = post.decode_contents().split('      ')[-2].split('>')[-1].strip()
+    pubdate_elem = post.select('pubDate')
+    item['pubDate'] = pubdate_elem[0].get_text() if pubdate_elem else ''
     return item
 
 
 def ctx(category=''):
     tree = fetch(f"https://feed.{domain}/rss/home/?rss=G1QFDERJXkJeGVtYWA==", 
                 headers=DEFAULT_HEADERS)
-    posts = tree.css('item')
+    posts = tree.select('item')
     items = list(map(parse, posts))
     items = filter_content(items)
     return {

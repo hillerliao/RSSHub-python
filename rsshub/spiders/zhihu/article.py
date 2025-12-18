@@ -36,16 +36,23 @@ class AtomEntry:
 class ZhihuAnswer(AtomEntry):
     def get(self):
         tree = fetch(self.link)
-        self.title = tree.css('h1::text').get()
-        self.content = zhihu_figure_transfer(tree.css('.RichText').get())
+        if tree is None:
+            return
+            
+        h1_elem = tree.select('h1')
+        self.title = h1_elem[0].get_text() if h1_elem else ''
+        rich_text_elem = tree.select('.RichText')
+        self.content = zhihu_figure_transfer(rich_text_elem[0].decode_contents() if rich_text_elem else '')
         self.description = self.content
 
         # author
 
-        self.author = json.loads(tree.xpath('//div[@class="ContentItem AnswerItem"]/@data-zop').get())['authorName']
+        answer_item = tree.select('div.ContentItem.AnswerItem')
+        self.author = json.loads(answer_item[0]['data-zop'])['authorName'] if answer_item else ''
 
-        meta: dict = get_value(json.loads(tree.css("#js-initialData::text").get())
-                               ['initialState']['entities']['questions'])
+        js_data_elem = tree.select("#js-initialData")
+        meta: dict = get_value(json.loads(js_data_elem[0].get_text())
+                               ['initialState']['entities']['questions']) if js_data_elem else {}
 
         self.pubDate = datetime.fromtimestamp(meta['created'])
         self.updated_time = datetime.fromtimestamp(meta['updatedTime'])
@@ -54,15 +61,21 @@ class ZhihuAnswer(AtomEntry):
 class ZhihuZhuanlanArticle(AtomEntry):
     def get(self):
         tree = fetch(self.link)
-        self.title = tree.css('h1::text').get()
-        author = tree.xpath('//meta[@itemProp="name"]/@content').get()
-        if author:
-            self.author = author
-        self.content = zhihu_figure_transfer(tree.css('article').css('.RichText').get())
+        if tree is None:
+            return
+            
+        h1_elem = tree.select('h1')
+        self.title = h1_elem[0].get_text() if h1_elem else ''
+        author_meta = tree.select('meta[itemprop="name"]')
+        if author_meta:
+            self.author = author_meta[0]['content']
+        article_rich = tree.select('article .RichText')
+        self.content = zhihu_figure_transfer(article_rich[0].decode_contents() if article_rich else '')
         self.description = self.content
 
         #
-        data = json.loads(tree.css("#js-initialData::text").get())
+        js_data_elem = tree.select("#js-initialData")
+        data = json.loads(js_data_elem[0].get_text()) if js_data_elem else {}
         metadata = list(data['initialState']['entities']['articles'].values())[0]
         self.pubDate = datetime.fromtimestamp(metadata['created'])
         self.updated_time = datetime.fromtimestamp(metadata['updated'])
@@ -72,10 +85,14 @@ class ZhihuQuestion(Feed):
 
     def get_description(self):
         tree = fetch(self.link)
-        self.title = tree.css('title::text').get()
-        self.description = tree.xpath('//meta[@name="description"]/text()').get()
+        if tree is None:
+            return
+            
+        desc_meta = tree.select('meta[name="description"]')
+        self.description = desc_meta[0].get_text() if desc_meta else ''
 
-        data = json.loads(tree.css("#js-initialData::text").get())
+        js_data_elem = tree.select("#js-initialData")
+        data = json.loads(js_data_elem[0].get_text()) if js_data_elem else {}
         for answer_id in list(data['initialState']['question']['answers'].values())[0]['ids']:
             assert answer_id['targetType'] == 'answer'
             item = ZhihuAnswer(f'{self.link}/answer/{answer_id["target"]}')

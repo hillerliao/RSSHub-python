@@ -9,17 +9,27 @@ def ctx(category=''):
     
     def parse(post):
         item = {}
-        item['description'] = item['title'] = stock.upper() + '的评级：' +  ', '.join(post.css('td::text').extract())
+        tds = post.select('td')
+        item['description'] = item['title'] = stock.upper() + '的评级：' +  ', '.join([td.get_text().strip() for td in tds])
         item['link'] = url
         return item    
 
     
     url = f'{domain}/stock/{category}/ratings'
     tree = fetch(url, headers=DEFAULT_HEADERS)
-    posts = tree.css('tbody tr')
+    if not tree:
+         return {
+            'title': f'{category} - benzinga',
+            'description': f'{category} - benzinga',
+            'link': url,
+            'author': f'hillerliao',
+            'items': []
+        }
+    posts = tree.select('tbody tr')
     items = list(map(parse, posts))
 
-    column_title = tree.css('title::text').extract_first()
+    title_el = tree.select_one('title')
+    column_title = title_el.get_text().strip() if title_el else category
     return {
         'title': f'{column_title} - benzinga',
         'description': f'{column_title} - benzinga',

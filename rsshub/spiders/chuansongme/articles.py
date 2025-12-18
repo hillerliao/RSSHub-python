@@ -5,15 +5,25 @@ domain = 'https://chuansongme.com'
 
 def parse(post):
     item = {}
-    item['title'] = post.css('a.question_link::text').extract()[-1].strip()
-    link = f"{domain}{post.css('a.question_link::attr(href)').extract_first()}"
-    item['link'] = link
+    a = post.select('a.question_link')
+    if a:
+        item['title'] = a[-1].get_text().strip()
+        item['link'] = f"{domain}{a[-1].get('href', '')}"
     return item
 
 
 def ctx(category=''):
-    tree = fetch(f"{domain}/{category}")
-    posts = tree.css('.feed_body .pagedlist_item')
+    url = f"{domain}/{category}"
+    tree = fetch(url)
+    if not tree:
+         return {
+            'title': '传送门',
+            'link': domain,
+            'description': '传送门：微信公众号订阅',
+            'author': 'alphardex',
+            'items': []
+        }
+    posts = tree.select('.feed_body .pagedlist_item')
     return {
         'title': '传送门',
         'link': domain,
