@@ -9,14 +9,26 @@ def ctx():
     items = {}
     channel = {}
 
-    hot_question = tree.css('.css-1nd7dqm')
-    newest_topic = tree.css('.ExploreSpecialCard-contentTitle')
-    discussion = tree.css('.ExploreRoundtableCard-questionTitle')
-    collection_card = tree.css('.ExploreCollectionCard-contentTitle')
+    hot_question = tree.select('.ExploreSpecialCard-contentTitle')
+    newest_topic = tree.select('.ExploreSpecialCard-contentTitle')
+    discussion = tree.select('.ExploreRoundtableCard-questionTitle')
+    collection_card = tree.select('.ExploreCollectionCard-contentTitle')
 
     for post in chain(hot_question, collection_card, discussion): #, newest_topic):
-        title = post.css('a::text').extract_first()
-        link: str = post.css('a::attr(href)').extract_first()
+        link_elem = post.select('a')
+        link = None  # Initialize link variable
+        title = None  # Initialize title variable
+        if link_elem:
+            title = link_elem[0].get_text()
+            link: str = link_elem[0]['href']
+        else:
+            # Check parent element for link
+            parent = post.parent
+            if parent:
+                parent_links = parent.select('a')
+                if parent_links:
+                    title = post.get_text()
+                    link = parent_links[0]['href']
 
         if link:
             if not (link.startswith('https://www.zhihu.com')
