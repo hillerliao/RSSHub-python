@@ -1,6 +1,5 @@
 import requests
 import json
-from parsel import Selector
 from datetime import datetime, date
 from rsshub.utils import DEFAULT_HEADERS
 

@@ -1,7 +1,7 @@
 import re
 from flask import Response
 import requests
-from parsel import Selector
+from bs4 import BeautifulSoup
 import functools
 import threading
 import hashlib
@@ -30,7 +30,7 @@ def fetch(url: str, headers: dict=DEFAULT_HEADERS, proxies: dict=None):
         print(f'[Err] {e}')
     else:
         html = res.text
-        tree = Selector(text=html)
+        tree = BeautifulSoup(html, 'html.parser')
         return tree
 
 
@@ -50,7 +50,7 @@ async def fetch_by_puppeteer(url):
         await page.goto(url)  # 访问网址
         html = await page.content()  # 获取页面内容
         await browser.close()  # 关闭浏览器
-        return Selector(text=html)
+        return BeautifulSoup(html, 'html.parser')
 
 
 def filter_content(items):

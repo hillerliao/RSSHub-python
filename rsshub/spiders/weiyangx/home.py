@@ -1,6 +1,6 @@
 import requests
 import json
-from parsel import Selector
+from bs4 import BeautifulSoup
 from rsshub.utils import DEFAULT_HEADERS
 
 domain = 'https://www.weiyangx.com'
@@ -18,8 +18,11 @@ def parse(post):
 def ctx():
     url = f'https://www.weiyangx.com/'
     res = requests.get(url, headers=DEFAULT_HEADERS)
-    res = Selector(res.text)
-    posts = res.css('script::text')[-5].extract().split('=')[-1]
+    soup = BeautifulSoup(res.text, 'html.parser')
+    scripts = soup.select('script')
+    if len(scripts) < 5:
+        raise ValueError("Not enough script tags found")
+    posts = scripts[-5].text.split('=')[-1]
     posts = json.loads(posts)
     items = list(map(parse, posts))
     return {
