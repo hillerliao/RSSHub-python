@@ -1,7 +1,11 @@
 import re
 import asyncio
 import arrow
-from playwright.async_api import async_playwright
+try:
+    from playwright.async_api import async_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
 from bs4 import BeautifulSoup
 
 
@@ -98,6 +102,20 @@ def ctx(user_id=None):
             'description': '雪球用户最新动态',
             'items': []
         }
+    
+    if not HAS_PLAYWRIGHT:
+        return {
+            'title': f'用户{user_id} - 雪球动态 (Not supported on Vercel)',
+            'link': f"https://xueqiu.com/u/{user_id}",
+            'description': 'Playwright is not available in this environment. Please use the self-hosted version for this feed.',
+            'author': 'hillerliao',
+            'items': [{
+                'title': 'Playwright not supported on Vercel',
+                'description': 'This feed requires Playwright, which is not supported on Vercel. Please use the self-hosted scraper image.',
+                'link': f"https://xueqiu.com/u/{user_id}"
+            }]
+        }
+
     result = asyncio.run(get_user_statuses(user_id))
     items = [parse_status(s, user_id, result['screen_name']) for s in result['posts']]
     return {

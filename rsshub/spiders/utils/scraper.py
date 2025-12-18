@@ -1,6 +1,10 @@
 import asyncio
 from urllib.parse import unquote, urljoin
-from playwright.async_api import async_playwright
+try:
+    from playwright.async_api import async_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
 
 
 async def get_html(url):
@@ -97,6 +101,8 @@ def fix_relative_paths(html_content, base_url):
 
 def ctx(url):
     """主函数 - 获取网页HTML"""
+    if not HAS_PLAYWRIGHT:
+        return "Playwright not supported on Vercel. Please use the self-hosted scraper image."
     try:
         # 解码URL
         decoded_url = unquote(url)

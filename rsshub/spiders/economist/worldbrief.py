@@ -2,7 +2,11 @@ import re
 import json
 import time
 from bs4 import BeautifulSoup
-from playwright.sync_api import sync_playwright
+try:
+    from playwright.sync_api import sync_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
 
 domain = 'https://www.economist.com'
 
@@ -52,6 +56,20 @@ def ctx(category=''):
     解析 JSON 数据，提取所有brief news的内容。
     """
     url = f"{domain}/the-world-in-brief"
+
+    if not HAS_PLAYWRIGHT:
+        return {
+            'title': 'World Brief - Economist (Not supported on Vercel)',
+            'link': url,
+            'description': 'Playwright is not available in this environment. Please use the self-hosted version for this feed.',
+            'author': 'hillerliao',
+            'items': [{
+                'title': 'Playwright not supported on Vercel',
+                'description': 'This feed requires Playwright, which is not supported on Vercel. Please use the self-hosted scraper image.',
+                'link': url
+            }]
+        }
+
     html = get_content_with_playwright(url)
     
     if not html:
