@@ -21,12 +21,15 @@ def create_app(config_name=None):
     cache.init_app(app)
 
     # Add analytics
-    from flask_analytics import Analytics
-    from rsshub.google_analytics import ga_account
+    # try:
+    #     from flask_analytics import Analytics
+    #     from rsshub.google_analytics import ga_account
 
-    Analytics(app)
-    app.config['ANALYTICS']['GOOGLE_UNIVERSAL_ANALYTICS']['ACCOUNT'] = ga_account
-    app.config['ANALYTICS']['ENABLED'] = True
+    #     Analytics(app)
+    #     app.config['ANALYTICS']['GOOGLE_UNIVERSAL_ANALYTICS']['ACCOUNT'] = ga_account
+    #     app.config['ANALYTICS']['ENABLED'] = True
+    # except ImportError:
+    #     pass
 
     register_blueprints(app)
     register_extensions(app)

@@ -7,25 +7,35 @@ from collections import defaultdict
 from requests.exceptions import ConnectionError, Timeout, RequestException
 
 
-def ctx():
+def ctx(api_url=None):
     """
     Fetch Anki cards that are due for review via Anki Connect API
     Returns context dictionary for RSS template
     """
     
     # Configuration - using environment variables with defaults
-    host = os.environ.get('ANKI_CONNECT_HOST', 'localhost')
-    port = os.environ.get('ANKI_CONNECT_PORT', '8765')
     limit = 20
     
     try:
-        # Connect to Anki Connect API
-        url = f'http://{host}:{port}'
+        # Determine base URL for AnkiConnect API
+        if api_url:
+            # Normalize input: ensure it has a scheme for urlparse
+            from urllib.parse import urlparse
+            if '://' not in api_url:
+                api_url = f'http://{api_url}'
+            parsed = urlparse(api_url)
+            host = parsed.hostname or 'localhost'
+            port = str(parsed.port or 8765)
+            base_url = f'http://{host}:{port}'
+        else:
+            host = os.environ.get('ANKI_CONNECT_HOST', 'localhost')
+            port = os.environ.get('ANKI_CONNECT_PORT', '8765')
+            base_url = f'http://{host}:{port}'
         
         # Test connection first
         try:
             test_response = requests.post(
-                url, 
+                base_url,
                 json={"action": "version", "version": 6},
                 timeout=5
             )
@@ -41,7 +51,7 @@ def ctx():
                 'items': [{
                     'title': 'Connection Error: Cannot Connect to Anki',
                     'description': f'''Please ensure that:
-1. Anki application is installed and running on {host}
+1. Anki application is installed and running on {host} (port {port})
 2. AnkiConnect addon is installed in Anki:
    - Go to Tools > Add-ons > Get Add-ons in Anki
    - Enter code: 2055492159
@@ -81,7 +91,7 @@ def ctx():
             }
         }
         
-        response = requests.post(url, json=payload, timeout=10)
+        response = requests.post(base_url, json=payload, timeout=10)
         card_ids = response.json()['result']
         
         # Handle case when no cards are due
@@ -109,7 +119,7 @@ def ctx():
             }
         }
         
-        response = requests.post(url, json=payload, timeout=10)
+        response = requests.post(base_url, json=payload, timeout=10)
         cards_info = response.json()['result']
         
         # Group cards by deck to ensure even distribution
@@ -132,7 +142,7 @@ def ctx():
             }
         }
         
-        response = requests.post(url, json=payload, timeout=10)
+        response = requests.post(base_url, json=payload, timeout=10)
         notes_info = response.json()['result']
         
         # Create mapping from note id to note info

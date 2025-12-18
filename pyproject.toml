@@ -24,7 +24,8 @@ dependencies = [
 
 ]
 
-dev-dependencies = [
+[project.optional-dependencies]
+dev = [
     "Bootstrap-Flask==1.8.0",
     "Flask-Analytics==0.6.0",
     "Flask-DebugToolbar==0.11.0",

@@ -21,12 +21,13 @@ To use this feature:
 1. Install and run [Anki](https://apps.ankiweb.net/)
 2. Install the [AnkiConnect](https://ankiweb.net/shared/info/2055492159) addon (addon code: 2055492159)
 3. Configure AnkiConnect to listen on the correct address (0.0.0.0:8765 by default)
-4. Create a `.env` file in the project root directory with the following content (adjust as needed):
+4. Create a `.env` file in the project root directory with the following content (adjust as needed), or pass at runtime via `?api=` query param.
    ```
    ANKI_CONNECT_HOST=192.168.6.181
    ANKI_CONNECT_PORT=8765
    ```
 5. Access the feed at `/anki/due-cards`
+   - Runtime override: `/anki/due-cards?api=http://your_host:8765`
 
 Each time you refresh the feed, you'll get a random card from those due for review today. The feed includes additional information such as:
 - Deck name
