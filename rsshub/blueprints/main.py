@@ -6,9 +6,9 @@ bp = Blueprint('main', __name__)
 
 @bp.route('/anki/due-cards')
 def anki_due_cards():
-    # Allow optional runtime override of AnkiConnect API via `api` query param
-    # Example: /anki/due-cards?api=http://your_host:8765
-    api_url = request.args.get('api')
+    # Allow optional runtime override of AnkiConnect API via `api_url` query param
+    # Example: /anki/due-cards?api_url=http://your_host:8765
+    api_url = request.args.get('api_url')
     from rsshub.spiders.anki.due_cards import ctx
     return render_template('main/atom.xml', **filter_content(ctx(api_url=api_url)))
 
