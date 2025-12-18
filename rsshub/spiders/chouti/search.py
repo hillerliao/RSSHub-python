@@ -18,12 +18,27 @@ def parse(post):
 
 
 def ctx(category=''):
-    DEFAULT_HEADERS.update({'Referer': domain}) 
+    headers = DEFAULT_HEADERS.copy()
+    headers.update({'Referer': domain}) 
     from urllib.parse import unquote
     category = unquote(category, 'utf-8')
     r_url = f'{domain}/search/show'
     post_data = {'words':category,'searchType':'2','linkType':'ALL', 'subjectId':'-1'}
-    posts = requests.post(r_url, data=post_data, headers=DEFAULT_HEADERS).json()['data']['linksList']
+    try:
+        response = requests.post(r_url, data=post_data, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        posts = data.get('data', {}).get('linksList', [])
+    except requests.RequestException as e:
+        print(f'Request error: {e}')
+        posts = []
+    except ValueError as e:
+        print(f'JSON decode error: {e}')
+        posts = []
+    except KeyError as e:
+        print(f'Data structure error: {e}')
+        posts = []
+    
     return {
         'title': f'{category} - 抽屉热榜',
         'link': r_url,

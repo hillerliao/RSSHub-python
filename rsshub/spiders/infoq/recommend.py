@@ -13,10 +13,24 @@ def parse(post):
 
 
 def ctx():
-    DEFAULT_HEADERS.update({'Referer': 'https://www.infoq.cn'}) # 必须设置Referer，不然会451错误
+    headers = DEFAULT_HEADERS.copy()
+    headers.update({'Referer': 'https://www.infoq.cn'})  # 必须设置Referer，不然会451错误
     import json
-    posts = requests.post(f'{domain}/public/v1/my/recommond', json={'size': 20}, headers=DEFAULT_HEADERS)
-    posts = json.loads(posts.text)['data']
+    try:
+        response = requests.post(f'{domain}/public/v1/my/recommond', json={'size': 20}, headers=headers)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        data = json.loads(response.text)
+        posts = data.get('data', [])
+    except requests.RequestException as e:
+        print(f'Request error: {e}')
+        posts = []
+    except json.JSONDecodeError as e:
+        print(f'JSON decode error: {e}')
+        posts = []
+    except KeyError as e:
+        print(f'Key error in response: {e}')
+        posts = []
+    
     return {
         'title': 'infoq',
         'link': domain,

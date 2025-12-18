@@ -7,7 +7,7 @@ domain = 'http://www.news.cn/world/index.html'
 def ctx():
     url = f'{domain}'
     tree = fetch(url, headers=DEFAULT_HEADERS)
-    posts = tree.xpath('//div[@id=\'recommendDepth\']//a')
+    posts = tree.select('#recommendDepth a')
     return {
         'title': '新华网 - 国际要闻',
         'link': url,

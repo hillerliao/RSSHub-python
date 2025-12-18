@@ -17,11 +17,13 @@ def parse(post):
 
 def ctx(category=''):
     referer = f'{domain}/profile/{category}/publish'
-    DEFAULT_HEADERS.update({'Referer': referer}) 
+    headers = DEFAULT_HEADERS.copy()
+    headers.update({'Referer': referer}) 
     url = f'{domain}/public/v1/user/getListByAuthor'
-    posts = requests.post(url, json={'size': 12, 'id': category, 'type': 0}, headers=DEFAULT_HEADERS)
-    tree = fetch(referer,headers=DEFAULT_HEADERS)
-    feed_title = tree.css('title::text').get()
+    posts = requests.post(url, json={'size': 12, 'id': category, 'type': 0}, headers=headers)
+    tree = fetch(referer,headers=headers)
+    title_elem = tree.select('title') if tree else []
+    feed_title = title_elem[0].get_text() if title_elem else ''
     posts = json.loads(posts.text)['data']
     return {
         'title': f'{feed_title} - Profile - InfoQ',

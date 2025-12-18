@@ -18,10 +18,28 @@ def parse(post):
 
 
 def ctx(category=''):
-    DEFAULT_HEADERS.update({'Referer': domain}) 
+    headers = DEFAULT_HEADERS.copy()
+    headers.update({'Referer': domain}) 
     r_url = f'{domain}/publish/links/ajax?userId={category}'
-    posts = requests.get(r_url, headers=DEFAULT_HEADERS).json()['data']
-    user_name = posts[0]['submitted_user']['nick']
+    try:
+        response = requests.get(r_url, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        posts = data.get('data', [])
+        user_name = posts[0]['submitted_user']['nick'] if posts else 'Unknown'
+    except requests.RequestException as e:
+        print(f'Request error: {e}')
+        posts = []
+        user_name = 'Unknown'
+    except ValueError as e:
+        print(f'JSON decode error: {e}')
+        posts = []
+        user_name = 'Unknown'
+    except (KeyError, IndexError) as e:
+        print(f'Data structure error: {e}')
+        posts = []
+        user_name = 'Unknown'
+    
     return {
         'title': f'{user_name} - 个人主页 - 抽屉热榜',
         'link': f'{domain}/publish/links/ctu_{category}',

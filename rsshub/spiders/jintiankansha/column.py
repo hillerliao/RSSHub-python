@@ -6,8 +6,10 @@ domain = 'http://www.jintiankansha.me'
 
 def parse(post):
     item = {}
-    item['description'] = item['title'] = post.css('a::text').extract_first()
-    item['link'] = post.css('a::attr(href)').extract_first()
+    a_elem = post.select('a')
+    if a_elem:
+        item['description'] = item['title'] = a_elem[0].get_text()
+        item['link'] = a_elem[0]['href']
     return item
 
 
@@ -15,11 +17,12 @@ def ctx(category=''):
     url = f'{domain}/column/{category}'
     DEFAULT_HEADERS.update({'Host': 'www.jintiankansha.me'})
     tree = fetch(url, headers=DEFAULT_HEADERS)
-    # posts = tree.css('.cell.item')
-    posts = tree.css('.item_title')
+    # posts = tree.select('.cell.item')
+    posts = tree.select('.item_title')
     items = list(map(parse, posts))
 
-    column_title = tree.css('title::text').extract_first()
+    title_elem = tree.select('title')
+    column_title = title_elem[0].get_text() if title_elem else ''
     return {
         'title': f'{column_title}',
         'description': f'{category}',

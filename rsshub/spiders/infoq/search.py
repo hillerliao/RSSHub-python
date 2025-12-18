@@ -21,11 +21,12 @@ def parse(post):
 def ctx(category='', type=''):
     category1 = category.encode("utf-8").decode("latin-1")
     referer = f'{domain}/search/c=0/k={category1}/t={type}'
-    DEFAULT_HEADERS.update({'Referer': referer}) 
+    headers = DEFAULT_HEADERS.copy()
+    headers.update({'Referer': referer}) 
     url = f'{domain}/api/gksearch/search'
     category = unquote(category, 'utf-8')
     payload = {"q":category,"t": type,"s":20,"p":1}
-    posts = requests.post(url, json=payload, headers=DEFAULT_HEADERS)
+    posts = requests.post(url, json=payload, headers=headers)
     posts = json.loads(posts.text)['data']['list']
     return {
         'title': f'{category} - 搜索 - InfoQ',

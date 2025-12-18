@@ -17,6 +17,8 @@ venv
 htmlcov/
 data-dev.db
 test*
+repro*
+debug*
 
 .env
 #Dockerfile

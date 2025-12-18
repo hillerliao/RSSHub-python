@@ -16,10 +16,26 @@ def parse(post):
     return item 
 
 def ctx(category=''):
-    DEFAULT_HEADERS.update({'Referer': domain}) 
-    post_data = {'sectionId':category}
+    headers = DEFAULT_HEADERS.copy()
+    headers.update({'Referer': domain}) 
+    post_data = {'sectionId': category}
     r_url = f'{domain}/section/links'
-    posts = requests.post(r_url, data=post_data, headers=DEFAULT_HEADERS).json()['data']
+    try:
+        response = requests.post(r_url, data=post_data, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        if data.get('success'):
+            posts = data.get('data', [])
+        else:
+            print(f'API error: {data.get("msg", "Unknown error")}')
+            posts = []
+    except requests.RequestException as e:
+        print(f'Request error: {e}')
+        posts = []
+    except ValueError as e:
+        print(f'JSON decode error: {e}')
+        posts = []
+    
     return {
         'title': f'{category} - 抽屉热榜',
         'link': r_url,

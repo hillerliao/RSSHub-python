@@ -7,7 +7,7 @@ domain = 'http://www.news.cn'
 def ctx():
     url = f'{domain}'
     tree = fetch(url, headers=DEFAULT_HEADERS)
-    posts = tree.xpath('//div[@id=\'latest\']//li/a')
+    posts = tree.select('#latest li a')
     return {
         'title': '新华网 - 最新播报',
         'link': url,

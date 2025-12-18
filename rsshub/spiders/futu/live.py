@@ -35,7 +35,6 @@ def ctx(lang=''):
         return Response("No data available", mimetype='text/plain')
 
     news_list = data.get('data', {}).get('data', {}).get('news', [])
-    print(news_list)
 
     # 使用 parse_gobbet 解析每一条新闻
     items = [parse_news(news) for news in news_list]
