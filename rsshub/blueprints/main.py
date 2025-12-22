@@ -427,7 +427,7 @@ def scrape_html(url):
 
 @bp.route('/randomword/<string:category>')
 @bp.route('/randomword')
-@cache.cached(timeout=3600)  # 1小时缓存
+@swr_cache(timeout=900)  # 15分钟缓存，使用SWR策略减少403影响
 def randomword(category='sentence'):
     from rsshub.spiders.randomword.randomword import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
