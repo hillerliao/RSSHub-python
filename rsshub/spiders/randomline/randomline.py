@@ -27,12 +27,34 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         
         if not content:
             # Use direct request with proper timeout if cache miss
-            response = requests.get(url, headers=DEFAULT_HEADERS, timeout=30)
-            response.raise_for_status()
-            content = response.text
-            # Cache the CSV content for 60 minutes
-            cache.set(cache_key, content, timeout=3600)
+            try:
+                # Ensure URL is clean
+                url = url.strip()
+                print(f"DEBUG: Fetching URL: {url!r}")
+                response = requests.get(url, headers=DEFAULT_HEADERS, timeout=30)
+                print(f"DEBUG: Status Code: {response.status_code}")
+                response.raise_for_status()
+                content = response.text
+                cache.set(cache_key, content, timeout=3600)
+            except Exception as e:
+                print(f"DEBUG: Request failed with default headers: {e}")
+                # Retry with curl User-Agent to mimic successful CLI command
+                try:
+                    print("DEBUG: Retrying with curl User-Agent...")
+                    headers_curl = {'User-Agent': 'curl/7.68.0'}
+                    response = requests.get(url, headers=headers_curl, timeout=30)
+                    response.raise_for_status()
+                    content = response.text
+                    cache.set(cache_key, content, timeout=3600)
+                    print("DEBUG: Retry successful!")
+                except Exception as e2:
+                    print(f"DEBUG: Retry failed: {e2}")
+                    if 'response' in locals():
+                        print(f"DEBUG: Response text: {response.text[:200]}")
+                    raise e
     except Exception as e:
+        import sys
+        print(f"DEBUG: Randomline error: {e}", file=sys.stderr)
         return {
             'title': feed_title,
             'link': url,
