@@ -100,23 +100,55 @@ nohup uv run gunicorn -c gunicorn.conf main:app > logs/server.log 2>&1 &
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhillerliao%2Frsshub-python)
 
 ### Docker Deployment
+#### Option 1: Docker Compose (Recommended)
+This method ensures all configurations (like `shm_size` for Playwright) are correct.
 
-Create docker container: `docker run -dt --name pyrsshub -p 5000:5000 hillerliao/pyrsshub:latest`
+1.  Create `docker-compose.yml`:
+    ```yaml
+    services:
+      rsshub:
+        image: hillerliao/pyrsshub:latest
+        container_name: pyrsshub
+        ports:
+          - "5000:5000"
+        restart: unless-stopped
+        # Playwright requires increased shared memory
+        shm_size: 512mb
+        environment:
+          - PORT=5000
+    ```
+2.  Run:
+    ```bash
+    docker-compose up -d
+    ```
 
-#### Scraper Image
-
-For advanced web scraping capabilities with Playwright support (including dynamic content loading and anti-detection):
-
+#### Option 2: Docker Run
+If you prefer a single command:
 ```bash
-docker run -dt --name pyrsshub-scraper -p 5000:5000 hillerliao/pyrsshub:scraper
+docker run -d \
+  --name pyrsshub \
+  -p 5000:5000 \
+  --restart unless-stopped \
+  --shm-size=512mb \
+  hillerliao/pyrsshub:latest
 ```
 
-**Features of scraper image:**
-- Full Playwright support for dynamic content scraping
-- Anti-bot detection mechanisms
-- Works with `/scrape/` endpoint and xueqiu user routes
-- Includes all standard RSSHub features
-- Requires self-hosting (not compatible with Vercel)
+### Zeabur Deployment
+
+Zeabur can automatically deploy directly from this GitHub repository or using a Docker image.
+
+**Method 1: Git Integration**
+1. Push this project to your GitHub.
+2. In Zeabur, go to **Create Service** -> **Git**.
+3. Select this repository.
+4. Zeabur will automatically build and run it.
+
+**Method 2: Pre-built Image**
+1. In Zeabur, go to **Create Service** -> **Docker Image**.
+2. Image Name: `hillerliao/pyrsshub:latest`
+3. Zeabur will pull and run the optimized image.
+
+> Note: The image includes Playwright dependencies optimized for Docker environments.
 
 **Use cases:**
 - `/scrape/https://example.com` - Get HTML source of any webpage
