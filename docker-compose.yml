@@ -1,6 +1,7 @@
 services:
   rsshub:
     build: .
+    container_name: pyrsshub
     ports:
       - "5000:5000"
     # Essential for Playwright to avoid crashing in Docker
