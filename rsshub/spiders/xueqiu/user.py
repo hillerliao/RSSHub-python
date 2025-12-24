@@ -3,7 +3,6 @@ import asyncio
 import arrow
 try:
     from playwright.async_api import async_playwright
-    from playwright_stealth import stealth_async
     HAS_PLAYWRIGHT = True
 except ImportError:
     HAS_PLAYWRIGHT = False
@@ -20,8 +19,12 @@ async def get_user_statuses(user_id):
         ) as browser:
             page = await browser.new_page()
             
-            # 设置反检测
-            await stealth_async(page)
+            # 设置反检测 (Manual Stealth)
+            await page.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                });
+            """)
             await page.set_extra_http_headers({
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             })
@@ -39,7 +42,7 @@ async def get_user_statuses(user_id):
                     await asyncio.sleep(2)
                 
                 content = await page.content()
-                soup = BeautifulSoup(content, 'lxml')
+                soup = BeautifulSoup(content, 'html.parser')
                 
                 all_posts = []
                 screen_name = f'用户{user_id}'
