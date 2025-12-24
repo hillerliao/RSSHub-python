@@ -1,13 +1,4 @@
-FROM python:3.12-slim
-
-# Install system dependencies for Chrome/Chromedriver
-RUN apt-get update && apt-get install -y \
-    wget gnupg unzip curl \
-    chromium chromium-driver \
-    fonts-liberation libnss3 libxi6 libxcursor1 libxrandr2 libxss1 libxcomposite1 libasound2 \
-    && rm -rf /var/lib/apt/lists/*
-
-
+FROM mcr.microsoft.com/playwright/python:v1.49.1-jammy
 
 # Set working directory
 WORKDIR /app
@@ -16,8 +7,9 @@ WORKDIR /app
 COPY . .
 
 # Install Python dependencies
+# Official image has system dependencies, we just need python deps
 RUN pip install --no-cache-dir -r requirements.txt && \
-    playwright install --with-deps chromium
+    playwright install chromium
 
 # Expose port
 EXPOSE 5000
