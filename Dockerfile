@@ -14,5 +14,5 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 # Expose port
 EXPOSE 5000
 
-# Start app
-CMD ["gunicorn", "-b", "0.0.0.0:5000", "main:app", "--timeout", "120", "--workers", "1"]
+# Start app using PORT environment variable (default 5000) for compatibility with Zeabur/Heroku
+CMD gunicorn -b 0.0.0.0:${PORT:-5000} main:app --timeout 120 --workers 1
