@@ -1,0 +1,15 @@
+services:
+  rsshub:
+    build: .
+    ports:
+      - "5000:5000"
+    # Essential for Playwright to avoid crashing in Docker
+    shm_size: '2gb'
+    deploy:
+      resources:
+        limits:
+          # Limit memory usage to prevent OOM killing the host
+          memory: 1G
+    restart: unless-stopped
+    environment:
+      - PORT=5000
