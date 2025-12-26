@@ -11,6 +11,10 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt && \
     playwright install chromium
 
+# Set production environment variables
+ENV FLASK_CONFIG=production
+ENV FLASK_ENV=production
+
 # Expose port
 EXPOSE 5000
 
