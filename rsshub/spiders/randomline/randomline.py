@@ -7,7 +7,7 @@ from urllib.parse import quote, urlparse
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.extensions import cache
 
-def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None):
+def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0):
     
     try:
         # Extract filename from URL for feed title
@@ -117,21 +117,30 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                 'items': []
             }
 
-        # Randomly select one row
-        row = random.choice(rows)
-        
-        # Get specified column as title
         # Validate title_col is within range
         if title_col < 0 or title_col >= len(fieldnames):
-            title_col = 0  # Fallback to first column if out of range
-        
+            title_col = 0
+            
         title_column_name = fieldnames[title_col]
-        title = row.get(title_column_name, '').strip()
         
-        if not title:
-            # Try again with another random row
-            row = random.choice(rows)
-            title = row.get(title_column_name, '').strip()
+        # Filter rows that meet the min_length criteria
+        if min_length > 0:
+            valid_rows = [
+                row for row in rows 
+                if len(row.get(title_column_name, '').strip()) >= min_length
+            ]
+            if not valid_rows:
+                return {
+                    'title': feed_title,
+                    'link': url,
+                    'description': f'No lines found with length >= {min_length}',
+                    'items': []
+                }
+            rows = valid_rows
+
+        # Randomly select one row from valid rows
+        row = random.choice(rows)
+        title = row.get(title_column_name, '').strip()
 
         # Build description from all columns except the title column
         description_parts = [title]  # Start with title
