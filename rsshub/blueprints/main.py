@@ -439,7 +439,8 @@ def random_line():
     from rsshub.spiders.randomline.randomline import ctx
     url = request.args.get('url', default='https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv', type=str)
     title_col = request.args.get('title_col', default=0, type=int)
-    return render_template('main/atom.xml', **filter_content(ctx(url, title_col)))
+    delimiter = request.args.get('delimiter')
+    return render_template('main/atom.xml', **filter_content(ctx(url, title_col, delimiter=delimiter)))
 
 
 @bp.route('/random_why')

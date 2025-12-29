@@ -7,7 +7,7 @@ from urllib.parse import quote, urlparse
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.extensions import cache
 
-def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0):
+def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None):
     
     try:
         # Extract filename from URL for feed title
@@ -74,6 +74,14 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                 'items': []
             }
         
+        # Determine delimiter
+        if delimiter and delimiter.lower() == 'tab':
+            delimiter_char = '\t'
+        elif delimiter:
+             delimiter_char = delimiter
+        else:
+            delimiter_char = ','
+
         # Use csv.reader first to check structure
         lines = content.splitlines()
         if len(lines) < 2:
@@ -86,7 +94,7 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         
         # Parse CSV with DictReader to get fieldnames
         csv_file = io.StringIO(content)
-        reader = csv.DictReader(csv_file)
+        reader = csv.DictReader(csv_file, delimiter=delimiter_char)
         fieldnames = reader.fieldnames
         
         if not fieldnames or len(fieldnames) < 1:
