@@ -77,6 +77,8 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         # Determine delimiter
         if delimiter and delimiter.lower() == 'tab':
             delimiter_char = '\t'
+        elif delimiter and delimiter.lower() == 'newline':
+             delimiter_char = '\n'
         elif delimiter:
              delimiter_char = delimiter
         else:
