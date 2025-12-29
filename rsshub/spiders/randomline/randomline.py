@@ -6,6 +6,7 @@ import os
 from urllib.parse import quote, urlparse
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.extensions import cache
+import trafilatura
 
 def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0):
     
@@ -35,6 +36,30 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                 print(f"DEBUG: Status Code: {response.status_code}")
                 response.raise_for_status()
                 content = response.text
+                
+                # Check if content needs extraction (HTML)
+                should_extract = False
+                content_type = response.headers.get('Content-Type', '').lower()
+                
+                # Determine if we should attempt extraction
+                # If explicit delimiter is CSV/TSV, probably don't extract unless user forces it (not handled here)
+                # If URL ends in .txt or .csv, assumption is raw data.
+                # If URL is generic web page, assume HTML.
+                ext = os.path.splitext(parsed_url.path)[1].lower()
+                if 'html' in content_type or ext not in ['.csv', '.txt', '.tsv', '.json']:
+                    should_extract = True
+                
+                if should_extract:
+                    extracted_text = trafilatura.extract(content)
+                    if extracted_text:
+                        print("DEBUG: Content extracted successfully via trafilatura")
+                        content = extracted_text
+                        # If we extracted text, we treat it as a newline-delimited file automatically
+                        if not delimiter:
+                            delimiter = 'newline'
+                    else:
+                        print("DEBUG: Trafilatura extraction returned None, using raw content")
+
                 cache.set(cache_key, content, timeout=3600)
             except Exception as e:
                 print(f"DEBUG: Request failed with default headers: {e}")
@@ -42,9 +67,26 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                 try:
                     print("DEBUG: Retrying with curl User-Agent...")
                     headers_curl = {'User-Agent': 'curl/7.68.0'}
+                    # ... (retry logic kept simple, but duplicating extraction logic here would be complex. 
+                    # For now, let's assume if retry is needed, it's just for fetching.)
                     response = requests.get(url, headers=headers_curl, timeout=30)
                     response.raise_for_status()
                     content = response.text
+                    
+                    # Same extraction logic for retry
+                    should_extract = False
+                    content_type = response.headers.get('Content-Type', '').lower()
+                    ext = os.path.splitext(parsed_url.path)[1].lower()
+                    if 'html' in content_type or ext not in ['.csv', '.txt', '.tsv', '.json']:
+                        should_extract = True
+                    
+                    if should_extract:
+                        extracted_text = trafilatura.extract(content)
+                        if extracted_text:
+                            content = extracted_text
+                            if not delimiter:
+                                delimiter = 'newline'
+
                     cache.set(cache_key, content, timeout=3600)
                     print("DEBUG: Retry successful!")
                 except Exception as e2:
