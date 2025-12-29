@@ -6,6 +6,7 @@ from flask.cli import with_appcontext
 from rsshub.config import config
 from rsshub.extensions import *
 from rsshub.blueprints.main import bp as main_bp
+from rsshub.blueprints.proxy import bp as proxy_bp
 from rsshub.utils import XMLResponse
 from rsshub.extensions import cache
 
@@ -51,6 +52,7 @@ def register_extensions(app):
 
 def register_blueprints(app):
     app.register_blueprint(main_bp)
+    app.register_blueprint(proxy_bp)
 
 
 def register_errors(app):
