@@ -95,32 +95,26 @@ def swr_cache(timeout=3600):
             if cached_data:
                 if not isinstance(cached_data, (tuple, list)):
                     print(f"[SWR] Warning: cached_data for {req_path} is not iterable: {type(cached_data)} value={cached_data!r}")
-                    # If it's corrupted (like an int), treat as cache miss
                     cache.delete(cache_key)
                 else:
                     try:
                         data, timestamp = cached_data
                         
-                        # Check if a refresh is already in progress or happened recently (Debounce)
                         lock_key = f"swr_lock:{key_hash}"
                         if not cache.get(lock_key):
                             print(f"[SWR] Triggering background refresh for {req_path}")
-                            # Set a lock for 60 seconds to prevent frequent refreshes
                             cache.set(lock_key, 1, timeout=60)
                             threading.Thread(target=refresh_cache, args=(app, req_path, req_query_string, cache_key, f, args, kwargs)).start()
                         else:
                             print(f"[SWR] Refresh locked/debounced for {req_path}")
                         
                         return data
-                    except ValueError as ve:
-                        print(f"[SWR] Unpacking failed for {req_path}: {ve}. cached_data={cached_data!r}")
+                    except Exception as e:
+                        print(f"[SWR] ERROR in decorated_function unpacking for {req_path}: {e}")
                         cache.delete(cache_key)
             
-            # Cache missing, fetch synchronously
             print(f"[SWR] Cache miss for {req_path}, fetching synchronously")
             result = f(*args, **kwargs)
-            # Save to cache with current timestamp. 
-            # We set a very long timeout for the underlying cache because we manage staleness manually.
             cache.set(cache_key, (result, arrow.now().timestamp()), timeout=timeout * 24 * 7) 
             return result
             
@@ -131,7 +125,9 @@ def refresh_cache(app, path, query_string, cache_key, func, args, kwargs):
     """Background task to refresh cache"""
     try:
         print(f"[SWR] Background refreshing {cache_key}")
-        # Use test_request_context to simulate a request context for functions that need it (like render_template or filter_content)
+        # Ensure query_string is a string, as bytes can cause unpacking errors in test_request_context
+        if isinstance(query_string, bytes):
+            query_string = query_string.decode('utf-8')
         with app.test_request_context(path=path, query_string=query_string):
             result = func(*args, **kwargs)
             cache.set(cache_key, (result, arrow.now().timestamp()), timeout=86400 * 7)
