@@ -219,11 +219,23 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         # Add original line number and source link
         # Format: from line XX of <a href>{file name}</a>
         # We use feed_title as the file name/source name
-        description += f'<br><br>from line {line_num} of <a href="{url}" target="_blank">{feed_title}</a>'
+        description += f'<br><br>来源：<a href="{url}" target="_blank">{filename}</a> 第{line_num}行'
         
         # Add ChatGPT search link
+        prompt_prefix = f"explain in plain and vivid English:"
         chatgpt_url = f"https://chatgpt.com/?hints=search&ref=ext&q={quote(title)}"
-        description += f'<br><br><a href="{chatgpt_url}" target="_blank">ChatGPT解读</a>'
+        chatgpt_url_en = f"https://chatgpt.com/?hints=search&ref=ext&q={quote(prompt_prefix + title)}"
+        google_url = f"https://www.google.com/search?q={quote(title)}"
+        google_url_en = f"https://www.google.com/search?q={quote(prompt_prefix + title)}"
+        xiaohongshu_url = f"https://www.xiaohongshu.com/search_result?keyword={quote(title)}"
+        felo_url = f"https://felo.ai/search?q={quote(title)}"
+        description += f'<br><br>解读：<a href="{chatgpt_url}" target="_blank">ChatGPT</a>'
+        description += f'、<a href="{chatgpt_url_en}" target="_blank">ChatGPT En</a>'
+        description += f'、<a href="{google_url}" target="_blank">Google</a>'
+        description += f'、<a href="{google_url_en}" target="_blank">Google En</a>'
+        description += f'、<a href="{xiaohongshu_url}" target="_blank">小红书</a>'
+        description += f'、<a href="{felo_url}" target="_blank">Felo</a>'
+        
 
             
         link = f"{url}?title={quote(title[:100])}"
