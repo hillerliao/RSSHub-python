@@ -93,19 +93,28 @@ def swr_cache(timeout=3600):
             req_query_string = request.query_string
             
             if cached_data:
-                data, timestamp = cached_data
-                
-                # Check if a refresh is already in progress or happened recently (Debounce)
-                lock_key = f"swr_lock:{key_hash}"
-                if not cache.get(lock_key):
-                    print(f"[SWR] Triggering background refresh for {req_path}")
-                    # Set a lock for 60 seconds to prevent frequent refreshes
-                    cache.set(lock_key, 1, timeout=60)
-                    threading.Thread(target=refresh_cache, args=(app, req_path, req_query_string, cache_key, f, args, kwargs)).start()
+                if not isinstance(cached_data, (tuple, list)):
+                    print(f"[SWR] Warning: cached_data for {req_path} is not iterable: {type(cached_data)} value={cached_data!r}")
+                    # If it's corrupted (like an int), treat as cache miss
+                    cache.delete(cache_key)
                 else:
-                    print(f"[SWR] Refresh locked/debounced for {req_path}")
-                
-                return data
+                    try:
+                        data, timestamp = cached_data
+                        
+                        # Check if a refresh is already in progress or happened recently (Debounce)
+                        lock_key = f"swr_lock:{key_hash}"
+                        if not cache.get(lock_key):
+                            print(f"[SWR] Triggering background refresh for {req_path}")
+                            # Set a lock for 60 seconds to prevent frequent refreshes
+                            cache.set(lock_key, 1, timeout=60)
+                            threading.Thread(target=refresh_cache, args=(app, req_path, req_query_string, cache_key, f, args, kwargs)).start()
+                        else:
+                            print(f"[SWR] Refresh locked/debounced for {req_path}")
+                        
+                        return data
+                    except ValueError as ve:
+                        print(f"[SWR] Unpacking failed for {req_path}: {ve}. cached_data={cached_data!r}")
+                        cache.delete(cache_key)
             
             # Cache missing, fetch synchronously
             print(f"[SWR] Cache miss for {req_path}, fetching synchronously")

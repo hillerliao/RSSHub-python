@@ -3,10 +3,83 @@ import csv
 import io
 import random
 import os
+import tempfile
+import ebooklib
+from ebooklib import epub
+import mobi
+from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.extensions import cache
 import trafilatura
+
+def extract_content(response, url):
+    parsed_url = urlparse(url)
+    ext = os.path.splitext(parsed_url.path)[1].lower()
+    content = None
+    delimiter = None
+    feed_title = None
+
+    if ext == '.epub':
+        print("DEBUG: Detected EPUB file, processing...")
+        with tempfile.NamedTemporaryFile(suffix='.epub', delete=True) as tmp:
+            tmp.write(response.content)
+            tmp.flush()
+            book = epub.read_epub(tmp.name)
+            extracted_parts = []
+            for item in book.get_items():
+                if item.get_type() == ebooklib.ITEM_DOCUMENT:
+                    soup = BeautifulSoup(item.get_content(), 'html.parser')
+                    extracted_parts.append(soup.get_text('\n', strip=True))
+            content = '\n'.join(extracted_parts)
+            delimiter = 'newline'
+    elif ext == '.mobi':
+        print("DEBUG: Detected MOBI file, processing...")
+        with tempfile.NamedTemporaryFile(suffix='.mobi', delete=True) as tmp:
+            tmp.write(response.content)
+            tmp.flush()
+            try:
+                # mobi.extract returns (tempdir, filepath) or raises
+                extraction_result = mobi.extract(tmp.name)
+                if isinstance(extraction_result, tuple) and len(extraction_result) == 2:
+                    tempdir, filepath = extraction_result
+                    try:
+                        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                        soup = BeautifulSoup(content, 'html.parser')
+                        content = soup.get_text('\n', strip=True)
+                        delimiter = 'newline'
+                    finally:
+                        import shutil
+                        if os.path.exists(tempdir):
+                            shutil.rmtree(tempdir)
+                else:
+                    print(f"DEBUG: mobi.extract returned unexpected value: {extraction_result}")
+                    content = response.text
+            except Exception as e:
+                print(f"DEBUG: MOBI extraction failed: {e}")
+                content = response.text
+    else:
+        content = response.text
+        should_extract = False
+        content_type = response.headers.get('Content-Type', '').lower()
+        if 'html' in content_type or ext not in ['.csv', '.txt', '.tsv', '.json']:
+            should_extract = True
+        
+        if should_extract:
+            extracted_text = trafilatura.extract(content)
+            if extracted_text:
+                print("DEBUG: Content extracted successfully via trafilatura")
+                try:
+                    metadata = trafilatura.extract_metadata(content)
+                    if metadata and metadata.title:
+                        feed_title = metadata.title
+                except Exception as e:
+                    print(f"DEBUG: Failed to extract metadata: {e}")
+                content = extracted_text
+                delimiter = 'newline'
+    
+    return content, delimiter, feed_title
 
 def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0):
     
@@ -14,102 +87,39 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         # Extract filename from URL for feed title
         parsed_url = urlparse(url)
         filename = os.path.basename(parsed_url.path)
-        # Remove extension if present
         if '.' in filename:
             filename = filename.rsplit('.', 1)[0]
-        # Convert filename to uppercase
         filename = filename.upper()
-        # Use filename as feed title
         feed_title = f'{filename} CSV Feed'
         
-        # Check cache first with URL-based cache key
-        cache_key = f'randomline_csv_content:{url}'  # Dynamic cache key based on URL
+        cache_key = f'randomline_csv_content:{url}'
         content = cache.get(cache_key)
         
         if not content:
-            # Use direct request with proper timeout if cache miss
+            url = url.strip()
+            print(f"DEBUG: Fetching URL: {url!r}")
             try:
-                # Ensure URL is clean
-                url = url.strip()
-                print(f"DEBUG: Fetching URL: {url!r}")
                 response = requests.get(url, headers=DEFAULT_HEADERS, timeout=30)
-                print(f"DEBUG: Status Code: {response.status_code}")
                 response.raise_for_status()
-                content = response.text
-                
-                # Check if content needs extraction (HTML)
-                should_extract = False
-                content_type = response.headers.get('Content-Type', '').lower()
-                
-                # Determine if we should attempt extraction
-                # If explicit delimiter is CSV/TSV, probably don't extract unless user forces it (not handled here)
-                # If URL ends in .txt or .csv, assumption is raw data.
-                # If URL is generic web page, assume HTML.
-                ext = os.path.splitext(parsed_url.path)[1].lower()
-                if 'html' in content_type or ext not in ['.csv', '.txt', '.tsv', '.json']:
-                    should_extract = True
-                
-                if should_extract:
-                    extracted_text = trafilatura.extract(content)
-                    if extracted_text:
-                        print("DEBUG: Content extracted successfully via trafilatura")
-                        # Try to extract metadata for title
-                        try:
-                            metadata = trafilatura.extract_metadata(content)
-                            if metadata and metadata.title:
-                                feed_title = metadata.title
-                        except Exception as e:
-                            print(f"DEBUG: Failed to extract metadata: {e}")
-
-                        content = extracted_text
-                        # If we extracted text, we treat it as a newline-delimited file automatically
-                        if not delimiter:
-                            delimiter = 'newline'
-                    else:
-                        print("DEBUG: Trafilatura extraction returned None, using raw content")
-
-                cache.set(cache_key, content, timeout=3600)
+                content, extracted_delimiter, extracted_title = extract_content(response, url)
+                if extracted_delimiter:
+                    delimiter = extracted_delimiter
+                if extracted_title:
+                    feed_title = extracted_title
             except Exception as e:
-                print(f"DEBUG: Request failed with default headers: {e}")
-                # Retry with curl User-Agent to mimic successful CLI command
-                try:
-                    print("DEBUG: Retrying with curl User-Agent...")
-                    headers_curl = {'User-Agent': 'curl/7.68.0'}
-                    # ... (retry logic kept simple, but duplicating extraction logic here would be complex. 
-                    # For now, let's assume if retry is needed, it's just for fetching.)
-                    response = requests.get(url, headers=headers_curl, timeout=30)
-                    response.raise_for_status()
-                    content = response.text
-                    
-                    # Same extraction logic for retry
-                    should_extract = False
-                    content_type = response.headers.get('Content-Type', '').lower()
-                    ext = os.path.splitext(parsed_url.path)[1].lower()
-                    if 'html' in content_type or ext not in ['.csv', '.txt', '.tsv', '.json']:
-                        should_extract = True
-                    
-                    if should_extract:
-                        extracted_text = trafilatura.extract(content)
-                        if extracted_text:
-                            # Try to extract metadata for title
-                            try:
-                                metadata = trafilatura.extract_metadata(content)
-                                if metadata and metadata.title:
-                                    feed_title = metadata.title
-                            except Exception as e:
-                                print(f"DEBUG: Failed to extract metadata: {e}")
+                print(f"DEBUG: Request failed with default headers: {e}, retrying with curl...")
+                headers_curl = {'User-Agent': 'curl/7.68.0'}
+                response = requests.get(url, headers=headers_curl, timeout=30)
+                response.raise_for_status()
+                content, extracted_delimiter, extracted_title = extract_content(response, url)
+                if extracted_delimiter:
+                    delimiter = extracted_delimiter
+                if extracted_title:
+                    feed_title = extracted_title
 
-                            content = extracted_text
-                            if not delimiter:
-                                delimiter = 'newline'
+            if content:
+                cache.set(cache_key, content, timeout=3600)
 
-                    cache.set(cache_key, content, timeout=3600)
-                    print("DEBUG: Retry successful!")
-                except Exception as e2:
-                    print(f"DEBUG: Retry failed: {e2}")
-                    if 'response' in locals():
-                        print(f"DEBUG: Response text: {response.text[:200]}")
-                    raise e
     except Exception as e:
         import sys
         print(f"DEBUG: Randomline error: {e}", file=sys.stderr)
@@ -200,7 +210,16 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             indexed_rows = valid_rows
 
         # Randomly select one row from valid rows
-        line_num, row = random.choice(indexed_rows)
+        selected_item = random.choice(indexed_rows)
+        if not (isinstance(selected_item, tuple) and len(selected_item) == 2):
+            return {
+                'title': feed_title,
+                'link': url,
+                'description': f'Internal error: selected row is not a valid tuple: {type(selected_item)}',
+                'items': []
+            }
+            
+        line_num, row = selected_item
         title = row.get(title_column_name, '').strip()
 
         # Build description from all columns except the title column
