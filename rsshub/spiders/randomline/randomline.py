@@ -53,6 +53,14 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                     extracted_text = trafilatura.extract(content)
                     if extracted_text:
                         print("DEBUG: Content extracted successfully via trafilatura")
+                        # Try to extract metadata for title
+                        try:
+                            metadata = trafilatura.extract_metadata(content)
+                            if metadata and metadata.title:
+                                feed_title = metadata.title
+                        except Exception as e:
+                            print(f"DEBUG: Failed to extract metadata: {e}")
+
                         content = extracted_text
                         # If we extracted text, we treat it as a newline-delimited file automatically
                         if not delimiter:
@@ -83,6 +91,14 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                     if should_extract:
                         extracted_text = trafilatura.extract(content)
                         if extracted_text:
+                            # Try to extract metadata for title
+                            try:
+                                metadata = trafilatura.extract_metadata(content)
+                                if metadata and metadata.title:
+                                    feed_title = metadata.title
+                            except Exception as e:
+                                print(f"DEBUG: Failed to extract metadata: {e}")
+
                             content = extracted_text
                             if not delimiter:
                                 delimiter = 'newline'
@@ -149,15 +165,18 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                 'items': []
             }
         
-        # Get all rows
-        rows = list(reader)
-        if not rows:
+        # Get all rows with original line numbers (header is line 1, so indices start at line 2)
+        # Store as (line_number, row_dict)
+        all_rows = list(reader)
+        if not all_rows:
             return {
                 'title': feed_title,
                 'link': url,
                 'description': 'No valid rows found in CSV',
                 'items': []
             }
+            
+        indexed_rows = [(i + 2, row) for i, row in enumerate(all_rows)]
 
         # Validate title_col is within range
         if title_col < 0 or title_col >= len(fieldnames):
@@ -168,7 +187,7 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         # Filter rows that meet the min_length criteria
         if min_length > 0:
             valid_rows = [
-                row for row in rows 
+                (ln, row) for ln, row in indexed_rows
                 if len(row.get(title_column_name, '').strip()) >= min_length
             ]
             if not valid_rows:
@@ -178,10 +197,10 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                     'description': f'No lines found with length >= {min_length}',
                     'items': []
                 }
-            rows = valid_rows
+            indexed_rows = valid_rows
 
         # Randomly select one row from valid rows
-        row = random.choice(rows)
+        line_num, row = random.choice(indexed_rows)
         title = row.get(title_column_name, '').strip()
 
         # Build description from all columns except the title column
@@ -196,6 +215,15 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         description = '<br>'.join(description_parts)  # Join with HTML line break
         if len(description) == len(title):  # If no other columns added
             description = title  # Just use title as description
+        
+        # Add ChatGPT search link
+        chatgpt_url = f"https://chatgpt.com/?hints=search&ref=ext&q={quote(title)}"
+        description += f'<br><a href="{chatgpt_url}" target="_blank">ChatGPT解读</a>'
+
+        # Add original line number and source link
+        # Format: from line XX of <a href>{file name}</a>
+        # We use feed_title as the file name/source name
+        description += f'<br><br>from line {line_num} of <a href="{url}" target="_blank">{feed_title}</a>'
             
         link = f"{url}?title={quote(title[:100])}"
 
