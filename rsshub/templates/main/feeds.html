@@ -238,11 +238,13 @@
                 <p class="card-text">路由：<code>/randomline</code></p>
                 <p class="card-text">参数：</p>
                 <ul>
-                        <li><code>url</code> Optional，自定义文件URL，可以是CSV/TXT文件，或者是普通网页（会自动提取正文），默认使用GitHub上的RAZ数据</li>
-                        <li><code>title_col</code> Optional，指定作为标题的列索引（从0开始），默认使用第一列</li>
+                        <li><code>url</code> Optional，自定义文件URL，可以是CSV/TXT文件，或者是普通网页（会自动提取正文），默认使用GitHub上的<a
+                                        href="https://github.com/HenryLoveMiller/ja/blob/main/raz.csv"
+                                        target="_blank">RAZ数据</a>。</li>
+                        <li><code>title_col</code> Optional，指定作为标题的列索引（从0开始），默认使用第一列。</li>
                         <li><code>delimiter</code> Optional，指定分隔符（如 <code>tab</code> 表示制表符，<code>newline</code>
-                                表示换行符，<code>;</code> 表示分号），默认为逗号</li>
-                        <li><code>min_length</code> Optional，最小长度限制，只有当标题长度大于等于该值时才会被选中，默认为0</li>
+                                表示换行符，<code>;</code> 表示分号），默认为逗号。</li>
+                        <li><code>min_length</code> Optional，最小长度限制，只有当标题长度大于等于该值时才会被选中，默认为0。</li>
                 </ul>
                 <p class="card-text">功能：从文件或网页中随机选择一行（或一段）生成RSS项。如果是网页，会自动提取正文内容并按换行符分割。举例：
                         <a href="https://pyrsshub.vercel.app/randomline?min_length=50&url=https://www.gushiwen.cn/guwen/bookv_c89d8eda4c2d.aspx"
