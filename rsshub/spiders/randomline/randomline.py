@@ -216,14 +216,15 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         if len(description) == len(title):  # If no other columns added
             description = title  # Just use title as description
         
-        # Add ChatGPT search link
-        chatgpt_url = f"https://chatgpt.com/?hints=search&ref=ext&q={quote(title)}"
-        description += f'<br><a href="{chatgpt_url}" target="_blank">ChatGPT解读</a>'
-
         # Add original line number and source link
         # Format: from line XX of <a href>{file name}</a>
         # We use feed_title as the file name/source name
         description += f'<br><br>from line {line_num} of <a href="{url}" target="_blank">{feed_title}</a>'
+        
+        # Add ChatGPT search link
+        chatgpt_url = f"https://chatgpt.com/?hints=search&ref=ext&q={quote(title)}"
+        description += f'<br><br><a href="{chatgpt_url}" target="_blank">ChatGPT解读</a>'
+
             
         link = f"{url}?title={quote(title[:100])}"
 
