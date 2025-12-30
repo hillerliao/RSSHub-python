@@ -230,8 +230,8 @@
                 <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/randomline"
                                 target="_blank">https://pyrsshub.vercel.app/randomline</a></p>
                 <p class="card-text">自定义CSV：<a
-                                href="https://pyrsshub.vercel.app/randomline?url=https://example.com/data.csv"
-                                target="_blank">https://pyrsshub.vercel.app/randomline?url=https://example.com/data.csv</a>
+                                href="https://pyrsshub.vercel.app/randomline?url=https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/cai-gen-tan.csv"
+                                target="_blank">https://pyrsshub.vercel.app/randomline?url=https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/cai-gen-tan.csv</a>
                 </p>
                 <p class="card-text">指定标题列：<a href="https://pyrsshub.vercel.app/randomline?title_col=1"
                                 target="_blank">https://pyrsshub.vercel.app/randomline?title_col=1</a></p>
@@ -244,7 +244,10 @@
                                 表示换行符，<code>;</code> 表示分号），默认为逗号</li>
                         <li><code>min_length</code> Optional，最小长度限制，只有当标题长度大于等于该值时才会被选中，默认为0</li>
                 </ul>
-                <p class="card-text">功能：从文件或网页中随机选择一行（或一段）生成RSS项。如果是网页，会自动提取正文内容并按换行符分割。</p>
+                <p class="card-text">功能：从文件或网页中随机选择一行（或一段）生成RSS项。如果是网页，会自动提取正文内容并按换行符分割。举例：
+                        <a href="https://pyrsshub.vercel.app/randomline?min_length=50&url=https://www.gushiwen.cn/guwen/bookv_c89d8eda4c2d.aspx"
+                                target="_blank">https://pyrsshub.vercel.app/randomline?min_length=50&url=https://www.gushiwen.cn/guwen/bookv_c89d8eda4c2d.aspx</a>
+                </p>
                 <p class="card-text">特点：支持任意CSV/TSV/TXT及普通网页，支持自定义分隔符，自动识别表头，支持正文提取，使用SWR缓存策略</p>
         </div>
 </div>
