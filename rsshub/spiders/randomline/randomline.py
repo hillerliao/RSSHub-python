@@ -83,14 +83,16 @@ def extract_content(response, url):
 
 def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0):
     
+    feed_title = "Random Line Feed"
     try:
         # Extract filename from URL for feed title
         parsed_url = urlparse(url)
         filename = os.path.basename(parsed_url.path)
+        filetype = ''
         if '.' in filename:
-            filename = filename.rsplit('.', 1)[0]
+            filename, filetype = filename.rsplit('.', 1)
         filename = filename.upper()
-        feed_title = f'{filename} CSV Feed'
+        feed_title = f'{filename} {filetype.upper()} Feed'.strip()
         
         cache_key = f'randomline_csv_content:{url}'
         content = cache.get(cache_key)
