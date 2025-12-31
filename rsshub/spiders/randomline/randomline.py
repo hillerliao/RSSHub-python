@@ -132,10 +132,8 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             'items': []
         }
 
-    # Parse CSV
+    # Parse content
     try:
-        # Clean the content to handle any potential issues
-        content = content.strip()
         if not content:
             return {
                 'title': feed_title,
@@ -145,56 +143,78 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             }
         
         # Determine delimiter
+        is_newline_delimiter = False
         if delimiter and delimiter.lower() == 'tab':
             delimiter_char = '\t'
         elif delimiter and delimiter.lower() == 'newline':
              delimiter_char = '\n'
+             is_newline_delimiter = True
         elif delimiter:
              delimiter_char = delimiter
         else:
             delimiter_char = ','
 
-        # Use csv.reader first to check structure
-        lines = content.splitlines()
-        if len(lines) < 2:
-            return {
-                'title': feed_title,
-                'link': url,
-                'description': 'Insufficient data in CSV',
-                'items': []
-            }
+        # Split into original lines to track indices accurately
+        # Use splitlines() but be aware it might behave differently on different OS
+        # Using io.StringIO to let csv module handle line endings if it was a file
         
-        # Parse CSV with DictReader to get fieldnames
-        csv_file = io.StringIO(content)
-        reader = csv.DictReader(csv_file, delimiter=delimiter_char)
-        fieldnames = reader.fieldnames
+        indexed_rows = []
+        fieldnames = []
         
-        if not fieldnames or len(fieldnames) < 1:
-            return {
-                'title': feed_title,
-                'link': url,
-                'description': 'No header found in CSV',
-                'items': []
-            }
-        
-        # Get all rows with original line numbers (header is line 1, so indices start at line 2)
-        # Store as (line_number, row_dict)
-        all_rows = list(reader)
-        if not all_rows:
-            return {
-                'title': feed_title,
-                'link': url,
-                'description': 'No valid rows found in CSV',
-                'items': []
-            }
+        if is_newline_delimiter:
+             # For newline, every line is a record, no header
+             lines = content.splitlines()
+             for i, line in enumerate(lines, 1):
+                 if line.strip():
+                     indexed_rows.append((i, {'line_content': line.strip()}))
+             fieldnames = ['line_content']
+             title_column_name = 'line_content'
+        else:
+            # For CSV/TSV, we use DictReader but track the actual line number
+            # DictReader doesn't expose line numbers of the original file easily if we just pass a string
+            # We skip empty lines manually to find the header
+            csv_file = io.StringIO(content)
+            reader = csv.reader(csv_file, delimiter=delimiter_char)
             
-        indexed_rows = [(i + 2, row) for i, row in enumerate(all_rows)]
+            header_found = False
+            for row_idx, row in enumerate(reader, 1):
+                if not header_found:
+                    if any(cell.strip() for cell in row):
+                        fieldnames = row
+                        header_found = True
+                        # We don't add the header as a data row
+                    continue
+                
+                # It's a data row
+                if not any(cell.strip() for cell in row):
+                    continue
+                
+                # Map row to dict
+                row_dict = {}
+                for i, field in enumerate(fieldnames):
+                    if i < len(row):
+                        row_dict[field] = row[i]
+                    else:
+                        row_dict[field] = ""
+                
+                indexed_rows.append((row_idx, row_dict))
+
+        if not indexed_rows:
+            msg = 'No valid data rows found'
+            if is_newline_delimiter:
+                 msg = 'No non-empty lines found'
+            return {
+                'title': feed_title,
+                'link': url,
+                'description': msg,
+                'items': []
+            }
 
         # Validate title_col is within range
-        if title_col < 0 or title_col >= len(fieldnames):
-            title_col = 0
-            
-        title_column_name = fieldnames[title_col]
+        if not is_newline_delimiter:
+            if title_col < 0 or title_col >= len(fieldnames):
+                title_col = 0
+            title_column_name = fieldnames[title_col]
         
         # Filter rows that meet the min_length criteria
         if min_length > 0:
@@ -213,33 +233,23 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
 
         # Randomly select one row from valid rows
         selected_item = random.choice(indexed_rows)
-        if not (isinstance(selected_item, tuple) and len(selected_item) == 2):
-            return {
-                'title': feed_title,
-                'link': url,
-                'description': f'Internal error: selected row is not a valid tuple: {type(selected_item)}',
-                'items': []
-            }
-            
         line_num, row = selected_item
         title = row.get(title_column_name, '').strip()
 
-        # Build description from all columns except the title column
-        description_parts = [title]  # Start with title
-        for i, fieldname in enumerate(fieldnames):
-            if i == title_col:  # Skip the title column
-                continue
-            value = row.get(fieldname, '').strip()
-            if value:  # Only add non-empty values
-                description_parts.append(f"{fieldname}: {value}")
-        
-        description = '<br>'.join(description_parts)  # Join with HTML line break
-        if len(description) == len(title):  # If no other columns added
-            description = title  # Just use title as description
+        # Build description
+        if is_newline_delimiter:
+            description = title
+        else:
+            description_parts = [title]
+            for i, fieldname in enumerate(fieldnames):
+                if i == title_col:
+                    continue
+                value = row.get(fieldname, '').strip()
+                if value:
+                    description_parts.append(f"{fieldname}: {value}")
+            description = '<br>'.join(description_parts)
         
         # Add original line number and source link
-        # Format: from line XX of <a href>{file name}</a>
-        # We use feed_title as the file name/source name
         description += f'<br><br>来源：<a href="{url}" target="_blank">{filename}</a> 第{line_num}行'
         
         # Add ChatGPT search link
