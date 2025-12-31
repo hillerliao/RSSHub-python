@@ -11,7 +11,7 @@ dependencies = [
     "click==8.1.7",
     "cssselect==1.2.0",
     "feedparser==6.0.8",
-    "Flask==3.0.0",
+    "Flask==2.2.5",
     "Flask-Moment==1.0.2",
     "gunicorn",
     "Werkzeug==3.0.0",
