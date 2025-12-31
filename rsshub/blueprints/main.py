@@ -444,10 +444,12 @@ def random_line():
     return render_template('main/atom.xml', **filter_content(ctx(url, title_col, delimiter=delimiter, min_length=min_length)))
 
 
-@bp.route('/random_why')
+@bp.route('/hf_dataset')
 @swr_cache(timeout=1800)  # 30分钟缓存，使用SWR策略
-def random_why():
-    from rsshub.spiders.random_why.random_why import ctx
+def hf_dataset():
+    from rsshub.spiders.hf_dataset.hf_dataset import ctx
     dataset_name = request.args.get('dataset', default='Mxode/I_Wonder_Why-Chinese', type=str)
-    return render_template('main/atom.xml', **filter_content(ctx(dataset_name)))
+    title_col = request.args.get('title_col')
+    content_col = request.args.get('content_col')
+    return render_template('main/atom.xml', **filter_content(ctx(dataset_name, title_col=title_col, content_col=content_col)))
 

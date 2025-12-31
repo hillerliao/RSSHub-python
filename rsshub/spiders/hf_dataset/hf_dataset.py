@@ -1,17 +1,19 @@
-
 import random
 import requests
 from rsshub.extensions import cache
 
-def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese"):
+def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese", title_col=None, content_col=None):
     # Extract project name from dataset_name (format: "username/project_name")
     project_name = dataset_name.split("/")[-1] if "/" in dataset_name else dataset_name
-    feed_title = f"{project_name.upper()} Random Question"
+    feed_title = f"{project_name.upper()} Random Dataset"
     feed_link = f"https://huggingface.co/datasets/{dataset_name}"
     
     try:
         # Check cache first
-        cache_key = f'random_why_content:{dataset_name}'
+        cache_key = f'hf_dataset_content:{dataset_name}'
+        if title_col or content_col:
+             cache_key += f":{title_col}:{content_col}"
+             
         random_item = cache.get(cache_key)
         
         if not random_item:
@@ -95,15 +97,21 @@ def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese"):
                 random_item['_index'] = idx
                 random_item['_config'] = config
                 
-                # Map fields if needed
-                # Questions/Prompts
+                # Map fields
+                if title_col and title_col in random_item:
+                    random_item['question'] = str(random_item[title_col])
+                
+                if content_col and content_col in random_item:
+                    random_item['answer'] = str(random_item[content_col])
+
+                # Questions/Prompts Heuristics
                 if 'question' not in random_item:
                     for k in ['prompt', 'instruction', 'context', 'title', 'input']:
                         if k in random_item and random_item[k]:
                             random_item['question'] = str(random_item[k])
                             break
                 
-                # Answers/Responses
+                # Answers/Responses Heuristics
                 if 'answer' not in random_item:
                     for k in ['response', 'content', 'output', 'answer_text']:
                         if k in random_item and random_item[k]:
@@ -111,9 +119,11 @@ def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese"):
                             break
                 
                 # Special case for poetry: title + author -> question, content -> answer
-                if 'title' in random_item and 'author' in random_item:
-                    q = f"《{random_item['title']}》 - {random_item['author']}"
-                    random_item['question'] = q
+                # Only if not explicitly directed to other columns
+                if not (title_col or content_col):
+                    if 'title' in random_item and 'author' in random_item:
+                        q = f"《{random_item['title']}》 - {random_item['author']}"
+                        random_item['question'] = q
 
             except Exception as api_e:
                 import traceback
@@ -158,7 +168,7 @@ def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese"):
         return {
             'title': feed_title,
             'link': feed_link,
-            'description': f'Random question and answer from {project_name} dataset',
+            'description': f'Random item from {project_name} dataset',
             'items': [item]
         }
     

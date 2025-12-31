@@ -250,7 +250,7 @@
                         <a href="https://pyrsshub.vercel.app/randomline?min_length=50&url=https://www.gushiwen.cn/guwen/bookv_c89d8eda4c2d.aspx"
                                 target="_blank">https://pyrsshub.vercel.app/randomline?min_length=50&url=https://www.gushiwen.cn/guwen/bookv_c89d8eda4c2d.aspx</a>
                 </p>
-                <p class="card-text">特点：支持任意CSV/TSV/TXT及普通网页，支持自定义分隔符，自动识别表头，支持正文提取，使用SWR缓存策略</p>
+                <p class="card-text">特点：支持任意 CSV/TSV/TXT/EPUB/MOBI 及普通网页，支持自定义分隔符，自动识别表头，支持正文提取，使用 SWR 缓存策略</p>
         </div>
 </div>
 <br>
@@ -259,24 +259,26 @@
 <!--item info start-->
 <div class="card text-left">
         <div class="card-body">
-                <h4 class="card-title">Random Why Chinese</h4>
-                <h6 class="text-muted">随机问答生成 <a href="https://github.com/hillerliao" target="_blank"
+                <h4 class="card-title">HF Dataset</h4>
+                <h6 class="text-muted">随机数据集生成 <a href="https://github.com/hillerliao" target="_blank"
                                 class="badge badge-secondary">by hillerliao</a></h6>
-                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/random_why"
-                                target="_blank">https://pyrsshub.vercel.app/random_why</a></p>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/hf_dataset"
+                                target="_blank">https://pyrsshub.vercel.app/hf_dataset</a></p>
                 <p class="card-text">自定义数据集：<a
-                                href="https://pyrsshub.vercel.app/random_why?dataset=Mxode/I_Wonder_Why-Chinese"
-                                target="_blank">https://pyrsshub.vercel.app/random_why?dataset=Mxode/I_Wonder_Why-Chinese</a>
+                                href="https://pyrsshub.vercel.app/hf_dataset?dataset=Mxode/I_Wonder_Why-Chinese"
+                                target="_blank">https://pyrsshub.vercel.app/hf_dataset?dataset=Mxode/I_Wonder_Why-Chinese</a>
                 </p>
-                <p class="card-text">路由：<code>/random_why</code></p>
+                <p class="card-text">路由：<code>/hf_dataset</code></p>
                 <p class="card-text">参数：</p>
                 <ul>
-                        <li><code>dataset</code> Optional，自定义Hugging Face数据集名称，默认使用<a
+                        <li><code>dataset</code> Optional，自定义 Hugging Face 数据集名称，默认使用 <a
                                         href="https://huggingface.co/datasets/Mxode/I_Wonder_Why-Chinese/tree/main">Mxode/I_Wonder_Why-Chinese</a>
                         </li>
+                        <li><code>title_col</code> Optional，指定作为标题的列名。</li>
+                        <li><code>content_col</code> Optional，指定作为内容的列名。</li>
                 </ul>
-                <p class="card-text">功能：从指定的Hugging Face数据集获取随机一条问答内容生成RSS项</p>
-                <p class="card-text">特点：使用SWR缓存策略，支持自定义数据集，默认使用中文科普问答数据集</p>
+                <p class="card-text">功能：从指定的 Hugging Face 数据集中随机抓取一条数据生成 RSS。支持多种格式（Parquet/CSV/JSONL），具备自动字段映射能力。</p>
+                <p class="card-text">特点：使用 SWR 缓存策略，支持自定义数据集，支持自定义列映射，支持大多数已索引的数据集</p>
         </div>
 </div>
 <br>
