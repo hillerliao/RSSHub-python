@@ -42,10 +42,10 @@ def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese"):
                     elif available_configs:
                         config = available_configs[0]
                     else:
-                         return {
+                        return {
                             'title': feed_title,
                             'link': feed_link,
-                            'description': 'Error: No configurations found for dataset',
+                            'description': 'Error: No configurations found. This dataset might not be indexed by Hugging Face Datasets Server (it needs to be in a supported format like Parquet, CSV, or standard JSONL).',
                             'items': []
                         }
                 else:
@@ -95,11 +95,25 @@ def ctx(dataset_name="Mxode/I_Wonder_Why-Chinese"):
                 random_item['_index'] = idx
                 random_item['_config'] = config
                 
-                # Map fields if needed (prompt/response -> question/answer)
-                if 'prompt' in random_item and 'question' not in random_item:
-                    random_item['question'] = random_item['prompt']
-                if 'response' in random_item and 'answer' not in random_item:
-                    random_item['answer'] = random_item['response']
+                # Map fields if needed
+                # Questions/Prompts
+                if 'question' not in random_item:
+                    for k in ['prompt', 'instruction', 'context', 'title', 'input']:
+                        if k in random_item and random_item[k]:
+                            random_item['question'] = str(random_item[k])
+                            break
+                
+                # Answers/Responses
+                if 'answer' not in random_item:
+                    for k in ['response', 'content', 'output', 'answer_text']:
+                        if k in random_item and random_item[k]:
+                            random_item['answer'] = str(random_item[k])
+                            break
+                
+                # Special case for poetry: title + author -> question, content -> answer
+                if 'title' in random_item and 'author' in random_item:
+                    q = f"《{random_item['title']}》 - {random_item['author']}"
+                    random_item['question'] = q
 
             except Exception as api_e:
                 import traceback

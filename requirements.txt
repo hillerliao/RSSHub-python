@@ -23,3 +23,5 @@ Requests==2.32.5
 setuptools==80.9.0
 undetected_chromedriver==3.5.5
 trafilatura
+EbookLib>=0.17.1
+mobi>=0.3.3
