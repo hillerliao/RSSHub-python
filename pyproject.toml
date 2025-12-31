@@ -26,6 +26,7 @@ dependencies = [
     "trafilatura>=2.0.0",
     "EbookLib>=0.17.1",
     "mobi>=0.3.3",
+    "pymupdf>=1.25.0",
 ]
 
 [project.optional-dependencies]

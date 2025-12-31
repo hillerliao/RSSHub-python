@@ -25,3 +25,4 @@ undetected_chromedriver==3.5.5
 trafilatura
 EbookLib>=0.17.1
 mobi>=0.3.3
+pymupdf>=1.25.0

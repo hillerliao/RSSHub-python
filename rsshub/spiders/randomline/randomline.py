@@ -12,6 +12,7 @@ from urllib.parse import quote, urlparse
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.extensions import cache
 import trafilatura
+import fitz
 
 def extract_content(response, url):
     parsed_url = urlparse(url)
@@ -59,6 +60,46 @@ def extract_content(response, url):
             except Exception as e:
                 print(f"DEBUG: MOBI extraction failed: {e}")
                 content = response.text
+    elif ext == '.pdf':
+        print("DEBUG: Detected PDF file, processing...")
+        try:
+            with tempfile.NamedTemporaryFile(suffix='.pdf', delete=True) as tmp:
+                tmp.write(response.content)
+                tmp.flush()
+                doc = fitz.open(tmp.name)
+                extracted_parts = []
+                for page in doc:
+                    text = page.get_text()
+                    if text:
+                        extracted_parts.append(text)
+                doc.close()
+                content_all = '\n'.join(extracted_parts)
+                
+                # Heuristic to rejoin lines into paragraphs
+                # 1. Standardize line endings
+                content_all = content_all.replace('\r\n', '\n').replace('\r', '\n')
+                
+                # 2. Identify paragraphs by double (or more) newlines
+                paragraphs = []
+                current_paragraph = []
+                
+                for line in content_all.split('\n'):
+                    stripped = line.strip()
+                    if not stripped:
+                        if current_paragraph:
+                            paragraphs.append(' '.join(current_paragraph))
+                            current_paragraph = []
+                        continue
+                    current_paragraph.append(stripped)
+                
+                if current_paragraph:
+                    paragraphs.append(' '.join(current_paragraph))
+                
+                content = '\n'.join(paragraphs)
+                delimiter = 'newline'
+        except Exception as e:
+            print(f"DEBUG: PDF extraction failed: {e}")
+            content = response.text
     else:
         content = response.text
         should_extract = False

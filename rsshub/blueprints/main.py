@@ -434,7 +434,7 @@ def randomword(category='sentence'):
 
 
 @bp.route('/randomline')
-@swr_cache(timeout=1800)  # 30分钟缓存，使用SWR策略
+@swr_cache(timeout=21600)  # 6小时缓存，使用SWR策略
 def random_line():
     from rsshub.spiders.randomline.randomline import ctx
     url = request.args.get('url', default='https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv', type=str)
