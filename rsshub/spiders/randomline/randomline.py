@@ -14,6 +14,21 @@ from rsshub.extensions import cache
 import trafilatura
 import fitz
 
+def _extract_semantic_text(html_content):
+    """Extract text from semantic tags like p, li, and headings."""
+    soup = BeautifulSoup(html_content, 'html.parser')
+    tags = ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+    extracted = []
+    for tag in soup.find_all(tags):
+        text = tag.get_text(strip=True)
+        if text:
+            extracted.append(text)
+    
+    # Fallback if no semantic tags found
+    if not extracted:
+        return soup.get_text('\n', strip=True)
+    return '\n'.join(extracted)
+
 def extract_content(response, url):
     parsed_url = urlparse(url)
     ext = os.path.splitext(parsed_url.path)[1].lower()
@@ -30,8 +45,7 @@ def extract_content(response, url):
             extracted_parts = []
             for item in book.get_items():
                 if item.get_type() == ebooklib.ITEM_DOCUMENT:
-                    soup = BeautifulSoup(item.get_content(), 'html.parser')
-                    extracted_parts.append(soup.get_text('\n', strip=True))
+                    extracted_parts.append(_extract_semantic_text(item.get_content()))
             content = '\n'.join(extracted_parts)
             delimiter = 'newline'
     elif ext == '.mobi':
@@ -46,9 +60,8 @@ def extract_content(response, url):
                     tempdir, filepath = extraction_result
                     try:
                         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-                            content = f.read()
-                        soup = BeautifulSoup(content, 'html.parser')
-                        content = soup.get_text('\n', strip=True)
+                            html_content = f.read()
+                        content = _extract_semantic_text(html_content)
                         delimiter = 'newline'
                     finally:
                         import shutil
@@ -108,9 +121,10 @@ def extract_content(response, url):
             should_extract = True
         
         if should_extract:
-            extracted_text = trafilatura.extract(content)
+            # Try to preserve basic formatting (lists, bold, etc.) via HTML output
+            extracted_text = trafilatura.extract(content, output_format='html', include_comments=False)
             if extracted_text:
-                print("DEBUG: Content extracted successfully via trafilatura")
+                print("DEBUG: Content extracted successfully via trafilatura (HTML mode)")
                 try:
                     metadata = trafilatura.extract_metadata(content)
                     if metadata and metadata.title:
@@ -214,11 +228,17 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         if is_newline_delimiter:
              # Normalize content to use \n for split
              content = content.replace('\r\n', '\n').replace('\r', '\n')
+             
+             current_line = 1
+             delimiter_lines = delimiter_char.count('\n')
              # Split into blocks based on delimiter
              blocks = content.split(delimiter_char)
-             for i, block in enumerate(blocks, 1):
+             for block in blocks:
                  if block.strip():
-                     indexed_rows.append((i, {'line_content': block.strip()}))
+                     indexed_rows.append((current_line, {'line_content': block.strip()}))
+                 # Update line count: lines in current block + lines in the delimiter that follows
+                 current_line += block.count('\n') + delimiter_lines
+             
              fieldnames = ['line_content']
              title_column_name = 'line_content'
         else:
@@ -290,15 +310,18 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
 
         # Build description
         if is_newline_delimiter:
-            description = title
+            # Preserve internal formatting by converting newlines to <br>
+            description = title.replace('\n', '<br>')
         else:
-            description_parts = [title]
+            # For tabular data, preserve newlines in values as well
+            description_parts = [title.replace('\n', '<br>')]
             for i, fieldname in enumerate(fieldnames):
                 if i == title_col:
                     continue
                 value = row.get(fieldname, '').strip()
                 if value:
-                    description_parts.append(f"{fieldname}: {value}")
+                    value_formatted = value.replace('\n', '<br>')
+                    description_parts.append(f"{fieldname}: {value_formatted}")
             description = '<br>'.join(description_parts)
         
         # Add original line number and source link
