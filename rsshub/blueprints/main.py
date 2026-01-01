@@ -5,6 +5,7 @@ from rsshub.utils import swr_cache
 bp = Blueprint('main', __name__)
 
 @bp.route('/anki/due-cards')
+@swr_cache(timeout=21600)  # 6小时缓存，使用SWR策略
 def anki_due_cards():
     # Allow optional runtime override of AnkiConnect API via `api_url` query param
     # Example: /anki/due-cards?api_url=http://your_host:8765

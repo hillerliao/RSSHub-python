@@ -185,29 +185,40 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         
         # Determine delimiter
         is_newline_delimiter = False
-        if delimiter and delimiter.lower() == 'tab':
+        if not delimiter:
+            delimiter_char = ','
+        elif delimiter.lower() == 'tab':
             delimiter_char = '\t'
-        elif delimiter and delimiter.lower() == 'newline':
+        elif delimiter.lower() == 'newline':
              delimiter_char = '\n'
              is_newline_delimiter = True
-        elif delimiter:
-             delimiter_char = delimiter
+        elif delimiter.lower() == 'double_newline':
+             delimiter_char = '\n\n'
+             is_newline_delimiter = True
+        elif delimiter.lower() == 'triple_newline':
+             delimiter_char = '\n\n\n'
+             is_newline_delimiter = True
+        elif delimiter.lower() == 'quadruple_newline':
+             delimiter_char = '\n\n\n\n'
+             is_newline_delimiter = True
+        elif delimiter.lower() == 'quintuple_newline':
+             delimiter_char = '\n\n\n\n\n'
+             is_newline_delimiter = True
         else:
-            delimiter_char = ','
-
-        # Split into original lines to track indices accurately
-        # Use splitlines() but be aware it might behave differently on different OS
-        # Using io.StringIO to let csv module handle line endings if it was a file
-        
+             delimiter_char = delimiter
+             if '\n' in delimiter_char:
+                 is_newline_delimiter = True
         indexed_rows = []
         fieldnames = []
         
         if is_newline_delimiter:
-             # For newline, every line is a record, no header
-             lines = content.splitlines()
-             for i, line in enumerate(lines, 1):
-                 if line.strip():
-                     indexed_rows.append((i, {'line_content': line.strip()}))
+             # Normalize content to use \n for split
+             content = content.replace('\r\n', '\n').replace('\r', '\n')
+             # Split into blocks based on delimiter
+             blocks = content.split(delimiter_char)
+             for i, block in enumerate(blocks, 1):
+                 if block.strip():
+                     indexed_rows.append((i, {'line_content': block.strip()}))
              fieldnames = ['line_content']
              title_column_name = 'line_content'
         else:
