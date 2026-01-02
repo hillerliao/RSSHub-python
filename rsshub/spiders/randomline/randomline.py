@@ -11,23 +11,54 @@ from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.extensions import cache
+import json
 import trafilatura
 import fitz
 
-def _extract_semantic_text(html_content):
-    """Extract text from semantic tags like p, li, and headings."""
+def _extract_semantic_text(html_content, heading_hierarchy=None):
+    """Extract text from semantic tags like p, li, and headings, tracking hierarchical chapters."""
+    if heading_hierarchy is None:
+        heading_hierarchy = {}
+    
     soup = BeautifulSoup(html_content, 'html.parser')
     tags = ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
     extracted = []
+    
     for tag in soup.find_all(tags):
+        tag_name = tag.name
         text = tag.get_text(strip=True)
-        if text:
-            extracted.append(text)
+        if not text:
+            continue
+            
+        if tag_name.startswith('h'):
+            try:
+                level = int(tag_name[1])
+                heading_hierarchy[level] = text
+                # Clear all sub-levels
+                for l in range(level + 1, 7):
+                    if l in heading_hierarchy:
+                        del heading_hierarchy[l]
+            except (ValueError, IndexError):
+                pass
+        else:
+            # Build breadcrumb: "H1 > H2 > H3"
+            breadcrumb_parts = []
+            for l in range(1, 7):
+                if l in heading_hierarchy:
+                    breadcrumb_parts.append(heading_hierarchy[l])
+            
+            breadcrumb = " > ".join(breadcrumb_parts)
+            extracted.append({
+                "line_content": text,
+                "chapter": breadcrumb
+            })
     
     # Fallback if no semantic tags found
     if not extracted:
-        return soup.get_text('\n', strip=True)
-    return '\n'.join(extracted)
+        text = soup.get_text('\n', strip=True)
+        return [{"line_content": li.strip()} for li in text.split('\n') if li.strip()]
+    
+    return extracted
 
 def extract_content(response, url):
     parsed_url = urlparse(url)
@@ -43,11 +74,12 @@ def extract_content(response, url):
             tmp.flush()
             book = epub.read_epub(tmp.name)
             extracted_parts = []
+            persistent_hierarchy = {}
             for item in book.get_items():
                 if item.get_type() == ebooklib.ITEM_DOCUMENT:
-                    extracted_parts.append(_extract_semantic_text(item.get_content()))
-            content = '\n'.join(extracted_parts)
-            delimiter = 'newline'
+                    extracted_parts.extend(_extract_semantic_text(item.get_content(), persistent_hierarchy))
+            content = json.dumps(extracted_parts, ensure_ascii=False)
+            delimiter = 'semantic'
     elif ext == '.mobi':
         print("DEBUG: Detected MOBI file, processing...")
         with tempfile.NamedTemporaryFile(suffix='.mobi', delete=True) as tmp:
@@ -61,8 +93,9 @@ def extract_content(response, url):
                     try:
                         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                             html_content = f.read()
-                        content = _extract_semantic_text(html_content)
-                        delimiter = 'newline'
+                        extracted_parts = _extract_semantic_text(html_content, heading_hierarchy={})
+                        content = json.dumps(extracted_parts, ensure_ascii=False)
+                        delimiter = 'semantic'
                     finally:
                         import shutil
                         if os.path.exists(tempdir):
@@ -122,8 +155,8 @@ def extract_content(response, url):
         
         if should_extract:
             # Try to preserve basic formatting (lists, bold, etc.) via HTML output
-            extracted_text = trafilatura.extract(content, output_format='html', include_comments=False)
-            if extracted_text:
+            extracted_html = trafilatura.extract(content, output_format='html', include_comments=False)
+            if extracted_html:
                 print("DEBUG: Content extracted successfully via trafilatura (HTML mode)")
                 try:
                     metadata = trafilatura.extract_metadata(content)
@@ -131,8 +164,11 @@ def extract_content(response, url):
                         feed_title = metadata.title
                 except Exception as e:
                     print(f"DEBUG: Failed to extract metadata: {e}")
-                content = extracted_text
-                delimiter = 'newline'
+                
+                # Apply semantic extraction to the simplified HTML
+                extracted_parts = _extract_semantic_text(extracted_html)
+                content = json.dumps(extracted_parts, ensure_ascii=False)
+                delimiter = 'semantic'
     
     return content, delimiter, feed_title
 
@@ -225,7 +261,26 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         indexed_rows = []
         fieldnames = []
         
-        if is_newline_delimiter:
+        # If content starts with JSON array indicating semantic data, force semantic delimiter
+        if content.strip().startswith('[') and '"line_content":' in content:
+            delimiter = 'semantic'
+
+        if delimiter == 'semantic':
+             try:
+                 if isinstance(content, str):
+                     blocks = json.loads(content)
+                 else:
+                     blocks = content
+                 for i, block in enumerate(blocks, 1):
+                     indexed_rows.append((i, block))
+                 fieldnames = ['line_content']
+                 title_column_name = 'line_content'
+             except:
+                 # Fallback to newline if JSON fails
+                 delimiter = 'newline'
+                 is_newline_delimiter = True
+
+        if delimiter != 'semantic' and is_newline_delimiter:
              # Normalize content to use \n for split
              content = content.replace('\r\n', '\n').replace('\r', '\n')
              
@@ -241,7 +296,7 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
              
              fieldnames = ['line_content']
              title_column_name = 'line_content'
-        else:
+        elif delimiter != 'semantic':
             # For CSV/TSV, we use DictReader but track the actual line number
             # DictReader doesn't expose line numbers of the original file easily if we just pass a string
             # We skip empty lines manually to find the header
@@ -325,7 +380,10 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             description = '<br>'.join(description_parts)
         
         # Add original line number and source link
-        description += f'<br><br>来源：<a href="{url}" target="_blank">{filename}</a> 第{line_num}行'
+        if delimiter == 'semantic' and row.get('chapter'):
+            description += f'<br><br>来源：<a href="{url}" target="_blank">{filename}</a> | 章节：{row["chapter"]}'
+        else:
+            description += f'<br><br>来源：<a href="{url}" target="_blank">{filename}</a> 第{line_num}行'
         
         # Add ChatGPT search link
         prompt_prefix = f"explain in plain and vivid English:"
