@@ -147,7 +147,12 @@ def extract_content(response, url):
             print(f"DEBUG: PDF extraction failed: {e}")
             content = response.text
     else:
-        content = response.text
+        # Handle potential encoding issues (e.g., requests defaulting to ISO-8859-1)
+        if response.encoding == 'ISO-8859-1' and 'charset' not in response.headers.get('Content-Type', '').lower():
+            content = response.content.decode(response.apparent_encoding, errors='ignore')
+        else:
+            content = response.text
+            
         should_extract = False
         content_type = response.headers.get('Content-Type', '').lower()
         if 'html' in content_type or ext not in ['.csv', '.txt', '.tsv', '.json']:
@@ -363,27 +368,36 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         line_num, row = selected_item
         title = row.get(title_column_name, '').strip()
 
-        # Build description
+        # Build context (Source and Chapter/Line)
+        if delimiter == 'semantic' and row.get('chapter'):
+            context = f'来源：<a href="{url}" target="_blank">{filename}</a> | 章节：{row["chapter"]}'
+        else:
+            context = f'来源：<a href="{url}" target="_blank">{filename}</a> 第{line_num}行'
+
+        description_parts = []
+        # Build description parts
         if is_newline_delimiter:
             # Preserve internal formatting by converting newlines to <br>
-            description = title.replace('\n', '<br>')
+            description_parts.append(title.replace('\n', '<br>'))
         else:
             # For tabular data, preserve newlines in values as well
-            description_parts = [title.replace('\n', '<br>')]
-            for i, fieldname in enumerate(fieldnames):
-                if i == title_col:
+            # The title itself is part of the description if it's not the only column
+            if title_column_name not in [fn for fn in fieldnames if fn != title_column_name and fn != 'chapter']:
+                description_parts.append(title.replace('\n', '<br>'))
+
+            for fieldname in fieldnames:
+                if fieldname == title_column_name or fieldname == 'chapter':
                     continue
                 value = row.get(fieldname, '').strip()
                 if value:
                     value_formatted = value.replace('\n', '<br>')
                     description_parts.append(f"{fieldname}: {value_formatted}")
-            description = '<br>'.join(description_parts)
         
-        # Add original line number and source link
-        if delimiter == 'semantic' and row.get('chapter'):
-            description += f'<br><br>来源：<a href="{url}" target="_blank">{filename}</a> | 章节：{row["chapter"]}'
+        main_description = '<br>'.join(description_parts)
+        if main_description:
+            description = f"{context}<br><br>{main_description}"
         else:
-            description += f'<br><br>来源：<a href="{url}" target="_blank">{filename}</a> 第{line_num}行'
+            description = context
         
         # Add ChatGPT search link
         prompt_prefix = f"explain in plain and vivid English:"
