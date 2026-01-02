@@ -60,6 +60,64 @@ def _extract_semantic_text(html_content, heading_hierarchy=None):
     
     return extracted
 
+def _extract_semantic_markdown(text):
+    """Extract text from markdown headings and paragraphs, tracking hierarchical chapters."""
+    lines = text.split('\n')
+    extracted = []
+    heading_hierarchy = {}
+    
+    current_para = []
+    
+    def flush_para():
+        if current_para:
+            content = " ".join(current_para).strip()
+            if content:
+                # Build breadcrumb
+                breadcrumb_parts = []
+                for l in range(1, 7):
+                    if l in heading_hierarchy:
+                        breadcrumb_parts.append(heading_hierarchy[l])
+                extracted.append({
+                    "line_content": content,
+                    "chapter": " > ".join(breadcrumb_parts)
+                })
+            current_para.clear()
+
+    for line in lines:
+        stripped_line = line.strip()
+        if not stripped_line:
+            flush_para()
+            continue
+            
+        if stripped_line.startswith('#'):
+            flush_para()
+            # Count leading #
+            level = 0
+            for char in stripped_line:
+                if char == '#':
+                    level += 1
+                else:
+                    break
+            
+            # Markdown headings should have a space after #
+            # e.g. # Title
+            after_hashes = stripped_line[level:]
+            if after_hashes.startswith(' ') or not after_hashes:
+                heading_text = after_hashes.strip()
+                if heading_text:
+                    heading_hierarchy[level] = heading_text
+                    # Clear sub-levels
+                    for l in range(level + 1, 7):
+                        if l in heading_hierarchy:
+                            del heading_hierarchy[l]
+                continue # Headings aren't paragraphs
+        
+        # If it's not a heading and not empty, it's part of a paragraph
+        current_para.append(stripped_line)
+            
+    flush_para()
+    return extracted
+
 def extract_content(response, url):
     parsed_url = urlparse(url)
     ext = os.path.splitext(parsed_url.path)[1].lower()
@@ -106,6 +164,16 @@ def extract_content(response, url):
             except Exception as e:
                 print(f"DEBUG: MOBI extraction failed: {e}")
                 content = response.text
+    elif ext == '.md':
+        print("DEBUG: Detected Markdown file, processing...")
+        if response.encoding == 'ISO-8859-1' and 'charset' not in response.headers.get('Content-Type', '').lower():
+            text = response.content.decode(response.apparent_encoding, errors='ignore')
+        else:
+            text = response.text
+        
+        extracted_parts = _extract_semantic_markdown(text)
+        content = json.dumps(extracted_parts, ensure_ascii=False)
+        delimiter = 'semantic'
     elif ext == '.pdf':
         print("DEBUG: Detected PDF file, processing...")
         try:
@@ -161,7 +229,28 @@ def extract_content(response, url):
         if should_extract:
             # Try to preserve basic formatting (lists, bold, etc.) via HTML output
             extracted_html = trafilatura.extract(content, output_format='html', include_comments=False)
-            if extracted_html:
+            
+            # Smart Fallback: trafilatura often flattens headings into <p> tags.
+            # If the source has headings but trafilatura output doesn't, 
+            # or if it's a known book-like site, use raw HTML for semantic extraction.
+            use_raw_html = False
+            if 'gutenberg.org' in url.lower():
+                use_raw_html = True
+                print("DEBUG: Gutenberg URL detected, using raw HTML for structured extraction")
+            elif extracted_html:
+                # Compare heading counts
+                soup_orig = BeautifulSoup(content, 'html.parser')
+                soup_extracted = BeautifulSoup(extracted_html, 'html.parser')
+                heading_tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6']
+                
+                orig_headings = len(soup_orig.find_all(heading_tags))
+                extracted_headings = len(soup_extracted.find_all(heading_tags))
+                
+                if orig_headings > 0 and extracted_headings == 0:
+                    use_raw_html = True
+                    print(f"DEBUG: Trafilatura stripped {orig_headings} headings. Falling back to raw HTML.")
+
+            if extracted_html and not use_raw_html:
                 print("DEBUG: Content extracted successfully via trafilatura (HTML mode)")
                 try:
                     metadata = trafilatura.extract_metadata(content)
@@ -172,6 +261,11 @@ def extract_content(response, url):
                 
                 # Apply semantic extraction to the simplified HTML
                 extracted_parts = _extract_semantic_text(extracted_html)
+                content = json.dumps(extracted_parts, ensure_ascii=False)
+                delimiter = 'semantic'
+            elif use_raw_html or content:
+                print("DEBUG: Using raw HTML for semantic extraction to preserve chapter structure")
+                extracted_parts = _extract_semantic_text(content)
                 content = json.dumps(extracted_parts, ensure_ascii=False)
                 delimiter = 'semantic'
     
