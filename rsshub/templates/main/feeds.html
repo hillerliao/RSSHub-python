@@ -1007,6 +1007,34 @@
 <br>
 <!--item qieman end-->
 
+<!--item danjuan start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">蛋卷基金调仓动态</h4>
+                <h6 class="text-muted">投顾组合调仓记录 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/danjuan/departure/TIA08030"
+                                target="_blank">https://pyrsshub.vercel.app/danjuan/departure/TIA08030</a></p>
+                <p class="card-text">路由：<code>/danjuan/departure/:strategy_code</code></p>
+                <p class="card-text">参数：</p>
+                <ul>
+                        <li><code>strategy_code</code> [必填， 策略代码，例如 TIA08030]</li>
+                        <li><code>accesstoken</code> [可选， 蛋卷基金的访问令牌。也可以通过环境变量 <code>DANJUAN_ACCESSTOKEN</code> 配置]</li>
+                        <li><code>page_no</code> [可选， 页码，默认 1]</li>
+                        <li><code>page_size</code> [可选， 每页数量，默认 20]</li>
+                </ul>
+                <p class="card-text">功能：获取蛋卷基金投顾组合的调仓发车记录和分析</p>
+                <div class="alert alert-warning py-2 mb-2">
+                        <small><i class="fas fa-exclamation-triangle"></i> <strong>安全提示：</strong>直接在 URL 中携带
+                                <code>accesstoken</code> 可能会导致令牌泄露。建议在部署环境中设置 <code>DANJUAN_ACCESSTOKEN</code>
+                                环境变量，这样在使用时无需在 URL 中显式填写该参数。</small>
+                </div>
+                <p class="card-text">注意：需要提供有效的认证信息（URL 参数或环境变量）</p>
+        </div>
+</div>
+<br>
+<!--item danjuan end-->
+
 <!--item scraper start-->
 <div class="card text-left">
         <div class="card-body">

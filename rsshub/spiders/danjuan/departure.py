@@ -3,13 +3,13 @@ import arrow
 from rsshub.utils import DEFAULT_HEADERS
 from flask import request as flask_request
 
-def get_auth_cookies():
-    """从请求参数中获取认证cookie"""
-    # 支持通过URL参数传递cookie字符串
-    cookie_str = flask_request.args.get('cookie') or flask_request.args.get('cookies')
-    if cookie_str:
-        return cookie_str
-    return None
+def get_accesstoken():
+    """从请求参数或环境变量中获取accesstoken"""
+    # 优先从URL参数获取，如果缺失则尝试从环境变量获取
+    # 使用环境变量可以避免在URL中暴露令牌，更加安全
+    import os
+    accesstoken = flask_request.args.get('accesstoken') or os.environ.get('DANJUAN_ACCESSTOKEN')
+    return accesstoken
 
 def parse(post, index=0, strategy_code='TIA08030'):
     """解析单条调仓记录"""
@@ -73,43 +73,57 @@ def parse(post, index=0, strategy_code='TIA08030'):
     
     return item
 
-def get_strategy_name(strategy_code, cookies=None):
-    """获取策略名称"""
-    url = f'https://danjuanfunds.com/djapi/fundx/ic/activity/server/departure/scheme/info?strategy_code={strategy_code}'
+def get_portfolio_info(ic_plan_code, accesstoken=None):
+    """获取组合信息：名称和简介"""
+    url = f'https://danjuanfunds.com/djapi/fundx/portfolio/ic/plan/info?ic_plan_code={ic_plan_code}'
     headers = DEFAULT_HEADERS.copy()
     headers.update({
         'Accept': 'application/json',
-        'Referer': f'https://danjuanfunds.com/n/departure/{strategy_code}'
+        'Referer': f'https://danjuanfunds.com/n/departure/{ic_plan_code}'
     })
+    
+    # 构造cookie
+    cookies = None
+    if accesstoken:
+        cookies = {'accesstoken': accesstoken}
+    
+    portfolio_name = f'策略{ic_plan_code}'
+    portfolio_intro = ''
     
     try:
         res = requests.get(url, headers=headers, cookies=cookies, timeout=10)
         if res.status_code == 200:
             data = res.json()
             if data.get('result_code') == 0:
-                scheme_info = data.get('data', {}).get('scheme_info', {})
-                return scheme_info.get('scheme_name', f'策略{strategy_code}')
+                data_dict = data.get('data', {})
+                # tp_plan_name 位于 data.plan_info 层级
+                plan_info = data_dict.get('plan_info', {})
+                portfolio_name = plan_info.get('tp_plan_name', f'策略{ic_plan_code}')
+                # dynamic_text 位于 data.plan_desc 层级
+                plan_desc = data_dict.get('plan_desc', {})
+                portfolio_intro = plan_desc.get('dynamic_text', '')
     except Exception as e:
-        print(f"Error fetching strategy info: {e}")
-    return f'策略{strategy_code}'
+        print(f"Error fetching portfolio info: {e}")
+    
+    return portfolio_name, portfolio_intro
 
 def ctx(strategy_code='TIA08030', page_no=1, page_size=20):
-    """主函数：获取调仓数据并返回RSS上下文"""
+    """主函数：获取调仓数据并返回RSS上下文
     
-    # 获取认证cookie
-    cookies_str = get_auth_cookies()
-    cookies = None
-    if cookies_str:
-        # 解析cookie字符串为字典
-        cookies = {}
-        for item in cookies_str.split(';'):
-            item = item.strip()
-            if '=' in item:
-                key, value = item.split('=', 1)
-                cookies[key.strip()] = value.strip()
+    Args:
+        strategy_code: 策略代码，默认TIA08030
+        page_no: 页码，默认1
+        page_size: 每页数量，默认20
     
-    # 获取策略名称
-    strategy_name = get_strategy_name(strategy_code, cookies)
+    认证：通过URL参数accesstoken传递访问令牌
+        例如：/danjuan/departure/TIA08030?accesstoken=xxx
+    """
+    
+    # 获取accesstoken
+    accesstoken = get_accesstoken()
+    
+    # 获取组合名称和简介
+    portfolio_name, portfolio_intro = get_portfolio_info(strategy_code, accesstoken)
     
     # 构建API请求URL
     url = 'https://danjuanfunds.com/djapi/fundx/ic/activity/server/departure/scheme/list'
@@ -127,6 +141,11 @@ def ctx(strategy_code='TIA08030', page_no=1, page_size=20):
         'DNT': '1'
     })
     
+    # 构造cookie
+    cookies = None
+    if accesstoken:
+        cookies = {'accesstoken': accesstoken}
+    
     items = []
     try:
         res = requests.get(url, headers=headers, params=params, cookies=cookies, timeout=10)
@@ -142,10 +161,25 @@ def ctx(strategy_code='TIA08030', page_no=1, page_size=20):
     except Exception as e:
         print(f"Error fetching departure data: {e}")
     
+    # 构建RSS描述，包含组合简介
+    description_parts = []
+    # Channel title：直接使用tp_plan_name
+    channel_title = f'{portfolio_name} 调仓-蛋卷投顾组合' 
+    # Channel description：组合名称 + 简介
+    channel_description = f'{portfolio_name}'
+    if portfolio_intro:
+        channel_description = f'{portfolio_name} - {portfolio_intro}'
+    
+    description_parts.append(f'<p>{portfolio_name}</p>')
+    if portfolio_intro:
+        description_parts.append(f'<p>{portfolio_intro}</p>')
+    description_parts.append('<p>来自蛋卷基金的调仓发车记录。</p>')
+    rss_description = ''.join(description_parts)
+    
     return {
-        'title': f'{strategy_name} - 调仓动态',
+        'title': channel_title,
         'link': f'https://danjuanfunds.com/n/departure/{strategy_code}',
-        'description': f'{strategy_name} 的调仓发车记录，来自蛋卷基金',
+        'description': rss_description,
         'author': 'hillerliao',
         'items': items
     }
