@@ -413,6 +413,13 @@ def xueqiu_user(user_id):
     return render_template('main/atom.xml', **filter_content(ctx(user_id)))
 
 
+@bp.route('/qieman/po_adjust/<string:portfolio_id>')
+@swr_cache(timeout=3600)
+def qieman_po_adjust(portfolio_id='SI000108'):
+    from rsshub.spiders.qieman.po_adjust import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(portfolio_id)))
+
+
 @bp.route('/scrape/<path:url>')
 @cache.cached(timeout=300)  # 5分钟缓存
 def scrape_html(url):
