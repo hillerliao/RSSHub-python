@@ -420,6 +420,16 @@ def qieman_po_adjust(portfolio_id='SI000108'):
     return render_template('main/atom.xml', **filter_content(ctx(portfolio_id)))
 
 
+@bp.route('/danjuan/departure/<string:strategy_code>')
+@bp.route('/danjuan/departure')
+@swr_cache(timeout=3600)
+def danjuan_departure(strategy_code='TIA08030'):
+    page_no = request.args.get('page_no', default=1, type=int)
+    page_size = request.args.get('page_size', default=20, type=int)
+    from rsshub.spiders.danjuan.departure import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(strategy_code, page_no, page_size)))
+
+
 @bp.route('/scrape/<path:url>')
 @cache.cached(timeout=300)  # 5分钟缓存
 def scrape_html(url):

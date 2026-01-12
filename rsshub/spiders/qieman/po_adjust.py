@@ -31,7 +31,7 @@ def get_portfolio_info(portfolio_id):
         print(f"Error fetching portfolio info: {e}")
     return None, None
 
-def parse(post, index=0):
+def parse_si(post, index=0):
     item = {}
     
     sig_summary = post.get('sigSummary', '')
@@ -86,15 +86,12 @@ def parse(post, index=0):
     item['description'] = "".join(desc_parts) or '无内容'
     
     # Handle date
-    date_str = post.get('adjustedDate')
     if date_str:
         try:
-            # adjustedDate is "YYYY-MM-DD"
             item['pubDate'] = arrow.get(date_str).isoformat()
         except Exception:
             item['pubDate'] = arrow.now().isoformat()
     else:
-        # Fallback to createdTime if adjustedDate is missing
         created_time = post.get('createdTime')
         if created_time:
             try:
@@ -114,40 +111,141 @@ def parse(post, index=0):
         
     return item
 
-def ctx(portfolio_id='SI000108'):
-    # Fetch dynamic metadata
-    po_name, po_desc = get_portfolio_info(portfolio_id)
+def parse_zh(post, index=0, po_code=''):
+    item = {}
     
-    # Verified API endpoint via browser subagent
-    url = f'https://qieman.com/pmdj/v1/pomodels/{portfolio_id}/sig-adjustments?page=0&size=10'
+    comment = post.get('comment', '')
+    date_iso = post.get('date', '')
+    
+    # Title
+    date_short = date_iso[:10] if date_iso else ''
+    item['title'] = (comment[:50] + '...' if len(comment) > 50 else comment) or '调仓分析'
+    item['title'] += f"({date_short})" if date_short else ''
+    
+    # Description
+    desc_parts = []
+    if comment:
+        header = f"本次调仓说明({date_short})" if date_short else "本次调仓说明"
+        desc_parts.append(f"<h4>{header}</h4><p>{comment}</p>")
+    
+    groups = post.get('groups', [])
+    if groups:
+        desc_parts.append("<h4>调仓详情</h4>")
+        table = "<table border='1' style='width:100%; border-collapse: collapse; text-align: left;'>"
+        table += "<tr><th>分类/基金</th><th>调仓前比例</th><th>调仓后比例</th></tr>"
+        for group in groups:
+            # Group header
+            group_name = group.get('movementName') or group.get('categoryCode') or '未知分类'
+            table += f"<tr style='background-color: #f2f2f2;'><td colspan='3'><b>{group_name}</b></td></tr>"
+            
+            parts = group.get('parts', [])
+            for p in parts:
+                fund = p.get('fund') or {}
+                name = fund.get('fundName', '-')
+                code = fund.get('fundCode', '-')
+                
+                b_pct = p.get('beforePercent', 0)
+                a_pct = p.get('afterPercent', 0)
+                before = f"{b_pct * 100:.2f}%" if isinstance(b_pct, (int, float)) else str(b_pct)
+                after = f"{a_pct * 100:.2f}%" if isinstance(a_pct, (int, float)) else str(a_pct)
+                
+                table += f"<tr><td>{name} ({code})</td><td>{before}</td><td>{after}</td></tr>"
+        table += "</table>"
+        desc_parts.append(table)
+        
+    item['description'] = "".join(desc_parts) or '无内容'
+    
+    # Date
+    if date_iso:
+        try:
+            item['pubDate'] = arrow.get(date_iso).isoformat()
+        except Exception:
+            item['pubDate'] = arrow.now().isoformat()
+    else:
+        item['pubDate'] = arrow.now().isoformat()
+        
+    # Link
+    adj_id = post.get('adjustmentId')
+    if index == 0:
+        item['link'] = f'https://qieman.com/alfa/portfolio/{po_code}/adjustment?tab=latest'
+    else:
+        item['link'] = f'https://qieman.com/alfa/portfolio/{po_code}/adjustment?adjId={adj_id}'
+        
+    return item
+
+def get_zh_adjustments(portfolio_id):
+    url = 'https://qieman.com/alfa/v1/graphql'
     headers = DEFAULT_HEADERS.copy()
     headers.update({
-        'Accept': 'application/json, text/plain, */*',
+        'Accept': '*/*',
+        'Content-Type': 'application/json',
         'x-sign': get_x_sign(),
-        'X-Requested-With': 'XMLHttpRequest',
-        'Referer': f'https://qieman.com/sig/portfolios/{portfolio_id}/adjustments?tab=history',
-        'Authorization': 'Bearer null'
+        'x-broker': '0008',
+        'Referer': f'https://qieman.com/alfa/portfolio/{portfolio_id}/adjustment'
     })
     
-    posts = []
+    # Working minified query string
+    query_str = "query Adjustment($poCode: String!, $page: Pagination = null, $needPreference: Boolean! = false, $needCategoryDict: Boolean! = false, $isModelPo: Boolean = false, $categoryType: FundCategoryType) {  portfolio(poCode: $poCode, isModelPo: $isModelPo) {    isSupportSmartAip    adjustments(page: $page, categoryType: $categoryType) {      adjustments {        date        comment        adjustmentId        article {          text          link          __typename        }        groups {          categoryCode          categoryCodeLevel1          movementName          parts {            fund {              fundCode              fundName              __typename            }            movementName            beforePercent            afterPercent            categoryCode            categoryCodeLevel1            __typename          }          beforePercent          afterPercent          __typename        }        __typename      }      totalCount      pageInfo {        hasMore        cursor        __typename      }      __typename    }    __typename  }  preferences @include(if: $needPreference) {    portfolio(poCode: $poCode, isModelPo: $isModelPo) {      adjustmentDetailListSeries      adjustmentDetailDimensions      __typename    }    __typename  }  dicts @include(if: $needCategoryDict) {    portfolioCompositionCategoryNames    portfolioRiskLevelNames    fundCategoryLevel1Names    __typename  }}"
+    
+    payload = {
+        'operationName': 'Adjustment',
+        'variables': {
+            'poCode': portfolio_id,
+            'page': {'size': 15},
+            'needPreference': True,
+            'needCategoryDict': True,
+            'isModelPo': False,
+            'categoryType': 'FundCategory'
+        },
+        'query': query_str
+    }
+    
     try:
-        # Set timeout to handle potential delays
-        res = requests.get(url, headers=headers, timeout=10)
+        res = requests.post(url, headers=headers, json=payload, timeout=10)
         if res.status_code == 200:
             data = res.json()
-            if isinstance(data, dict) and 'content' in data:
-                posts = data['content']
-            elif isinstance(data, list):
-                posts = data
-        else:
-            print(f"Failed to fetch Qieman API: {res.status_code}")
-    except Exception as e:
-        print(f"Error fetching Qieman API: {e}")
+            if 'errors' in data:
+                return []
+            return data.get('data', {}).get('portfolio', {}).get('adjustments', {}).get('adjustments', [])
+    except Exception:
+        pass
+    return []
+
+def ctx(portfolio_id='SI000108'):
+    po_name, po_desc = get_portfolio_info(portfolio_id)
+    
+    items = []
+    if portfolio_id.startswith('ZH'):
+        posts = get_zh_adjustments(portfolio_id)
+        items = [parse_zh(p, i, portfolio_id) for i, p in enumerate(posts)]
+    else:
+        url = f'https://qieman.com/pmdj/v1/pomodels/{portfolio_id}/sig-adjustments?page=0&size=10'
+        headers = DEFAULT_HEADERS.copy()
+        headers.update({
+            'Accept': 'application/json, text/plain, */*',
+            'x-sign': get_x_sign(),
+            'X-Requested-With': 'XMLHttpRequest',
+            'Referer': f'https://qieman.com/sig/portfolios/{portfolio_id}/adjustments?tab=history',
+        })
+        
+        posts = []
+        try:
+            res = requests.get(url, headers=headers, timeout=10)
+            if res.status_code == 200:
+                data = res.json()
+                if isinstance(data, dict) and 'content' in data:
+                    posts = data['content']
+                elif isinstance(data, list):
+                    posts = data
+        except Exception:
+            pass
+        
+        items = [parse_si(p, i) for i, p in enumerate(posts)]
 
     return {
-        'title': f'{po_name}({portfolio_id})-且慢发车记录',
-        'link': f'https://qieman.com/sig/portfolios/{portfolio_id}/adjustments?tab=history',
+        'title': f'{po_name or "Qieman"}({portfolio_id})-且慢发车记录',
+        'link': f'https://qieman.com/alfa/portfolio/{portfolio_id}/adjustment' if portfolio_id.startswith('ZH') else f'https://qieman.com/sig/portfolios/{portfolio_id}/adjustments?tab=history',
         'description': po_desc or f'且慢组合 {portfolio_id} 的调仓记录',
         'author': 'hillerliao',
-        'items': [parse(p, i) for i, p in enumerate(posts)]
+        'items': items
     }
