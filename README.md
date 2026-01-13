@@ -30,6 +30,8 @@ uv sync
 uv run flask run
 ```
 
+> **Note**: For full features (Playwright, PDF processing, etc.), use `pip install -r requirements-full.txt` instead of the default `requirements.txt`.
+
 ---
 
 ## 🛠 Advanced Features
@@ -64,10 +66,8 @@ docker run -d \
 
 ### Cloud Platforms
 - **Vercel**: [![Deploy with Vercel](https://vercel.app/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhillerliao%2Frsshub-python)
-  > **Note**: To resolve the 250MB limit on Vercel:
-  > 1. Go to your Vercel Project **Settings** > **Build & Development**.
-  > 2. Toggle **Override** for **Install Command**.
-  > 3. Enter: `pip install -r requirements-lite.txt`.
+  > **Note**: The project is pre-configured for Vercel Lite Mode via `vercel.json`. It uses `requirements-lite.txt` to avoid the 250MB size limit.
+  > Advanced features like Playwright and PDF parsing are disabled in Lite Mode.
 
 - **Zeabur**: Supports both Git integration and pre-built Docker images.
 

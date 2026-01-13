@@ -1,0 +1,5 @@
+uv.lock
+pyproject.toml
+Pipfile
+Pipfile.lock
+.python-version

@@ -1,6 +1,11 @@
 import requests
 from flask import Blueprint, request, Response
-import trafilatura
+
+try:
+    import trafilatura
+    HAS_TRAFILATURA = True
+except ImportError:
+    HAS_TRAFILATURA = False
 
 bp = Blueprint('proxy', __name__, url_prefix='/proxy')
 
@@ -10,6 +15,9 @@ DEFAULT_HEADERS = {
 
 @bp.route('/readability')
 def readability():
+    if not HAS_TRAFILATURA:
+        return "Error: Trafilatura not available in Lite Mode. This feature requires the full installation.", 503
+    
     url = request.args.get('url')
     proxy_url = request.args.get('proxy')
     
