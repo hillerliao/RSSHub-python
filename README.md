@@ -64,6 +64,11 @@ docker run -d \
 
 ### Cloud Platforms
 - **Vercel**: [![Deploy with Vercel](https://vercel.app/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fhillerliao%2Frsshub-python)
+  > **Note**: To resolve the 250MB limit on Vercel:
+  > 1. Go to your Vercel Project **Settings** > **Build & Development**.
+  > 2. Toggle **Override** for **Install Command**.
+  > 3. Enter: `pip install -r requirements-lite.txt`.
+
 - **Zeabur**: Supports both Git integration and pre-built Docker images.
 
 ---

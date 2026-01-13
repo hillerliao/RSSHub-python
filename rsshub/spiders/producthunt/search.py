@@ -1,11 +1,18 @@
 import re
 import asyncio
-from playwright.async_api import async_playwright
+try:
+    from playwright.async_api import async_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
 from rsshub.utils import DEFAULT_HEADERS
 
 domain = 'https://www.producthunt.com'
 
 async def get_search_html(keyword, period):
+    if not HAS_PLAYWRIGHT:
+        print("DEBUG: Playwright not installed (Lite Mode).")
+        return ""
     async with async_playwright() as p:
         browser = await p.chromium.launch(
             headless=True,
@@ -84,6 +91,19 @@ def parse_products(html):
     return items
 
 def ctx(keyword='', period=''):
+    if not HAS_PLAYWRIGHT:
+        return {
+            'title': f'{keyword} - Producthunt (Not supported on Vercel)',
+            'link': f'{domain}/search?q={keyword}',
+            'description': 'Playwright is not available in this environment.',
+            'author': 'hillerliao',
+            'items': [{
+                'title': 'Playwright not supported',
+                'description': 'This feed requires Playwright, which is not supported in Lite Mode (e.g. Vercel). Please use a full environment.',
+                'link': 'https://github.com/hillerliao/rsshub-python'
+            }]
+        }
+
     html = asyncio.run(get_search_html(keyword, period))
     items = parse_products(html)
     

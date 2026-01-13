@@ -4,18 +4,36 @@ import io
 import random
 import os
 import tempfile
-import ebooklib
-from ebooklib import epub
-import mobi
+try:
+    import ebooklib
+    from ebooklib import epub
+except ImportError:
+    ebooklib = None
+    epub = None
+
+try:
+    import mobi
+except ImportError:
+    mobi = None
+
+try:
+    import fitz
+except ImportError:
+    fitz = None
+
 from bs4 import BeautifulSoup
 from urllib.parse import quote, urlparse
 from rsshub.utils import DEFAULT_HEADERS
 from rsshub.extensions import cache
 import json
-import trafilatura
-import fitz
 
-def _extract_semantic_text(html_content, heading_hierarchy=None):
+try:
+    import trafilatura
+    HAS_TRAFILATURA = True
+except ImportError:
+    HAS_TRAFILATURA = False
+
+def _extract_semantic_text(html_content, heading_hierarchy=None, split_lines=True):
     """Extract text from semantic tags like p, li, and headings, tracking hierarchical chapters."""
     if heading_hierarchy is None:
         heading_hierarchy = {}
@@ -24,9 +42,25 @@ def _extract_semantic_text(html_content, heading_hierarchy=None):
     tags = ['p', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
     extracted = []
     
+    
+    # Pre-process <br> tags if we intend to split lines later
+    # We replace them with a unique placeholder so we can differentiate them from actual text
+    # This acts as a logical execution of "split items"
+    BR_PLACEHOLDER = "___BR_SEP___"
+    if split_lines:
+        for br in soup.find_all('br'):
+            br.replace_with(BR_PLACEHOLDER)
+        
+        # Also separate block elements to avoid merging "Block1" and "Block2" in get_text fallback
+        # or when adjacent text nodes are involved
+        for tag in soup.find_all(['p', 'div', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'article', 'section', 'blockquote']):
+            tag.insert_after(BR_PLACEHOLDER)
+
     for tag in soup.find_all(tags):
         tag_name = tag.name
-        text = tag.get_text(strip=True)
+        # Use space as separator to preserve spacing between inline elements (like text and links)
+        # But allow us to control splitting via the placeholder
+        text = tag.get_text(separator=' ', strip=True)
         if not text:
             continue
             
@@ -48,16 +82,48 @@ def _extract_semantic_text(html_content, heading_hierarchy=None):
                     breadcrumb_parts.append(heading_hierarchy[l])
             
             breadcrumb = " > ".join(breadcrumb_parts)
-            extracted.append({
-                "line_content": text,
-                "chapter": breadcrumb
-            })
+            
+            if split_lines:
+                # Replace placeholder with newline and split
+                text = text.replace(BR_PLACEHOLDER, '\n')
+                for line in text.split('\n'):
+                    line = line.strip()
+                    if line:
+                        extracted.append({
+                            "line_content": line,
+                            "chapter": breadcrumb
+                        })
+            else:
+                # Treat the whole tag content as one item
+                # Restore <br> conceptually by replacing placeholder with space or keeping it?
+                # Actually if split_lines=False (delimiter='p'), we might want to keep newlines as is for display?
+                # But here we just want the text. Let's convert placeholder to newline for "one big text blob"
+                text = text.replace(BR_PLACEHOLDER, '\n')
+                if text.strip():
+                    extracted.append({
+                        "line_content": text.strip(),
+                        "chapter": breadcrumb
+                    })
     
-    # Fallback if no semantic tags found
-    if not extracted:
-        text = soup.get_text('\n', strip=True)
-        return [{"line_content": li.strip()} for li in text.split('\n') if li.strip()]
-    
+    # Fallback if no semantic tags found OR if extraction yielded very few items (heuristic for "missed mixed content")
+    # e.g. <p>Title</p> Sibling Text <br> Sibling Text 2
+    if (not extracted or (len(extracted) <= 1 and len(html_content) > 100)) and split_lines:
+        print("DEBUG: Few items found via tags. Trying full get_text fallback.")
+        full_text = soup.get_text(separator=' ', strip=True)
+        full_text = full_text.replace(BR_PLACEHOLDER, '\n')
+        
+        fallback_items = []
+        for line in full_text.split('\n'):
+            line = line.strip()
+            if line:
+                fallback_items.append(line)
+        
+        # Only use fallback if it yields MORE items
+        if len(fallback_items) > len(extracted):
+             # For fallback, we lose "chapter" info but capture missed text.
+             # Convert simple strings to dicts
+             return [{"line_content": c, "chapter": ""} for c in fallback_items]
+
     return extracted
 
 def _extract_semantic_markdown(text):
@@ -118,14 +184,22 @@ def _extract_semantic_markdown(text):
     flush_para()
     return extracted
 
-def extract_content(response, url):
+def extract_content(response, url, user_delimiter=None):
     parsed_url = urlparse(url)
     ext = os.path.splitext(parsed_url.path)[1].lower()
     content = None
     delimiter = None
     feed_title = None
 
+    # Determine if we should split lines based on user preference
+    # Default is True (split by <br>), but if delimiter='p', we keep paragraphs intact
+    split_lines = True
+    if user_delimiter == 'p':
+        split_lines = False
+
     if ext == '.epub':
+        if not epub:
+            return None, None, "EPUB processing not supported in Lite Mode"
         print("DEBUG: Detected EPUB file, processing...")
         with tempfile.NamedTemporaryFile(suffix='.epub', delete=True) as tmp:
             tmp.write(response.content)
@@ -135,10 +209,12 @@ def extract_content(response, url):
             persistent_hierarchy = {}
             for item in book.get_items():
                 if item.get_type() == ebooklib.ITEM_DOCUMENT:
-                    extracted_parts.extend(_extract_semantic_text(item.get_content(), persistent_hierarchy))
+                    extracted_parts.extend(_extract_semantic_text(item.get_content(), persistent_hierarchy, split_lines=split_lines))
             content = json.dumps(extracted_parts, ensure_ascii=False)
             delimiter = 'semantic'
     elif ext == '.mobi':
+        if not mobi:
+            return None, None, "MOBI processing not supported in Lite Mode"
         print("DEBUG: Detected MOBI file, processing...")
         with tempfile.NamedTemporaryFile(suffix='.mobi', delete=True) as tmp:
             tmp.write(response.content)
@@ -151,7 +227,7 @@ def extract_content(response, url):
                     try:
                         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
                             html_content = f.read()
-                        extracted_parts = _extract_semantic_text(html_content, heading_hierarchy={})
+                        extracted_parts = _extract_semantic_text(html_content, heading_hierarchy={}, split_lines=split_lines)
                         content = json.dumps(extracted_parts, ensure_ascii=False)
                         delimiter = 'semantic'
                     finally:
@@ -175,6 +251,8 @@ def extract_content(response, url):
         content = json.dumps(extracted_parts, ensure_ascii=False)
         delimiter = 'semantic'
     elif ext == '.pdf':
+        if not fitz:
+            return None, None, "PDF processing not supported in Lite Mode"
         print("DEBUG: Detected PDF file, processing...")
         try:
             with tempfile.NamedTemporaryFile(suffix='.pdf', delete=True) as tmp:
@@ -226,7 +304,7 @@ def extract_content(response, url):
         if 'html' in content_type or ext not in ['.csv', '.txt', '.tsv', '.json']:
             should_extract = True
         
-        if should_extract:
+        if should_extract and HAS_TRAFILATURA:
             # Try to preserve basic formatting (lists, bold, etc.) via HTML output
             extracted_html = trafilatura.extract(content, output_format='html', include_comments=False)
             
@@ -260,14 +338,30 @@ def extract_content(response, url):
                     print(f"DEBUG: Failed to extract metadata: {e}")
                 
                 # Apply semantic extraction to the simplified HTML
-                extracted_parts = _extract_semantic_text(extracted_html)
+                extracted_parts = _extract_semantic_text(extracted_html, split_lines=split_lines)
+                
+                # Heuristic: If trafilatura flattened the content too much (<= 1 item) but we expect splitting,
+                # fallback to raw HTML extraction to check if we can get more structure.
+                if len(extracted_parts) <= 1 and split_lines:
+                    print("DEBUG: Trafilatura yielded few items. Checking raw HTML for better structure...")
+                    raw_parts = _extract_semantic_text(content, split_lines=split_lines)
+                    if len(raw_parts) > len(extracted_parts):
+                         print(f"DEBUG: Raw HTML yielded {len(raw_parts)} items (vs {len(extracted_parts)}), preferring raw HTML.")
+                         extracted_parts = raw_parts
+                
                 content = json.dumps(extracted_parts, ensure_ascii=False)
                 delimiter = 'semantic'
             elif use_raw_html or content:
                 print("DEBUG: Using raw HTML for semantic extraction to preserve chapter structure")
-                extracted_parts = _extract_semantic_text(content)
+                extracted_parts = _extract_semantic_text(content, split_lines=split_lines)
                 content = json.dumps(extracted_parts, ensure_ascii=False)
                 delimiter = 'semantic'
+        elif should_extract and not HAS_TRAFILATURA:
+            # Trafilatura not available, use raw HTML directly
+            print("DEBUG: Trafilatura not available (Lite Mode). Using raw HTML extraction.")
+            extracted_parts = _extract_semantic_text(content, split_lines=split_lines)
+            content = json.dumps(extracted_parts, ensure_ascii=False)
+            delimiter = 'semantic'
     
     return content, delimiter, feed_title
 
@@ -293,7 +387,7 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             try:
                 response = requests.get(url, headers=DEFAULT_HEADERS, timeout=30)
                 response.raise_for_status()
-                content, extracted_delimiter, extracted_title = extract_content(response, url)
+                content, extracted_delimiter, extracted_title = extract_content(response, url, user_delimiter=delimiter)
                 if extracted_delimiter:
                     delimiter = extracted_delimiter
                 if extracted_title:
@@ -303,7 +397,7 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                 headers_curl = {'User-Agent': 'curl/7.68.0'}
                 response = requests.get(url, headers=headers_curl, timeout=30)
                 response.raise_for_status()
-                content, extracted_delimiter, extracted_title = extract_content(response, url)
+                content, extracted_delimiter, extracted_title = extract_content(response, url, user_delimiter=delimiter)
                 if extracted_delimiter:
                     delimiter = extracted_delimiter
                 if extracted_title:
