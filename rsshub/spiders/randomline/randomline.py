@@ -448,8 +448,16 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
              delimiter_char = '\n\n\n\n\n'
              is_newline_delimiter = True
         else:
+             # Custom delimiter - could be anything like "---", "***", etc.
              delimiter_char = delimiter
-             if '\n' in delimiter_char:
+             # Check if it's a multi-line delimiter (contains newlines or is surrounded by newlines in typical usage)
+             # For patterns like "---" in markdown, we want to split on "\n---\n" to avoid matching "---" mid-line
+             if delimiter_char and not delimiter_char.startswith('\n') and '\n' not in delimiter_char:
+                 # Assume it's a line-based delimiter like "---" in markdown
+                 # We'll look for it as a standalone line
+                 delimiter_char = f'\n{delimiter_char}\n'
+                 is_newline_delimiter = True
+             elif '\n' in delimiter_char:
                  is_newline_delimiter = True
         indexed_rows = []
         fieldnames = []
