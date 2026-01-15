@@ -235,6 +235,8 @@
                 </p>
                 <p class="card-text">指定标题列：<a href="https://pyrsshub.vercel.app/randomline?title_col=1"
                                 target="_blank">https://pyrsshub.vercel.app/randomline?title_col=1</a></p>
+                <p class="card-text">包含上下文：<a href="https://pyrsshub.vercel.app/randomline?include_context=true"
+                                target="_blank">https://pyrsshub.vercel.app/randomline?include_context=true</a></p>
                 <p class="card-text">路由：<code>/randomline</code></p>
                 <p class="card-text">参数：</p>
                 <ul>
@@ -245,8 +247,9 @@
                         <li><code>delimiter</code> Optional，指定分隔符（如 <code>tab</code> 表示制表符，<code>newline</code>
                                 表示换行符，<code>double_newline</code> 表示1个空行，<code>triple_newline</code>
                                 表示2个空行，<code>quadruple_newline</code> 表示3个空行，<code>quintuple_newline</code>
-                                表示4个空行），默认为逗号。</li>
+                                表示4个空行），或者使用自定义分隔符（如 <code>---</code>、<code>***</code>），默认为逗号。</li>
                         <li><code>min_length</code> Optional，最小长度限制，只有当标题长度大于等于该值时才会被选中，默认为0。</li>
+                        <li><code>include_context</code> Optional，是否包含上一行和下一行，设置为 <code>true</code> 时会在描述中显示所选内容的上一行和下一行，默认为 <code>false</code>。</li>
                 </ul>
                 <p class="card-text">功能：从文件或网页中随机选择一行（或一段）生成RSS项。如果是网页，会自动提取正文内容并按换行符分割。举例：
                         <a href="https://pyrsshub.vercel.app/randomline?min_length=50&url=https://www.gushiwen.cn/guwen/bookv_c89d8eda4c2d.aspx"

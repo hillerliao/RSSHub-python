@@ -365,7 +365,7 @@ def extract_content(response, url, user_delimiter=None):
     
     return content, delimiter, feed_title
 
-def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0):
+def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0, include_context=False):
     
     feed_title = "Random Line Feed"
     try:
@@ -571,6 +571,24 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             context = f'来源：<a href="{url}" target="_blank">{filename}</a> 第{line_num}行'
 
         description_parts = []
+        
+        # Add previous and next lines if include_context is True
+        if include_context:
+            # Find the index of the selected item in indexed_rows
+            selected_index = indexed_rows.index(selected_item)
+            
+            # Get previous line if exists
+            if selected_index > 0:
+                prev_line_num, prev_row = indexed_rows[selected_index - 1]
+                prev_content = prev_row.get(title_column_name, '').strip()
+                if prev_content:
+                    if is_newline_delimiter:
+                        prev_content = prev_content.replace('\n', '<br>')
+                    description_parts.append(f'<div style="color: #888; font-style: italic;">上一行 (第{prev_line_num}行): {prev_content}</div>')
+            
+            # Add separator before main content
+            if description_parts:
+                description_parts.append('<hr style="border: 1px solid #ddd; margin: 10px 0;">')
         # Build description parts
         if is_newline_delimiter:
             # Preserve internal formatting by converting newlines to <br>
@@ -590,6 +608,18 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                     description_parts.append(f"{fieldname}: {value_formatted}")
         
         main_description = '<br>'.join(description_parts)
+        
+        # Add next line if include_context is True
+        if include_context:
+            selected_index = indexed_rows.index(selected_item)
+            if selected_index < len(indexed_rows) - 1:
+                next_line_num, next_row = indexed_rows[selected_index + 1]
+                next_content = next_row.get(title_column_name, '').strip()
+                if next_content:
+                    if is_newline_delimiter:
+                        next_content = next_content.replace('\n', '<br>')
+                    main_description += f'<hr style="border: 1px solid #ddd; margin: 10px 0;"><div style="color: #888; font-style: italic;">下一行 (第{next_line_num}行): {next_content}</div>'
+        
         if main_description:
             description = f"{context}<br><br>{main_description}"
         else:

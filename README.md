@@ -40,6 +40,12 @@ uv run flask run
 Extract random content blocks from various file formats.
 - Supports: `CSV`, `TSV`, `TXT`, `PDF`, `EPUB`, `MOBI`, and Web URLs.
 - Features: Automatic paragraph joining for PDFs and readability extraction for web pages.
+- Parameters:
+  - `url`: Custom file URL (supports CSV/TXT/PDF/EPUB/MOBI or web pages)
+  - `title_col`: Column index for title (0-based, default: 0)
+  - `delimiter`: Separator type (`tab`, `newline`, `double_newline`, `triple_newline`, etc.)
+  - `min_length`: Minimum title length requirement
+  - `include_context`: Include previous and next lines in description when set to `true`
 
 ### Proxy Readability (`/proxy/readability`)
 A dedicated endpoint to extract clean text from any URL, stripping away ads and navigation.

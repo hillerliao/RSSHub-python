@@ -459,7 +459,8 @@ def random_line():
     title_col = request.args.get('title_col', default=0, type=int)
     delimiter = request.args.get('delimiter')
     min_length = request.args.get('min_length', default=0, type=int)
-    return render_template('main/atom.xml', **filter_content(ctx(url, title_col, delimiter=delimiter, min_length=min_length)))
+    include_context = request.args.get('include_context', default='false', type=str).lower() == 'true'
+    return render_template('main/atom.xml', **filter_content(ctx(url, title_col, delimiter=delimiter, min_length=min_length, include_context=include_context)))
 
 
 @bp.route('/hf_dataset')
