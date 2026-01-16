@@ -92,9 +92,3 @@ We welcome new spiders!
 
 - **Discord**: [Join our server](https://discord.gg/4BZBZuyx7p)
 - **Contribution Guide**: Check our [crawler tutorial](https://juejin.cn/post/6953881777756700709) (Chinese).
-
----
-*Actually writing crawlers in Python is more convenient than JS :p*
-
-
-[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
