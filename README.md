@@ -95,3 +95,6 @@ We welcome new spiders!
 
 ---
 *Actually writing crawlers in Python is more convenient than JS :p*
+
+
+[![Powered by DartNode](https://dartnode.com/branding/DN-Open-Source-sm.png)](https://dartnode.com "Powered by DartNode - Free VPS for Open Source")
