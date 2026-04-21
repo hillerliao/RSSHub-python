@@ -18,7 +18,7 @@ dependencies = [
     "Flask-Caching==2.3.0",
     "Jinja2==3.1.2",
     "parsel==1.8.1",
-    "python-dotenv==1.2.1",
+    "python-dotenv==1.2.2",
     "pytz==2025.2",
     "Requests==2.32.5",
     "setuptools==80.9.0",
