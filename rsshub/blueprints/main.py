@@ -482,3 +482,10 @@ def xhunt_trends(group='global', hours='24', tag='ai'):
     from rsshub.spiders.xhunt.trends import ctx
     return render_template('main/atom.xml', **filter_content(ctx(group, hours, tag)))
 
+
+@bp.route('/ps/tag/<string:category>')
+@swr_cache(timeout=1800) 
+def five_hundred_px(category="recommendTime"):
+    from rsshub.spiders.px.tag import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
