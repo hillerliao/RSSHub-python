@@ -482,3 +482,24 @@ def xhunt_trends(group='global', hours='24', tag='ai'):
     from rsshub.spiders.xhunt.trends import ctx
     return render_template('main/atom.xml', **filter_content(ctx(group, hours, tag)))
 
+
+@bp.route('/yikecaiwan/journal')
+@swr_cache(timeout=3600)  # 1小时缓存，使用SWR策略（spider会并发抓取全部日记全文，避免每次请求都重复抓）
+def yikecaiwan_journal():
+    from rsshub.spiders.yikecaiwan.journal import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
+@bp.route('/yikecaiwan/weekly')
+@swr_cache(timeout=3600)  # 1小时缓存，使用SWR策略（spider会并发抓取每期周报全文）
+def yikecaiwan_weekly():
+    from rsshub.spiders.yikecaiwan.weekly import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
+
+@bp.route('/yikecaiwan/sitemap')
+@cache.cached(timeout=3600)  # 1小时缓存
+def yikecaiwan_sitemap():
+    from rsshub.spiders.yikecaiwan.sitemap import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
