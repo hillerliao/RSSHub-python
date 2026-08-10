@@ -1,90 +1,68 @@
 import re
 import asyncio
 import arrow
-try:
-    from playwright.async_api import async_playwright
-    HAS_PLAYWRIGHT = True
-except ImportError:
-    HAS_PLAYWRIGHT = False
 from bs4 import BeautifulSoup
+from rsshub.spiders.utils.browser import browser_pool, HAS_PLAYWRIGHT
 
 
-async def get_user_statuses(user_id):
-    """使用 Playwright 获取用户动态"""
-    async with async_playwright() as p:
-        # Use async context manager for browser to ensure it handles cleanup
-        async with await p.chromium.launch(
-            headless=True,
-            args=['--no-sandbox', '--disable-dev-shm-usage']
-        ) as browser:
-            page = await browser.new_page()
-            
-            # 设置反检测 (Manual Stealth)
-            await page.add_init_script("""
-                Object.defineProperty(navigator, 'webdriver', {
-                    get: () => undefined
-                });
-            """)
-            await page.set_extra_http_headers({
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-            })
+async def scrape_user_statuses(page, user_id):
+    """在复用的浏览器页面上抓取用户动态"""
+    # 设置反检测 (Manual Stealth)
+    await page.add_init_script("""
+        Object.defineProperty(navigator, 'webdriver', {
+            get: () => undefined
+        });
+    """)
+    await page.set_extra_http_headers({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    })
 
-            # Block unnecessary resources
-            await page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2,css}", lambda route: route.abort())
-            
-            try:
-                await page.goto(f"https://xueqiu.com/u/{user_id}", wait_until='domcontentloaded')
-                await page.wait_for_selector('.timeline__item', timeout=15000)
-                
-                # 模拟滚动加载
-                for _ in range(3):
-                    await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
-                    await asyncio.sleep(2)
-                
-                content = await page.content()
-                soup = BeautifulSoup(content, 'html.parser')
-                
-                all_posts = []
-                screen_name = f'用户{user_id}'
-                description = '雪球用户'
-                
-                # 提取昵称和简介
-                info_div = soup.select_one('.profiles__hd__info')
-                if info_div:
-                    h2_tag = info_div.find('h2')
-                    p_tag = info_div.find('p')
-                    if h2_tag:
-                        screen_name = h2_tag.get_text(strip=True)
-                    if p_tag:
-                        description = p_tag.get_text(strip=True)
-                
-                timeline_items = soup.find_all('article', class_='timeline__item')
-                for item in timeline_items[:5]:
-                    content_element = item.select_one('.timeline__item__content .content--description > div')
-                    content = content_element.get_text(strip=True, separator='\n') if content_element else "N/A"
-                    time_element = item.find('a', class_='date-and-source')
-                    timestamp = time_element.get_text(strip=True) if time_element else "N/A"
-                    link = "https://xueqiu.com" + time_element['href'] if time_element and time_element.has_attr('href') else f"https://xueqiu.com/u/{user_id}"
-                    all_posts.append({
-                        'content': content,
-                        'timestamp': timestamp,
-                        'link': link
-                    })
-                
-                return {
-                    'screen_name': screen_name,
-                    'description': description,
-                    'posts': all_posts
-                }
-                
-            except Exception as e:
-                # Browser will close automatically due to context manager
-                print(f"Error fetching Xueqiu user {user_id}: {e}")
-                return {
-                    'screen_name': f'用户{user_id}',
-                    'description': '雪球用户',
-                    'posts': []
-                }
+    # Block unnecessary resources
+    await page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2,css}", lambda route: route.abort())
+
+    await page.goto(f"https://xueqiu.com/u/{user_id}", wait_until='domcontentloaded')
+    await page.wait_for_selector('.timeline__item', timeout=15000)
+
+    # 模拟滚动加载
+    for _ in range(3):
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        await asyncio.sleep(2)
+
+    content = await page.content()
+    soup = BeautifulSoup(content, 'html.parser')
+
+    all_posts = []
+    screen_name = f'用户{user_id}'
+    description = '雪球用户'
+
+    # 提取昵称和简介
+    info_div = soup.select_one('.profiles__hd__info')
+    if info_div:
+        h2_tag = info_div.find('h2')
+        p_tag = info_div.find('p')
+        if h2_tag:
+            screen_name = h2_tag.get_text(strip=True)
+        if p_tag:
+            description = p_tag.get_text(strip=True)
+
+    timeline_items = soup.find_all('article', class_='timeline__item')
+    for item in timeline_items[:5]:
+        content_element = item.select_one('.timeline__item__content .content--description > div')
+        content = content_element.get_text(strip=True, separator='\n') if content_element else "N/A"
+        time_element = item.find('a', class_='date-and-source')
+        timestamp = time_element.get_text(strip=True) if time_element else "N/A"
+        link = "https://xueqiu.com" + time_element['href'] if time_element and time_element.has_attr('href') else f"https://xueqiu.com/u/{user_id}"
+        all_posts.append({
+            'content': content,
+            'timestamp': timestamp,
+            'link': link
+        })
+
+    return {
+        'screen_name': screen_name,
+        'description': description,
+        'posts': all_posts
+    }
 
 def parse_status(status, user_id, screen_name=None):
     """解析单条动态数据"""
@@ -120,7 +98,15 @@ def ctx(user_id=None):
             }]
         }
 
-    result = asyncio.run(get_user_statuses(user_id))
+    try:
+        result = browser_pool.run(lambda page: scrape_user_statuses(page, user_id))
+    except Exception as e:
+        print(f"Error fetching Xueqiu user {user_id}: {e}")
+        result = {
+            'screen_name': f'用户{user_id}',
+            'description': '雪球用户',
+            'posts': []
+        }
     items = [parse_status(s, user_id, result['screen_name']) for s in result['posts']]
     return {
         'title': f"{result['screen_name']} - 雪球动态",

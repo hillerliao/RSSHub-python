@@ -1,50 +1,34 @@
 import re
 import asyncio
-try:
-    from playwright.async_api import async_playwright
-    HAS_PLAYWRIGHT = True
-except ImportError:
-    HAS_PLAYWRIGHT = False
 from rsshub.utils import DEFAULT_HEADERS
+from rsshub.spiders.utils.browser import browser_pool, HAS_PLAYWRIGHT
 
 domain = 'https://www.producthunt.com'
 
-async def get_search_html(keyword, period):
-    if not HAS_PLAYWRIGHT:
-        print("DEBUG: Playwright not installed (Lite Mode).")
+async def get_search_html(page, keyword, period):
+    await page.set_extra_http_headers({
+        'User-Agent': DEFAULT_HEADERS.get('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+    })
+
+    # Add init script to hide webdriver property (stealth)
+    await page.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+
+    # Block images and fonts to speed up loading
+    await page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2}", lambda route: route.abort())
+
+    url = f'{domain}/search?q={keyword}&postedAfter={period}:days'
+
+    try:
+        await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+        await asyncio.sleep(5)
+        content = await page.content()
+        print(f"DEBUG: Fetched HTML length: {len(content)}")
+        if len(content) < 1000:
+            print(f"DEBUG: Content preview: {content}")
+        return content
+    except Exception as e:
+        print(f"Error fetching page: {e}")
         return ""
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(
-            headless=True,
-            args=['--no-sandbox', '--disable-dev-shm-usage']
-        )
-        context = await browser.new_context(
-            user_agent=DEFAULT_HEADERS.get('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
-        )
-        
-        # Add init script to hide webdriver property (stealth)
-        await context.add_init_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-        
-        page = await context.new_page()
-        
-        # Block images and fonts to speed up loading
-        await page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2}", lambda route: route.abort())
-        
-        url = f'{domain}/search?q={keyword}&postedAfter={period}:days'
-        
-        try:
-            await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-            await asyncio.sleep(5) 
-            content = await page.content()
-            print(f"DEBUG: Fetched HTML length: {len(content)}")
-            if len(content) < 1000:
-                print(f"DEBUG: Content preview: {content}")
-            return content
-        except Exception as e:
-            print(f"Error fetching page: {e}")
-            return ""
-        finally:
-            await browser.close()
 
 def parse_products(html):
     print("DEBUG: Parsing products with robust heuristic...")
@@ -104,7 +88,7 @@ def ctx(keyword='', period=''):
             }]
         }
 
-    html = asyncio.run(get_search_html(keyword, period))
+    html = browser_pool.run(lambda page: get_search_html(page, keyword, period))
     items = parse_products(html)
     
     return {

@@ -1,12 +1,8 @@
 import re
 import json
-import time
+import asyncio
 from bs4 import BeautifulSoup
-try:
-    from playwright.sync_api import sync_playwright
-    HAS_PLAYWRIGHT = True
-except ImportError:
-    HAS_PLAYWRIGHT = False
+from rsshub.spiders.utils.browser import browser_pool, HAS_PLAYWRIGHT
 
 domain = 'https://www.economist.com'
 
@@ -24,32 +20,27 @@ def parse_news(gobbet):
     }
     return item
 
-def get_content_with_playwright(url):
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-dev-shm-usage'])
-        context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        )
-        page = context.new_page()
-        
-        # Block unnecessary resources
-        page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2,css}", lambda route: route.abort())
+async def get_content_with_playwright(page, url):
+    await page.set_extra_http_headers({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    })
 
-        try:
-            # Increase timeout to 60s and wait for domcontentloaded which is faster
-            page.goto(url, wait_until='domcontentloaded', timeout=60000)
-            # Wait for content to load
-            page.wait_for_selector("main", timeout=60000)
-            # Scroll to trigger lazy loading
-            page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
-            time.sleep(5)
-            content = page.content()
-            return content
-        except Exception as e:
-            print(f"Error fetching content: {e}")
-            return None
-        finally:
-            browser.close()
+    # Block unnecessary resources
+    await page.route("**/*.{png,jpg,jpeg,gif,svg,woff,woff2,css}", lambda route: route.abort())
+
+    try:
+        # Increase timeout to 60s and wait for domcontentloaded which is faster
+        await page.goto(url, wait_until='domcontentloaded', timeout=60000)
+        # Wait for content to load
+        await page.wait_for_selector("main", timeout=60000)
+        # Scroll to trigger lazy loading
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
+        await asyncio.sleep(5)
+        content = await page.content()
+        return content
+    except Exception as e:
+        print(f"Error fetching content: {e}")
+        return None
 
 def ctx(category=''):
     """
@@ -70,7 +61,7 @@ def ctx(category=''):
             }]
         }
 
-    html = get_content_with_playwright(url)
+    html = browser_pool.run(lambda page: get_content_with_playwright(page, url))
     
     if not html:
         raise ValueError("Failed to retrieve content from The Economist")
