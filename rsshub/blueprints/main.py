@@ -413,6 +413,14 @@ def xueqiu_user(user_id):
     return render_template('main/atom.xml', **filter_content(ctx(user_id)))
 
 
+@bp.route('/xueqiu/stock/<string:symbol>')
+@bp.route('/xueqiu/stock')
+@swr_cache(timeout=1800)  # 30分钟缓存
+def xueqiu_stock(symbol='TSLA'):
+    from rsshub.spiders.xueqiu.stock import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(symbol)))
+
+
 @bp.route('/qieman/po_adjust/<string:portfolio_id>')
 @swr_cache(timeout=3600)
 def qieman_po_adjust(portfolio_id='SI000108'):
@@ -498,7 +506,7 @@ def yikecaiwan_weekly():
 
 
 @bp.route('/yikecaiwan/sitemap')
-@cache.cached(timeout=3600)  # 1小时缓存
+@swr_cache(timeout=3600)  # 1小时缓存，使用SWR策略（spider会并发抓取全部带日期页面的全文）
 def yikecaiwan_sitemap():
     from rsshub.spiders.yikecaiwan.sitemap import ctx
     return render_template('main/atom.xml', **filter_content(ctx()))
