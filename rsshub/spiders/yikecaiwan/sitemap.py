@@ -60,9 +60,13 @@ def ctx():
     }
 
     try:
-        res = requests.get(SITEMAP_URL, headers=DEFAULT_HEADERS)
+        res = requests.get(SITEMAP_URL, headers=DEFAULT_HEADERS, timeout=15)
         res.raise_for_status()
-        tree = BeautifulSoup(res.text, 'xml')
+        try:
+            tree = BeautifulSoup(res.text, 'xml')
+        except Exception:
+            # Vercel 环境的 requirements.txt 未包含 lxml，回退到 html.parser
+            tree = BeautifulSoup(res.text, 'html.parser')
     except Exception:
         return empty_feed
 

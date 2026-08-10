@@ -16,7 +16,8 @@ def parse_item(li):
     4. <li><a href="...">YYYY-MM-DD</a></li>  (link only, no description)
     """
     text = li.get_text(strip=True)
-    link_elem = li.find('a')
+    # 优先取指向日记文章的锚点，避免误选摘要文本中的其他链接
+    link_elem = li.find('a', href=re.compile(r'/journal/\d{4}-\d{2}-\d{2}')) or li.find('a')
     href = link_elem.get('href') if link_elem else None
 
     # Extract date from link text first, fallback to full text
