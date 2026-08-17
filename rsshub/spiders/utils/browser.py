@@ -76,10 +76,24 @@ class BrowserPool:
                 pass
             self._playwright = None
         self._playwright = await async_playwright().start()
-        self._browser = await self._playwright.chromium.launch(
+        # 优先使用系统 Chrome/Edge：自带 Chromium 容易被 Cloudflare 等反爬拦截
+        # （例如 economist.com 直接返回 403 挑战页），系统浏览器指纹更真实。
+        launch_kwargs = dict(
             headless=True,
             args=['--no-sandbox', '--disable-dev-shm-usage'],
         )
+        self._browser = None
+        for channel in ('chrome', 'msedge', None):
+            try:
+                if channel:
+                    self._browser = await self._playwright.chromium.launch(channel=channel, **launch_kwargs)
+                else:
+                    self._browser = await self._playwright.chromium.launch(**launch_kwargs)
+                break
+            except Exception as e:
+                print(f'[browser] launch channel={channel} failed: {e}')
+        if self._browser is None:
+            raise RuntimeError('Failed to launch any Chromium browser')
         # 等待浏览器 CDP 连接就绪，避免 launch 后立即 new_page 触发上下文错乱
         for _ in range(20):
             if self._browser.is_connected():
@@ -98,24 +112,36 @@ class BrowserPool:
         """
         self._ensure_loop()
 
+        # 每次请求使用独立 context 并携带真实 UA/视口。注意：
+        # page.set_extra_http_headers 设置的 User-Agent 在 Playwright 中不生效，
+        # 只能通过 context 的 user_agent 参数指定，否则会带 HeadlessChrome 标识
+        # 被 Cloudflare 等反爬拦截（例如 economist.com 返回 403 挑战页）。
+        context_kwargs = {
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+            'viewport': {'width': 1920, 'height': 1080},
+            'locale': 'en-US',
+        }
+
         async def wrapper():
             browser = await self._get_browser()
             self._last_used = self._loop.time()
             try:
-                page = await browser.new_page()
+                context = await browser.new_context(**context_kwargs)
+                page = await context.new_page()
             except Exception as e:
-                # 上下文句柄错乱时彻底重建 Playwright，再开新 page
+                # 上下文句柄错乱时彻底重建 Playwright，再开新 context/page
                 if 'TargetClosedError' in type(e).__name__ or 'Protocol error' in str(e):
                     await self._restart_playwright()
                     browser = self._browser
-                    page = await browser.new_page()
+                    context = await browser.new_context(**context_kwargs)
+                    page = await context.new_page()
                 else:
                     raise
             try:
                 return await page_task(page)
             finally:
                 try:
-                    await page.close()
+                    await context.close()
                 except Exception:
                     pass
                 self._last_used = self._loop.time()

@@ -1,7 +1,7 @@
 from rsshub.utils import fetch
 from rsshub.utils import DEFAULT_HEADERS
 
-domain = 'https://www.chaindd.com'
+domain = 'https://www.chaindd.net'
 
 
 def parse(post):
@@ -17,7 +17,7 @@ def parse(post):
 
 
 def ctx(category=''):
-    DEFAULT_HEADERS.update({'Referer': f'https://www.chaindd.com/column/{category}'}) 
+    DEFAULT_HEADERS.update({'Referer': f'{domain}/column/{category}'}) 
     url = f"{domain}/column/{category}"
     tree = fetch(url)
     if not tree:

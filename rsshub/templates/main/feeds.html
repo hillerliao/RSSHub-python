@@ -444,10 +444,10 @@
                 <h4 class="card-title">Earnings Date</h4>
                 <h6 class="text-muted">Earnings Date <a href="https://github.com/hillerliao" target="_blank"
                                 class="badge badge-secondary">by hillerliao</a></h6>
-                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/earningsdate/businesswire"
-                                target="_blank">https://pyrsshub.vercel.app/earningsdate/businesswire</a></p>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/earningsdate/prnewswire"
+                                target="_blank">https://pyrsshub.vercel.app/earningsdate/prnewswire</a></p>
                 <p class="card-text">路由：<code>/earningsdate/:category</code></p>
-                <p class="card-text">参数：category [必填，可以为“businesswire、globenewswire、prnewswire”]</p>
+                <p class="card-text">参数：category [必填，可以为“prnewswire、globenewswire”；businesswire 上游已失效]</p>
         </div>
 </div>
 <br>
@@ -563,6 +563,21 @@
 <!--item info start-->
 <div class="card text-left">
         <div class="card-body">
+                <h4 class="card-title">东方财富网快讯</h4>
+                <h6 class="text-muted">东方财富网快讯 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/eastmoney/kuaixun"
+                                target="_blank">https://pyrsshub.vercel.app/eastmoney/kuaixun</a></p>
+                <p class="card-text">路由：<code>/eastmoney/kuaixun/:category?</code></p>
+                <p class="card-text">参数：category [可选，分类，如 focus / zhibo / company / region / us / centralbank / fed / economydata / stock / commodity / fx / bond / fund，默认 all（7x24 全球直播）；也可直接传 column 编号]</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
                 <h4 class="card-title">选股宝板块/主题动态</h4>
                 <h6 class="text-muted">选股宝板块/主题动态 <a href="https://github.com/hillerliao" target="_blank"
                                 class="badge badge-secondary">by hillerliao</a></h6>
@@ -599,6 +614,70 @@
                 <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/cls/telegraph"
                                 target="_blank">https://pyrsshub.vercel.app/cls/telegraph</a></p>
                 <p class="card-text">路由：<code>/cls/telegraph</code></p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">证券时报网快讯</h4>
+                <h6 class="text-muted">证券时报网快讯 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/stcn/kuaixun"
+                                target="_blank">https://pyrsshub.vercel.app/stcn/kuaixun</a></p>
+                <p class="card-text">路由：<code>/stcn/kuaixun/:tag?</code></p>
+                <p class="card-text">参数：tag [可选，标签，如 ipoc，见 https://www.stcn.com/article/kx-tag-detail.html?tag=xxx]</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">同花顺7x24实时新闻</h4>
+                <h6 class="text-muted">同花顺7x24实时新闻 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/10jqka/realtimenews"
+                                target="_blank">https://pyrsshub.vercel.app/10jqka/realtimenews</a></p>
+                <p class="card-text">路由：<code>/10jqka/realtimenews/:category?</code></p>
+                <p class="card-text">参数：category [可选，分类，news（要闻直播）/ econ（经济数据），默认 news，见 https://news.10jqka.com.cn/realtimenews.html]</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">金十数据快讯</h4>
+                <h6 class="text-muted">金十数据快讯 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/jin10"
+                                target="_blank">https://pyrsshub.vercel.app/jin10</a></p>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/jin10/category/36"
+                                target="_blank">https://pyrsshub.vercel.app/jin10/category/36</a>（期货分类）</p>
+                <p class="card-text">路由：<code>/jin10/:category?</code>，分类用 <code>/jin10/category/:id</code> 或直接传中文分类名</p>
+                <p class="card-text">参数：category [可选，分类，如 2(黄金) / 36(期货) / 53(美联储) / 黄金 / 美联储；默认全部快讯]</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">金色财经快讯</h4>
+                <h6 class="text-muted">金色财经快讯 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/jinse/lives"
+                                target="_blank">https://pyrsshub.vercel.app/jinse/lives</a></p>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/jinse/lives/AI"
+                                target="_blank">https://pyrsshub.vercel.app/jinse/lives/AI</a>（AI分类）</p>
+                <p class="card-text">路由：<code>/jinse/lives/:category?</code></p>
+                <p class="card-text">参数：category [可选，分类，0 全部 / 1 精选 / 7 政策 / 2 数据 / 5 AI / 9 Alpha，也支持中文分类名，如 政策 / AI；默认全部]</p>
         </div>
 </div>
 <br>

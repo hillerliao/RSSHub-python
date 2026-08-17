@@ -156,11 +156,6 @@ def earningsdate_globenewswire():
     from rsshub.spiders.earningsdate.globenewswire import ctx
     return render_template('main/atom.xml', **filter_content(ctx()))
 
-@bp.route('/earningsdate/businesswire')
-def earningsdate_businesswire():
-    from rsshub.spiders.earningsdate.businesswire import ctx
-    return render_template('main/atom.xml', **filter_content(ctx()))
-
 @bp.route('/jiemian/newsflash/<string:category>')
 def jiemian_newsflash(category=''):
     from rsshub.spiders.jiemian.newsflash import ctx
@@ -172,6 +167,7 @@ def csrc_audit(category=''):
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/caixin/scroll/<string:category>')
+@swr_cache(timeout=300)  # SWR缓存，降低财新网关请求频率，规避风控403
 def caixin_scroll(category=''):
     from rsshub.spiders.caixin.scroll import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
@@ -180,6 +176,43 @@ def caixin_scroll(category=''):
 def eastmoney_report(category='', type=''):
     from rsshub.spiders.eastmoney.report import ctx
     return render_template('main/atom.xml', **filter_content(ctx(type,category)))
+
+@bp.route('/eastmoney/kuaixun/<string:category>')
+@bp.route('/eastmoney/kuaixun')
+def eastmoney_kuaixun(category='all'):
+    from rsshub.spiders.eastmoney.kuaixun import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+@bp.route('/stcn/kuaixun/<string:tag>')
+@bp.route('/stcn/kuaixun')
+@swr_cache(timeout=600)  # 10分钟SWR缓存,快讯接口依赖会话Cookie,降低请求频率防风控
+def stcn_kuaixun(tag=''):
+    from rsshub.spiders.stcn.kuaixun import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(tag)))
+
+@bp.route('/10jqka/realtimenews/<string:category>')
+@bp.route('/10jqka/realtimenews')
+@swr_cache(timeout=300)  # 5分钟SWR缓存,快讯接口,降低请求频率防风控
+def ths_realtimenews(category='news'):
+    from rsshub.spiders.ths.realtimenews import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
+@bp.route('/jin10/category/<string:category>')
+@bp.route('/jin10/important')
+@bp.route('/jin10')
+@swr_cache(timeout=300)  # 5分钟SWR缓存
+def jin10_kuaixun(category='', important=''):
+    from rsshub.spiders.jin10.kuaixun import ctx
+    if request.path.endswith('/important'):
+        important = '1'
+    return render_template('main/atom.xml', **filter_content(ctx(category, important)))
+
+@bp.route('/jinse/lives/<string:category>')
+@bp.route('/jinse/lives')
+@swr_cache(timeout=300)  # 5分钟SWR缓存
+def jinse_lives(category='all'):
+    from rsshub.spiders.jinse.lives import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/xuangubao/<string:type>/<string:category>')
 def xuangubao_xuangubao(type='', category=''):

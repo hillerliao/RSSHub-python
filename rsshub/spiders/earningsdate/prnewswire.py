@@ -4,14 +4,16 @@ domain = 'https://www.prnewswire.com'
 
 def parse(post):
     item = {}
-    h3_elems = post.select('h3')
-    item['title'] = h3_elems[1].get_text() if len(h3_elems) > 1 else ''
+    h3 = post.select_one('h3')
+    small_elem = h3.select_one('small') if h3 else None
+    item['pubDate'] = small_elem.get_text().strip() if small_elem else ''
+    if small_elem:
+        small_elem.extract()
+    item['title'] = h3.get_text().strip() if h3 else ''
     p_elem = post.select('p')
     item['description'] = p_elem[0].get_text() if p_elem else ''
-    a_elem = post.select('a')
-    item['link'] = f"{domain}{a_elem[0]['href']}" if a_elem else ''
-    small_elem = post.select('small')
-    item['pubDate'] = small_elem[0].get_text() if small_elem else ''
+    a_elem = post.select_one('a.newsreleaseconsolidatelink')
+    item['link'] = f"{domain}{a_elem['href']}" if a_elem else ''
     return item
 
 def ctx(category=''):

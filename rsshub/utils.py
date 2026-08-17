@@ -15,11 +15,20 @@ DEFAULT_HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Appl
 
 
 class XMLResponse(Response):
-    def __init__(self, response, **kwargs):
+    def __init__(self, response=None, status=None, headers=None, **kwargs):
+        # werkzeug's test client calls response_wrapper(response, status, headers, request=...)
+        # and passes 'request' through; consume it here.
+        kwargs.pop('request', None)
         if 'mimetype' not in kwargs and 'contenttype' not in kwargs:
-            if response.startswith('<?xml'):
+            text = response
+            if isinstance(text, bytes):
+                try:
+                    text = text.decode('utf-8')
+                except UnicodeDecodeError:
+                    text = None
+            if isinstance(text, str) and text.startswith('<?xml'):
                 kwargs['mimetype'] = 'application/xml'
-        return super().__init__(response, **kwargs)
+        return super().__init__(response, status, headers, **kwargs)
 
 
 def fetch(url: str, headers: dict=DEFAULT_HEADERS, proxies: dict=None):

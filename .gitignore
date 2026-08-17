@@ -29,3 +29,4 @@ debug*
 # Logs
 logs/
 *.log
+tmp*
