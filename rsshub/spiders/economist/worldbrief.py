@@ -33,15 +33,6 @@ def parse_news_page(data, page_url):
     raw = extract_news_html(data)
 
     description = ''
-    # ZINGER 类型（Quote of the day）：内容在 component.zinger 里
-    if not raw and component.get('type') == 'ZINGER' and isinstance(component.get('zinger'), dict):
-        zinger = component['zinger']
-        quote = zinger.get('quote') or ''
-        author = zinger.get('author') or ''
-        description = f'<blockquote><p>{quote}</p><footer>— {author}</footer></blockquote>'
-        if headline.startswith('Quote of the day') and author and author not in headline:
-            headline = f'{headline}: {author}'
-
     for gobbet in raw:
         text_html = gobbet.get('textHtml')
         if text_html:
@@ -75,15 +66,18 @@ async def get_page_json(page, url, retries=3):
     for attempt in range(1, retries + 1):
         try:
             await page.goto(url, wait_until='commit', timeout=60000)
-            # DataDome 挑战页没有 __NEXT_DATA__，等待它出现（会因无 JS 挑战而失败）
-            try:
-                await page.wait_for_selector('script#__NEXT_DATA__', state='attached', timeout=20000)
-            except Exception:
-                pass
-            html = await page.content()
         except Exception as e:
-            print(f"Error fetching {url}: {e}")
+            print(f"Error fetching {url} (attempt {attempt}/{retries}): {e}")
+            if attempt < retries:
+                await asyncio.sleep(attempt * 5)
+                continue
             return None
+        # DataDome 挑战页没有 __NEXT_DATA__，等待它出现（会因无 JS 挑战而失败）
+        try:
+            await page.wait_for_selector('script#__NEXT_DATA__', state='attached', timeout=20000)
+        except Exception:
+            pass
+        html = await page.content()
 
         soup = BeautifulSoup(html, 'html.parser')
         script_tag = soup.find('script', id="__NEXT_DATA__", type="application/json")
@@ -131,7 +125,13 @@ def ctx(category=''):
         content = data.get('props', {}).get('pageProps', {}).get('content', {})
         component = content.get('component', {})
         raw = extract_news_html(data)
-        if component.get('type') in ('GOBBETS', 'ZINGER') or raw:
+        headline = (component.get('headline') or component.get('metadataTitle') or '').strip()
+        # 过滤非 brief 内容：Quote of the day（ZINGER）与 Daily quiz（CHUNK 但 headline 固定）
+        is_non_brief = (
+            component.get('type') == 'ZINGER'
+            or headline.lower().startswith('daily quiz')
+        )
+        if not is_non_brief and (component.get('type') in ('GOBBETS', 'CHUNK') or raw):
             items.append(parse_news_page(data, current_url))
 
         # 找出下一页链接
