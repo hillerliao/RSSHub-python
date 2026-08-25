@@ -548,13 +548,15 @@
 <!--item info start-->
 <div class="card text-left">
         <div class="card-body">
-                <h4 class="card-title">东方财富网行业/个股研报</h4>
-                <h6 class="text-muted">东方财富网行业/个股研报 <a href="https://github.com/hillerliao" target="_blank"
+                <h4 class="card-title">东方财富网研报</h4>
+                <h6 class="text-muted">东方财富网研报 <a href="https://github.com/hillerliao" target="_blank"
                                 class="badge badge-secondary">by hillerliao</a></h6>
-                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/eastmoney/report/stock/473"
-                                target="_blank">https://pyrsshub.vercel.app/eastmoney/report/stock/473</a></p>
-                <p class="card-text">路由：<code>/eastmoney/report/:type/:category</code></p>
-                <p class="card-text">参数：type, category [必填，见东方财富网研报频道 ]</p>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/eastmoney/report/macresearch"
+                                target="_blank">https://pyrsshub.vercel.app/eastmoney/report/macresearch</a></p>
+                <p class="card-text">路由：<code>/eastmoney/report/:type/:category?</code></p>
+                <p class="card-text">参数：<code>type</code> 必填 [stock 个股研报 / industry 行业研报 / strategyreport 策略报告 / macresearch 宏观研究 / brokerreport 券商晨会 / newstock 新股研报]</p>
+                <p class="card-text">参数：<code>category</code> 可选 [行业代码，仅 stock / industry 需要，如 <a href="https://pyrsshub.vercel.app/eastmoney/report/stock/473"
+                                target="_blank">/eastmoney/report/stock/473</a>]</p>
         </div>
 </div>
 <br>
@@ -1215,5 +1217,21 @@
 </div>
 <br>
 <!--item yikecaiwan end-->
+
+<!--item prudential start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">Prudential 香港保诚</h4>
+                <h6 class="text-muted">保险知识（Knowledge Corner） <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/prudential/knowledge-corner"
+                                target="_blank">https://pyrsshub.vercel.app/prudential/knowledge-corner</a></p>
+                <p class="card-text">路由：<code>/prudential/knowledge-corner</code>，可指定分类：<code>/prudential/knowledge-corner/&lt;分类&gt;</code></p>
+                <p class="card-text">功能：获取 <a href="https://www.prudential.com.hk/sc/knowledge-corner/understanding-insurance/"
+                                target="_blank">保诚香港保险知识</a> 文章列表及全文（默认分类：understanding-insurance 保险入门）</p>
+        </div>
+</div>
+<br>
+<!--item prudential end-->
 
 {% endblock content %}

@@ -173,9 +173,10 @@ def caixin_scroll(category=''):
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/eastmoney/report/<string:type>/<string:category>')
+@bp.route('/eastmoney/report/<string:type>')
 def eastmoney_report(category='', type=''):
     from rsshub.spiders.eastmoney.report import ctx
-    return render_template('main/atom.xml', **filter_content(ctx(type,category)))
+    return render_template('main/atom.xml', **filter_content(ctx(type, category)))
 
 @bp.route('/eastmoney/kuaixun/<string:category>')
 @bp.route('/eastmoney/kuaixun')
@@ -543,4 +544,12 @@ def yikecaiwan_weekly():
 def yikecaiwan_sitemap():
     from rsshub.spiders.yikecaiwan.sitemap import ctx
     return render_template('main/atom.xml', **filter_content(ctx()))
+
+
+@bp.route('/prudential/knowledge-corner/<string:category>')
+@bp.route('/prudential/knowledge-corner')
+@swr_cache(timeout=3600)  # 1小时缓存，使用SWR策略
+def prudential_knowledge_corner(category='understanding-insurance'):
+    from rsshub.spiders.prudential.knowledge_corner import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
 
