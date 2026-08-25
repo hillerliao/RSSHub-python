@@ -22,6 +22,9 @@ from bs4 import BeautifulSoup
 
 from rsshub.utils import DEFAULT_HEADERS
 
+# 港股频道主页(聚合头条+各栏目最新内容)
+HOME_URL = 'https://stock.10jqka.com.cn/hks/'
+
 # 港股频道子栏目 -> (列表页 URL, 栏目名)
 CATEGORY_MAP = {
     'hknews': ('https://stock.10jqka.com.cn/hks/hknews_list/', '要闻'),
@@ -45,7 +48,7 @@ URL_DATE_RE = re.compile(r'/(20\d{2})(\d{2})(\d{2})/')
 
 
 def fetch_list(url):
-    """抓取列表页 HTML 并解码为文本(GBK,失败回退 utf-8)"""
+    """抓取列表页 HTML 并解码为文本(优先 GBK,页面含个别非法字节时用 replace 兜底)"""
     headers = DEFAULT_HEADERS.copy()
     headers.update({
         'Referer': 'https://stock.10jqka.com.cn/hks/',
@@ -55,9 +58,9 @@ def fetch_list(url):
     res.raise_for_status()
     raw = res.content
     try:
-        return raw.decode('gbk')
-    except UnicodeDecodeError:
-        return raw.decode('utf-8', errors='ignore')
+        return raw.decode('gbk', errors='replace')
+    except (UnicodeDecodeError, LookupError):
+        return raw.decode('utf-8', errors='replace')
 
 
 def parse_item(li):
@@ -96,37 +99,77 @@ def build_pubdate(time_str, link):
         return arrow.now().isoformat()
 
 
-def ctx(category='ggyj'):
-    if category not in CATEGORY_MAP:
-        category = 'ggyj'
-    url, name = CATEGORY_MAP[category]
+def fetch_home_items(html):
+    """主页聚合: 提取全部文章链接+标题(去重),头条区块带摘要"""
+    soup = BeautifulSoup(html, 'html.parser')
+    # 头条区(div.headList)的摘要,按链接映射
+    head_summaries = {}
+    for blk in soup.select('div.headList'):
+        a = blk.select_one('h2 a[href]')
+        p = blk.select_one('p.f14')
+        if a and p and a.get('href'):
+            head_summaries[a['href'].strip()] = p.get_text(strip=True)
 
-    try:
-        html = fetch_list(url)
-    except Exception as e:
-        print(f'[ths/hks] Fetch failed: {e}')
-        html = ''
+    # 收集全部文章链接(同一链接多区块标题截断,取最长)
+    merged = {}
+    for a in soup.select('a[href]'):
+        href = (a.get('href') or '').strip()
+        if '10jqka.com.cn' not in href or not re.search(r'/c\d+\.shtml$', href):
+            continue
+        title = (a.get('title') or a.get_text(strip=True) or '').strip()
+        if not title or len(title) < 4:
+            continue
+        if href not in merged or len(title) > len(merged[href]):
+            merged[href] = title
 
     items = []
-    if html:
-        soup = BeautifulSoup(html, 'html.parser')
-        for li in soup.select('div.list-con ul li'):
-            try:
-                parsed = parse_item(li)
-                if not parsed:
-                    continue
-                title, link, summary, time_str = parsed
-                if '10jqka.com.cn' not in link or not link.endswith('.shtml'):
-                    continue
-                items.append({
-                    'title': title,
-                    'link': link,
-                    'description': summary or title,
-                    'author': '同花顺',
-                    'pubDate': build_pubdate(time_str, link),
-                })
-            except Exception as e:
-                print(f'[ths/hks] Skipping bad item: {e}')
+    for href, title in merged.items():
+        items.append({
+            'title': title,
+            'link': href,
+            'description': head_summaries.get(href, title),
+            'author': '同花顺',
+            'pubDate': build_pubdate('', href),
+        })
+    return items
+
+
+def ctx(category='home'):
+    if category in ('home', '') or category not in CATEGORY_MAP:
+        url, name = HOME_URL, '港股主页'
+        try:
+            html = fetch_list(url)
+        except Exception as e:
+            print(f'[ths/hks] Fetch failed: {e}')
+            html = ''
+        items = fetch_home_items(html) if html else []
+    else:
+        url, name = CATEGORY_MAP[category]
+        try:
+            html = fetch_list(url)
+        except Exception as e:
+            print(f'[ths/hks] Fetch failed: {e}')
+            html = ''
+        items = []
+        if html:
+            soup = BeautifulSoup(html, 'html.parser')
+            for li in soup.select('div.list-con ul li'):
+                try:
+                    parsed = parse_item(li)
+                    if not parsed:
+                        continue
+                    title, link, summary, time_str = parsed
+                    if '10jqka.com.cn' not in link or not link.endswith('.shtml'):
+                        continue
+                    items.append({
+                        'title': title,
+                        'link': link,
+                        'description': summary or title,
+                        'author': '同花顺',
+                        'pubDate': build_pubdate(time_str, link),
+                    })
+                except Exception as e:
+                    print(f'[ths/hks] Skipping bad item: {e}')
 
     return {
         'title': f'同花顺港股-{name}',

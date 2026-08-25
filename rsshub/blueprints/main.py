@@ -201,7 +201,7 @@ def ths_realtimenews(category='news'):
 @bp.route('/10jqka/hks/<string:category>')
 @bp.route('/10jqka/hks')
 @swr_cache(timeout=600)  # 10分钟SWR缓存
-def ths_hks(category='ggyj'):
+def ths_hks(category='home'):
     from rsshub.spiders.ths.hks import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
