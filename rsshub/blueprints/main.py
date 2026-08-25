@@ -198,6 +198,13 @@ def ths_realtimenews(category='news'):
     from rsshub.spiders.ths.realtimenews import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/10jqka/hks/<string:category>')
+@bp.route('/10jqka/hks')
+@swr_cache(timeout=600)  # 10分钟SWR缓存
+def ths_hks(category='ggyj'):
+    from rsshub.spiders.ths.hks import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(category)))
+
 @bp.route('/jin10/category/<string:category>')
 @bp.route('/jin10/important')
 @bp.route('/jin10')
