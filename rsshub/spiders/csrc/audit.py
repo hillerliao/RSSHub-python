@@ -1,37 +1,55 @@
+import datetime
 import requests
-from bs4 import BeautifulSoup
 
 domain = 'https://neris.csrc.gov.cn'
 
 
 def parse(post):
     item = {}
-    title_li = post.select('li.templateTip li')
-    item['title'] = title_li[0].text.strip() if title_li else ''
-    audit_status_tds = post.select('td[style="font-weight:100 ;color: black ;position: relative;left:20px"]')
-    audit_status = [td.text.strip() for td in audit_status_tds]
-    audit_date_tds = post.select('td[style="font-weight:100 ;color:black;position: relative; "]')
-    audit_date = [td.text.strip() for td in audit_date_tds]
-    
-    description = item['title'] + '；'
-    for i in range(len(audit_status)):
-        description += '<' + audit_date[i] + ' ' + audit_status[i] + '>\n'
+    flows = post.get('aprvSchdPubFlowPOs') or []
+    title = f"关于{post.get('apptPubName')}的《{post.get('appMatrName')}》"
+    audit_status = [flow.get('taskName') for flow in flows if flow.get('taskName')]
+    audit_date = [
+        datetime.datetime.fromtimestamp(flow['fnshDate'] / 1000).strftime('%Y-%m-%d')
+        for flow in flows
+        if flow.get('fnshDate')
+    ]
 
-    item['title'] += '，' + audit_status[-1] if audit_status else ''
+    description = title + '；'
+    for d, s in zip(audit_date, audit_status):
+        description += f'<{d} {s}>\n'
+
+    item['title'] = title + ('，' + audit_status[-1] if audit_status else '')
     item['description'] = description
+    item['link'] = f"{domain}/alappl/home1/onlinealog?appMatrCde={post.get('supvAppMatruuid', '')}"
     item['pubDate'] = audit_date[-1] if audit_date else ''
     return item
 
 
 def ctx(category=''):
-    q_url = f"{domain}/alappl/home1/onlinealog.do"
     items = []
-    for i in range(1,4):
-        q_data = {"appMatrCde": category, "pageNo": str(i), "pageSize": "10"}
-        res = requests.post(q_url,data=q_data, verify=False)
-        soup = BeautifulSoup(res.text, 'html.parser')
-        posts = soup.select('tr[height="50"]')
-        items.extend(list(map(parse, posts)))
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Referer': f'{domain}/alappl/home1/onlinealog.do?appMatrCde={category}',
+    }
+    for i in range(1, 4):
+        q_params = {
+            'appMatrCde': category,
+            'appMatrName': '',
+            'apptName': '',
+            'pageNo': i,
+            'pageSize': 10,
+        }
+        try:
+            res = requests.get(f'{domain}/alappl/home1/newOnlinealog', params=q_params, headers=headers, verify=False, timeout=20)
+            data = res.json()
+        except (requests.RequestException, ValueError):
+            break
+        posts = data.get('appltList') or []
+        if not posts:
+            break
+        items.extend(map(parse, posts))
     return {
         'title': f'申请事项进度查询 - {category}  - 中国证监会',
         'link': f'{domain}/alappl/home1/onlinealog?appMatrCde={category}',
