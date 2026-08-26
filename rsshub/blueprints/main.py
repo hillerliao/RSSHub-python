@@ -108,6 +108,7 @@ def emagazine(category=''):
     from rsshub.spiders.emagazine.magazine import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+@bp.route('/bbwc/realtime/<string:category>')
 @bp.route('/bbwc/realtime')
 def bbwc_realtime(category=''):
     from rsshub.spiders.bbwc.realtime import ctx
@@ -336,9 +337,28 @@ def futu_live(lang=''):
     return render_template('main/atom.xml', **filter_content(ctx(lang)))    
 
 @bp.route('/baidu/suggest/<string:category>')
+@swr_cache(timeout=1800)  # 30分钟SWR缓存，百度接口海外访问不稳定，避免重复跨境请求
 def baidu_suggest(category=''):
     from rsshub.spiders.baidu.suggest import ctx
-    return render_template('main/atom.xml', **filter_content(ctx(category)))
+    return render_template('main/atom.xml', **ctx(category))
+
+@bp.route('/search/baidu/<string:keyword>')
+@swr_cache(timeout=1800)  # 30分钟SWR缓存
+def search_baidu(keyword=''):
+    from rsshub.spiders.search.baidu import ctx
+    return render_template('main/atom.xml', **ctx(keyword))
+
+@bp.route('/search/google/<string:keyword>')
+@swr_cache(timeout=1800)  # 30分钟SWR缓存
+def search_google(keyword=''):
+    from rsshub.spiders.search.google import ctx
+    return render_template('main/atom.xml', **ctx(keyword))
+
+@bp.route('/search/bing/<string:keyword>')
+@swr_cache(timeout=1800)  # 30分钟SWR缓存
+def search_bing(keyword=''):
+    from rsshub.spiders.search.bing import ctx
+    return render_template('main/atom.xml', **ctx(keyword))
 
 @bp.route('/mp/gh/<string:gh>')
 def mp_gh(gh=''):
