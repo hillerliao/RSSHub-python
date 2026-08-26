@@ -580,3 +580,10 @@ def prudential_knowledge_corner(category='understanding-insurance'):
     from rsshub.spiders.prudential.knowledge_corner import ctx
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
+
+@bp.route('/aia/press-releases')
+@swr_cache(timeout=3600)  # 1小时缓存，使用SWR策略（并发抓取新闻稿正文）
+def aia_press_releases():
+    from rsshub.spiders.aia.press_releases import ctx
+    return render_template('main/atom.xml', **filter_content(ctx()))
+
