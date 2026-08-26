@@ -201,7 +201,8 @@
                 <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/bbwc/realtime/2"
                                 target="_blank">https://pyrsshub.vercel.app/bbwc/realtime/2</a></p>
                 <p class="card-text">路由：<code>/bbwc/realtime/:category</code></p>
-                <p class="card-text">参数：category，分类，1 - 中文、2 - 英文</p>
+                <p class="card-text">参数：category [可选，栏目 ID；不带参数或无效 ID 时返回首页推荐流]</p>
+                <p class="card-text">常用栏目：11 - 科技、12 - 金融、13 - PURSUITS、14 - 视频、15 - 推荐、19 - 全球、20 - 商业、244 - 观点、1490 - AI 等</p>
         </div>
 </div>
 <br>
@@ -1234,6 +1235,22 @@
 <br>
 <!--item yikecaiwan end-->
 
+<!--item aia start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">AIA Hong Kong 友邦香港</h4>
+                <h6 class="text-muted">新闻稿（Press Releases） <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/aia/press-releases"
+                                target="_blank">https://pyrsshub.vercel.app/aia/press-releases</a></p>
+                <p class="card-text">路由：<code>/aia/press-releases</code></p>
+                <p class="card-text">功能：获取 <a href="https://www.aia.com.hk/zh-hk/about-aia/about-us/media-centre/press-releases"
+                                target="_blank">友邦香港新闻稿</a> 列表及正文全文</p>
+        </div>
+</div>
+<br>
+<!--item aia end-->
+
 <!--item prudential start-->
 <div class="card text-left">
         <div class="card-body">
@@ -1249,5 +1266,35 @@
 </div>
 <br>
 <!--item prudential end-->
+
+<!--item search start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">搜索引擎结果</h4>
+
+                <h6 class="text-muted">百度搜索 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/search/baidu/香港"
+                                target="_blank">https://pyrsshub.vercel.app/search/baidu/香港</a></p>
+                <p class="card-text">路由：<code>/search/baidu/:keyword</code></p>
+                <p class="card-text">keyword [必填， 搜索关键词]</p>
+
+                <h6 class="text-muted">Google 搜索 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/search/google/AI"
+                                target="_blank">https://pyrsshub.vercel.app/search/google/AI</a></p>
+                <p class="card-text">路由：<code>/search/google/:keyword</code></p>
+                <p class="card-text">keyword [必填， 搜索关键词]</p>
+
+                <h6 class="text-muted">Bing 搜索 <a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/search/bing/香港"
+                                target="_blank">https://pyrsshub.vercel.app/search/bing/香港</a></p>
+                <p class="card-text">路由：<code>/search/bing/:keyword</code></p>
+                <p class="card-text">keyword [必填， 搜索关键词]</p>
+        </div>
+</div>
+<br>
+<!--item search end-->
 
 {% endblock content %}
