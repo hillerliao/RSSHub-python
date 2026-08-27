@@ -17,10 +17,9 @@
 import re
 
 import arrow
-import requests
 from bs4 import BeautifulSoup
 
-from rsshub.utils import DEFAULT_HEADERS
+from rsshub.utils import DEFAULT_HEADERS, fetch_with_deadline
 
 # 港股频道主页(聚合头条+各栏目最新内容)
 HOME_URL = 'https://stock.10jqka.com.cn/hks/'
@@ -38,8 +37,9 @@ CATEGORY_MAP = {
     'ggmj': ('https://stock.10jqka.com.cn/hks/ggmj_list/', '名家'),
 }
 
-# 接口超时(避免上游慢导致网关 504)
-REQUEST_TIMEOUT = 8
+# 请求总预算(硬性截止,防止上游慢速爬行拖垮网关导致 504)
+REQUEST_DEADLINE = 5.0
+REQUEST_TIMEOUT = 4.0
 
 # 页面时间格式: 08月25日 19:59
 TIME_RE = re.compile(r'(\d{2})月(\d{2})日\s+(\d{2}):(\d{2})')
@@ -54,8 +54,7 @@ def fetch_list(url):
         'Referer': 'https://stock.10jqka.com.cn/hks/',
         'Accept': 'text/html, */*;q=0.8',
     })
-    res = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
-    res.raise_for_status()
+    res = fetch_with_deadline(url, headers=headers, deadline=REQUEST_DEADLINE, timeout=REQUEST_TIMEOUT)
     raw = res.content
     try:
         return raw.decode('gbk', errors='replace')

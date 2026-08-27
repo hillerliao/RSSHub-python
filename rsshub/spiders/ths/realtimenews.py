@@ -2,9 +2,8 @@ import json
 import re
 
 import arrow
-import requests
 
-from rsshub.utils import DEFAULT_HEADERS
+from rsshub.utils import DEFAULT_HEADERS, fetch_with_deadline
 
 # 同花顺 7x24 实时新闻 https://news.10jqka.com.cn/realtimenews.html
 # 页面新闻列表通过 thsRss JS 变量异步加载,接口返回 GBK 编码
@@ -21,8 +20,9 @@ API_MAP = {
     ),
 }
 
-# 接口超时(避免上游慢导致网关 504)
-REQUEST_TIMEOUT = 8
+# 请求总预算(硬性截止,防止上游慢速爬行拖垮网关导致 504)
+REQUEST_DEADLINE = 5.0
+REQUEST_TIMEOUT = 4.0
 
 
 def fetch(category='news'):
@@ -33,8 +33,7 @@ def fetch(category='news'):
         'Referer': 'https://news.10jqka.com.cn/realtimenews.html',
         'Accept': 'application/javascript, */*;q=0.8',
     })
-    res = requests.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
-    res.raise_for_status()
+    res = fetch_with_deadline(url, headers=headers, deadline=REQUEST_DEADLINE, timeout=REQUEST_TIMEOUT)
     # 接口为 GBK 编码(含中文),按字节解码,失败则回退 utf-8
     raw = res.content
     try:

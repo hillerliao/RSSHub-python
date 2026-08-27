@@ -127,6 +127,7 @@ def infoq_topic(category=''):
     return render_template('main/atom.xml', **filter_content(ctx(category)))
 
 @bp.route('/readhub/topic/<string:type>/<string:uid>')
+@swr_cache(timeout=600)
 def readhub_topic(type='', uid=''):
     from rsshub.spiders.readhub.topic import ctx
     return render_template('main/atom.xml', **filter_content(ctx(type,uid)))    
@@ -334,6 +335,14 @@ def nasdaq_symbol_change(category=''):
 @bp.route('/futu/live/<string:lang>')
 def futu_live(lang=''):
     from rsshub.spiders.futu.live import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(lang)))
+
+
+@bp.route('/moomoo/news/<string:lang>')
+@bp.route('/moomoo/news')
+@swr_cache(timeout=600)  # 10分钟SWR缓存
+def moomoo_news(lang='zh-cn'):
+    from rsshub.spiders.moomoo.news import ctx
     return render_template('main/atom.xml', **filter_content(ctx(lang)))    
 
 @bp.route('/baidu/suggest/<string:category>')

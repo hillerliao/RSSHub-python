@@ -1,4 +1,5 @@
 import re
+import queue
 from flask import Response
 import requests
 from bs4 import BeautifulSoup
@@ -12,6 +13,40 @@ import arrow
 from flask import current_app
 
 DEFAULT_HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'}
+
+
+def fetch_with_deadline(url, headers=None, deadline=5.0, timeout=4.0):
+    """带硬性总截止时间的请求。
+
+    requests 的 ``timeout`` 只约束单次 connect/read 操作:若服务端持续缓慢吐数据
+    (慢速爬行),请求可在远超预算后仍未结束,拖垮网关(如 Vercel 的 10s 限制)导致 504。
+    本函数将请求放到守护线程中执行,一旦超过 ``deadline`` 总时长立即放弃并抛
+    requests.Timeout,确保调用方总能及时返回。
+
+    :param deadline: 总耗时上限(秒)
+    :param timeout: 底层单次 connect/read 超时(秒)
+    :return: requests.Response
+    :raises: requests.Timeout(截止超时)或其他请求异常
+    """
+    result = queue.Queue(maxsize=1)
+
+    def _worker():
+        try:
+            res = requests.get(url, headers=headers or DEFAULT_HEADERS, timeout=timeout)
+            res.raise_for_status()
+            result.put(res)
+        except Exception as e:
+            result.put(e)
+
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+    try:
+        got = result.get(timeout=deadline)
+    except queue.Empty:
+        raise requests.Timeout(f'fetch deadline ({deadline}s) exceeded: {url}')
+    if isinstance(got, Exception):
+        raise got
+    return got
 
 
 class XMLResponse(Response):
