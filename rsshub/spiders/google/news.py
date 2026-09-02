@@ -31,7 +31,7 @@ import re
 import unicodedata
 from difflib import SequenceMatcher
 from html import escape
-from urllib.parse import urlencode
+from urllib.parse import unquote, urlencode
 
 import arrow
 import feedparser
@@ -275,6 +275,36 @@ def _iso_date(entry, timestamp):
     return arrow.now().isoformat()
 
 
+def _when_window(when):
+    """把 when='7d' 换算成本地过滤用的 Unix 时间戳下限。
+
+    Google 的部分后端对「when: + 中文复杂查询」会不稳定地返回空结果，
+    此时需要去掉 when: 抓全量再按条目 pubDate 自行过滤。换算不了返回 None。
+    """
+    value = str(when).strip().lower()
+    if not _WHEN_RE.match(value):
+        return None
+    unit, digits = value[-1], value[:-1]
+    try:
+        amount = int(digits)
+    except ValueError:
+        return None
+    now = arrow.utcnow()
+    if unit == 'h':
+        start = now.shift(hours=-amount)
+    elif unit == 'd':
+        start = now.shift(days=-amount)
+    elif unit == 'w':
+        start = now.shift(weeks=-amount)
+    elif unit == 'm':
+        start = now.shift(months=-amount)
+    elif unit == 'y':
+        start = now.shift(years=-amount)
+    else:
+        return None
+    return start.timestamp()
+
+
 def parse(entry, keep_source=True):
     raw_title = (getattr(entry, 'title', '') or '').strip()
     source_entry = getattr(entry, 'source', None) or {}
@@ -342,6 +372,9 @@ def ctx(keyword='', site='', intitle=True, exclude='', when='',
     :param keep_source: 标题是否保留「 - 来源」后缀
     :param sort: 是否按发布时间倒序输出
     """
+    # Vercel 的 Python 运行时把路径参数原样（不做 percent 解码）传进来，
+    # 中文关键词会变成 %E7%81%AB... 的字面文本；unquote 对已解码的中文是幂等的。
+    keyword = unquote(str(keyword or ''))
     try:
         query = build_query(split_terms(keyword), split_terms(site),
                             intitle, split_terms(exclude), when)
@@ -359,14 +392,40 @@ def ctx(keyword='', site='', intitle=True, exclude='', when='',
         similar = 0.0
     similar = max(0.0, min(1.0, similar))
 
+    # 部分 Google 后端对「when: + 中文复杂查询」会不稳定地返回空结果：
+    # 先用带 when: 的 query 抓，空时去掉 when: 重抓一次，再按 pubDate 本地过滤，
+    # 这样既有兜底，又不改变用户想要的时间窗语义。
+    local_when = ''
     try:
         entries = fetch_feed(params)
+    except ValueError as e:
+        clause = ''
+        if when:
+            clause = 'when:%s' % str(when).strip().lower()
+        fallback = query.replace(' %s' % clause, '') if clause else ''
+        if fallback and fallback != query:
+            print('[Google News] when 结果为空，去掉 when: 重抓兜底: %s' % e)
+            try:
+                entries = fetch_feed(dict(params, q=fallback))
+                local_when = str(when).strip().lower()
+            except Exception:
+                print('[Google News Error] %s' % e)
+                return empty_ctx(query, query, '抓取 Google 新闻失败：%s' % e)
+        else:
+            print('[Google News Error] %s' % e)
+            return empty_ctx(query, query, '抓取 Google 新闻失败：%s' % e)
     except Exception as e:
         print('[Google News Error] %s' % e)
         return empty_ctx(query, query, '抓取 Google 新闻失败：%s' % e)
 
     items = [parse(entry, keep_source) for entry in entries]
     items = [item for item in items if item['link']]
+    if local_when:
+        min_ts = _when_window(local_when)
+        if min_ts:
+            before = len(items)
+            items = [item for item in items if item['_ts'] >= min_ts]
+            print('[Google News] 本地按 when:%s 过滤，%d -> %d 条' % (local_when, before, len(items)))
     total = len(items)
 
     strategy = normalize_dedup(dedup)
