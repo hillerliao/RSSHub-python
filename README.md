@@ -50,6 +50,29 @@ Extract random content blocks from various file formats.
 ### Proxy Readability (`/proxy/readability`)
 A dedicated endpoint to extract clean text from any URL, stripping away ads and navigation.
 
+### Google News Search (`/google/news/:keyword`)
+Turn Google News search results into a clean, deduplicated RSS feed.
+- Example: `/google/news/火了|财富密码|流量密码?site=36kr.com&when=7d`
+- Parameters:
+  - `q`: Keywords (also accepted as the path segment); separate multiple terms with `|` or `,`
+  - `site`: Restrict to one or more domains, e.g. `36kr.com,ithome.com`
+  - `intitle`: `1` (default) matches titles only; `0` matches the full text
+  - `exclude`: Terms to exclude
+  - `when`: Time range, e.g. `24h`, `7d`, `1m`
+  - `hl` / `gl` / `ceid`: Language / region / edition (`ceid` is derived from `gl` + `hl` when omitted)
+  - `dedup`: `title` (default) / `title+source` / `guid` / `link` / `none`
+  - `similar`: Fuzzy title dedup threshold (0-1, e.g. `0.9`); disabled by default
+  - `source`: Keep the trailing " - Publisher" in titles (`1`, default) or strip it (`0`)
+  - `sort`: Sort by publish time descending (`1`, default)
+
+> **Why dedup by title instead of `guid`?**
+> A Google News `guid` is a *story cluster* ID: the same article re-crawled from the same
+> publisher gets a **different** guid (in one real request, a single 36Kr article appeared
+> 3 times with 3 distinct guids). And `<link>` is a unique
+> `news.google.com/rss/articles/<CBMi...>` redirect URL, so deduping by link is a no-op.
+> The default strategy normalizes titles (strips the " - Publisher" suffix, ignores
+> punctuation, case and full/half-width differences) and keeps the newest copy.
+
 ### Universal Filtering
 Filter any feed using URL parameters:
 - `include_title` / `include_description`: Case-insensitive keyword matching (supports `|` for OR).

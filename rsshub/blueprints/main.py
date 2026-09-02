@@ -369,6 +369,45 @@ def search_bing(keyword=''):
     from rsshub.spiders.search.bing import ctx
     return render_template('main/atom.xml', **ctx(keyword))
 
+
+def _flag(name, default=True):
+    """把 ?xxx=0/false/no 解析成布尔值，默认开关打开。"""
+    value = request.args.get(name)
+    if value is None:
+        return default
+    return str(value).strip().lower() not in ('0', 'false', 'no', 'off', '')
+
+
+@bp.route('/google/news/<path:keyword>')
+@bp.route('/google/news')
+@swr_cache(timeout=1800)  # 30分钟SWR缓存
+def google_news(keyword=''):
+    """Google 新闻搜索订阅源。
+
+    路径或 ?q= 传关键词（多个用 | 或 , 分隔），其余参数：
+    site / intitle / exclude / when / hl / gl / ceid / dedup / similar /
+    source / sort，详见 /feeds 页面说明。
+
+    默认按归一化标题精确排重，只去除标题完全相同的重复条目。
+    注意句式雷同不一定是重复（如不同日期的气象预警是不同事件），
+    需要把标题近似（如转载同稿）也合并时才加 ?similar=0.9。
+    """
+    from rsshub.spiders.google.news import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(
+        keyword=request.args.get('q') or keyword,
+        site=request.args.get('site', ''),
+        intitle=_flag('intitle'),
+        exclude=request.args.get('exclude', ''),
+        when=request.args.get('when', ''),
+        hl=request.args.get('hl', 'zh-CN'),
+        gl=request.args.get('gl', 'CN'),
+        ceid=request.args.get('ceid', ''),
+        dedup=request.args.get('dedup', 'title'),
+        similar=request.args.get('similar', default=0.0, type=float),
+        keep_source=_flag('source'),
+        sort=_flag('sort'),
+    )))
+
 @bp.route('/mp/gh/<string:gh>')
 def mp_gh(gh=''):
     from rsshub.spiders.mp.gh import ctx

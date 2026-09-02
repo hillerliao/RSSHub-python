@@ -64,6 +64,39 @@
 <!--item info start-->
 <div class="card text-left">
         <div class="card-body">
+                <h4 class="card-title">Google 新闻搜索</h4>
+                <h6 class="text-muted">Google News Search</h6>
+                <p class="card-text">举例：<a
+                                href="https://pyrsshub.vercel.app/google/news/%E7%81%AB%E4%BA%86%7C%E8%B4%A2%E5%AF%8C%E5%AF%86%E7%A0%81%7C%E6%B5%81%E9%87%8F%E5%AF%86%E7%A0%81?site=36kr.com&amp;when=7d"
+                                target="_blank">https://pyrsshub.vercel.app/google/news/火了|财富密码|流量密码?site=36kr.com&amp;when=7d</a>
+                </p>
+                <p class="card-text">路由：<code>/google/news/:keyword</code></p>
+                <p class="card-text">参数：</p>
+                <ul>
+                        <li><code>q</code> 关键词，多个用 <code>|</code> 或 <code>,</code> 分隔（也可直接写在路径里）</li>
+                        <li><code>site</code> 限定站点，多个用 <code>|</code> 或 <code>,</code> 分隔，如 <code>36kr.com,ithome.com</code></li>
+                        <li><code>intitle</code> 关键词是否只匹配标题，默认 <code>1</code>，传 <code>0</code> 改为全文匹配</li>
+                        <li><code>exclude</code> 排除词，多个用 <code>|</code> 分隔</li>
+                        <li><code>when</code> 时间范围，如 <code>24h</code> / <code>7d</code> / <code>1m</code></li>
+                        <li><code>hl</code> 语言，默认 <code>zh-CN</code>；<code>gl</code> 地区，默认 <code>CN</code></li>
+                        <li><code>ceid</code> 语种地区标识，留空则由 <code>gl</code> + <code>hl</code> 推导，如 <code>CN:zh-Hans</code></li>
+                        <li><code>dedup</code> 排重策略：<code>title</code>（默认）/ <code>title+source</code> / <code>guid</code> /
+                                <code>link</code> / <code>none</code></li>
+                        <li><code>similar</code> 模糊标题排重阈值（0-1，如 <code>0.9</code>），默认关闭</li>
+                        <li><code>source</code> 标题是否保留「 - 来源」后缀，默认 <code>1</code>，传 <code>0</code> 去掉</li>
+                        <li><code>sort</code> 是否按发布时间倒序，默认 <code>1</code></li>
+                </ul>
+                <p class="card-text">说明：Google 新闻的 <code>guid</code> 是文章簇 ID，同一篇文章被重复收录时会拿到不同的
+                        <code>guid</code>，<code>link</code> 又是每条唯一的跳转地址，两者都排不掉重复，所以默认按归一化标题排重
+                        （忽略标点、大小写、全半角差异，重复项保留最新的一条）。</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
                 <h4 class="card-title">RSS 代理</h4>
                 <h6 class="text-muted">RSS 代理 <a href="https://github.com/hillerliao" target="_blank"
                                 class="badge badge-secondary">by hillerliao</a></h6>
