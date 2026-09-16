@@ -126,28 +126,42 @@ def _extract_semantic_text(html_content, heading_hierarchy=None, split_lines=Tru
 
     return extracted
 
-def _extract_semantic_markdown(text):
-    """Extract text from markdown headings and paragraphs, tracking hierarchical chapters."""
-    lines = text.split('\n')
+def _extract_semantic_markdown(text, split_lines=True):
+    """
+    Extract text from markdown headings and paragraphs, tracking hierarchical chapters.
+
+    split_lines=True  -> every physical line becomes one item (respects hard-wrapped lines)
+    split_lines=False -> consecutive lines are merged into one paragraph item
+    """
+    lines = text.replace('\r\n', '\n').replace('\r', '\n').split('\n')
     extracted = []
     heading_hierarchy = {}
     
     current_para = []
     
+    def breadcrumb():
+        return " > ".join([heading_hierarchy[l] for l in range(1, 7) if l in heading_hierarchy])
+    
     def flush_para():
-        if current_para:
+        if not current_para:
+            return
+        if split_lines:
+            # Keep each line separate so hard-wrapped books don't collapse into one blob
+            for raw_line in current_para:
+                item = raw_line.strip()
+                if item:
+                    extracted.append({
+                        "line_content": item,
+                        "chapter": breadcrumb()
+                    })
+        else:
             content = " ".join(current_para).strip()
             if content:
-                # Build breadcrumb
-                breadcrumb_parts = []
-                for l in range(1, 7):
-                    if l in heading_hierarchy:
-                        breadcrumb_parts.append(heading_hierarchy[l])
                 extracted.append({
                     "line_content": content,
-                    "chapter": " > ".join(breadcrumb_parts)
+                    "chapter": breadcrumb()
                 })
-            current_para.clear()
+        current_para.clear()
 
     for line in lines:
         stripped_line = line.strip()
@@ -247,7 +261,10 @@ def extract_content(response, url, user_delimiter=None):
         else:
             text = response.text
         
-        extracted_parts = _extract_semantic_markdown(text)
+        # `delimiter=p` keeps whole paragraphs merged; anything else (including the
+        # default and `newline`) yields one item per physical line, which avoids
+        # hard-wrapped books collapsing into one giant block.
+        extracted_parts = _extract_semantic_markdown(text, split_lines=split_lines)
         content = json.dumps(extracted_parts, ensure_ascii=False)
         delimiter = 'semantic'
     elif ext == '.pdf':
@@ -378,7 +395,7 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         filename = filename.upper()
         feed_title = f'{filename} {filetype.upper()} Feed'.strip()
         
-        cache_key = f'randomline_csv_content:{url}'
+        cache_key = f'randomline_csv_content:{url}:{delimiter or "default"}'
         content = cache.get(cache_key)
         
         if not content:
