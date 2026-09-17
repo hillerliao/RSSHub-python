@@ -382,7 +382,7 @@ def extract_content(response, url, user_delimiter=None):
     
     return content, delimiter, feed_title
 
-def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0, include_context=False):
+def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0, include_context=False, chapter=None):
     
     feed_title = "Random Line Feed"
     try:
@@ -561,6 +561,22 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                 title_col = 0
             title_column_name = fieldnames[title_col]
         
+        # Filter rows by chapter (only available in semantic extraction mode)
+        if chapter:
+            chapter_keyword = chapter.strip()
+            chapter_rows = [
+                (ln, row) for ln, row in indexed_rows
+                if chapter_keyword.lower() in (row.get('chapter') or '').lower()
+            ]
+            if not chapter_rows:
+                return {
+                    'title': feed_title,
+                    'link': url,
+                    'description': f'No lines found in chapter: {chapter}',
+                    'items': []
+                }
+            indexed_rows = chapter_rows
+
         # Filter rows that meet the min_length criteria
         if min_length > 0:
             valid_rows = [
@@ -668,10 +684,20 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             'pubDate': '',  # No date in CSV
         }
 
+        # Build feed description based on actual file type / extraction mode
+        if filetype:
+            source_desc = f'Random item from {filetype.upper()} file'
+        elif delimiter == 'semantic':
+            source_desc = 'Random item from file (semantic extraction)'
+        elif is_newline_delimiter:
+            source_desc = 'Random line from file'
+        else:
+            source_desc = 'Random item from CSV/TSV file'
+
         return {
             'title': feed_title,
             'link': url,
-            'description': 'Random item from CSV file',
+            'description': source_desc,
             'items': [item]
         }
     except Exception as e:
