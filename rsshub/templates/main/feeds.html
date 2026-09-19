@@ -97,6 +97,42 @@
 <!--item info start-->
 <div class="card text-left">
         <div class="card-body">
+                <h4 class="card-title">Twitter / X 用户时间线</h4>
+                <h6 class="text-muted">Twitter User Timeline (via Google News)</h6>
+                <p class="card-text">举例：<a
+                                href="http://127.0.0.1:5000/x/elonmusk?when=24h"
+                                target="_blank">http://127.0.0.1:5000/x/elonmusk?when=24h</a>
+                </p>
+                <p class="card-text">路由：<code>/x/&lt;username&gt;</code> 或 <code>/x?username=&lt;name&gt;</code></p>
+                <p class="card-text">参数：</p>
+                <ul>
+                        <li><code>when</code> 时间窗 <code>24h</code> / <code>7d</code> / <code>30d</code>，默认 <code>7d</code></li>
+                        <li><code>editions</code> 用哪几个桶，逗号分隔，默认 <code>cn,us</code>（双桶合并）
+                                可选：<code>cn</code>（中文桶） / <code>us</code>（美/英桶） / <code>gb</code> / <code>jp</code> / <code>tw</code></li>
+                        <li><code>auto=1</code> 自动选桶 —— 把 <code>editions</code> 列出的桶都查一遍，挑返回最新推文的那桶。代价是多 N 倍请求。</li>
+                        <li><code>limit</code> 最多返回多少条，默认 <code>30</code></li>
+                </ul>
+                <p class="card-text">原理：把 <code>site:x.com/&lt;username&gt;</code> 丢给 Google News 的 RSS 端点
+                        <code>https://news.google.com/rss/search</code>，把已被 Google News 索引的推文转成 Atom。
+                        <strong>不需要 X 登录 cookie、无封号风险</strong>。</p>
+                <p class="card-text">⚠️ <strong>桶选择很重要</strong>：Google News 按 <code>ceid</code> 把索引分桶，
+                        中文内容账号（如本机测试的 <code>wangwatchworld</code>）用 CN 桶拿当天推文，
+                        用 US 桶只有几个月前的；英文内容账号（如 <code>elonmusk</code>）反过来。
+                        三个用法：
+                        <strong>(1)</strong> 你知道账号语言 → 直接 <code>?editions=cn</code> 或 <code>?editions=us</code>；
+                        <strong>(2)</strong> 不确定 → <code>?editions=cn,us</code> 默认合并；
+                        <strong>(3)</strong> 懒得想 → <code>?auto=1&amp;editions=cn,us,gb,jp,tw</code> 自动选最合适的桶。
+                        实时性受 Google News 索引速度制约（中文桶 0–7 天，英文桶可接近实时）。</p>
+                <p class="card-text">permalink 推文（标题是 URL 的那种）的真实 x.com 链接会被提到
+                        <code>link</code> 字段；其它条目仍是 <code>news.google.com/rss/articles/CBMi...</code> 跳转。</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
                 <h4 class="card-title">RSS 代理</h4>
                 <h6 class="text-muted">RSS 代理 <a href="https://github.com/hillerliao" target="_blank"
                                 class="badge badge-secondary">by hillerliao</a></h6>
