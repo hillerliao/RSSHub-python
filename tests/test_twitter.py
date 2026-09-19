@@ -95,13 +95,33 @@ class AutoEditionTestCase(unittest.TestCase):
         self.assertEqual([item['title'] for item in ctx['items']], ['US bucket fresh tweet'])
         self.assertIn('auto 选中 us', ctx['description'])
 
-    def test_auto_keeps_results_when_chosen_edition_is_empty_on_rerun(self):
-        """选中的桶若重查失败，旧实现会把结果清空，这里确保不受影响。"""
+    def test_auto_picks_non_empty_bucket(self):
+        """某个桶空时，auto 应选另一桶；非选中桶的条目不会出现在结果里。"""
         cn_entries = [make_entry('中文桶最新推文 - x.com', 'cn-1', days_ago=1)]
         with patch.object(twitter, 'fetch_feed', side_effect=[cn_entries, []]) as mocked:
             ctx = twitter.ctx('wangwatchworld', auto=True)
         self.assertEqual(mocked.call_count, 2)
         self.assertEqual(len(ctx['items']), 1)
+        self.assertEqual(ctx['items'][0]['title'], '中文桶最新推文')
+
+    def test_auto_keeps_newest_copy_of_cross_bucket_duplicate(self):
+        """auto 选 cn，但某条推文在 us 有比 cn 更新的副本，应保留 us 那份而不是 cn 那份。"""
+        cn_entries = [
+            make_entry('跨桶推文 - x.com', 'cn-A', days_ago=10),    # 旧副本
+            make_entry('CN-only newest - x.com', 'cn-B', days_ago=1),  # cn 桶整体最新
+        ]
+        us_entries = [
+            make_entry('跨桶推文 - x.com', 'us-A', days_ago=2),     # 比 cn-A 新
+        ]
+        with patch.object(twitter, 'fetch_feed',
+                          side_effect=[cn_entries, us_entries]) as mocked:
+            ctx = twitter.ctx('wangwatchworld', auto=True)
+        self.assertEqual(mocked.call_count, 2)
+        items = {item['title']: item for item in ctx['items']}
+        self.assertIn('CN-only newest', items)
+        self.assertIn('跨桶推文', items)
+        self.assertEqual(items['跨桶推文']['guid'], 'us-A',
+                         '跨桶重复应保留时间最新那份（不限桶）')
 
 
 class RouteTestCase(BaseTestCase):

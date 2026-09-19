@@ -202,8 +202,9 @@ def ctx(username='', when='7d', editions='cn,us', limit=30, auto=False):
     :param editions: 逗号分隔的桶列表，默认 ``cn,us``
                      可选：cn / us / gb / jp / tw
     :param limit: 最多返回多少条
-    :param auto: 自动选桶 —— 把请求的桶都查一遍，只用「最新推文最新鲜」的那桶。
-                 用户不用关心账号是中文还是英文，代价是多查几个桶。
+    :param auto: 自动选桶 —— 把请求的桶都查一遍，只展示「最新推文最新鲜」的那个桶
+                 抓到的推文；如果一条推文在多个桶都有，仍保留时间最新的一份
+                 （不限桶）。用户不用关心账号是中文还是英文，代价是多查几个桶。
     """
     username = unquote(str(username or '')).strip().lstrip('@')
     if not re.match(r'^[A-Za-z0-9_]{1,15}$', username):
@@ -250,16 +251,26 @@ def ctx(username='', when='7d', editions='cn,us', limit=30, auto=False):
         per_edition[key] = (len(entries), newest)
         edition_stats.append('%s=%d' % (key, len(entries)))
 
-    # auto 模式：只留「最新推文最新鲜」的那个桶。选桶在第一轮查询时就顺手记下了，
-    # 这里不再重复请求——Vercel 下多打一次 Google 很容易撞上 8s 截止而丢掉全部结果。
+    # auto 模式：先按「最新推文最新鲜」选桶，选桶用第一轮查询时就记下的数据，
+    # 不再重复请求——Vercel 下多打一次 Google 很容易撞上 8s 截止而丢掉全部结果。
     chosen_edition = None
     if auto and per_edition:
         chosen_edition = max(per_edition,
                              key=lambda k: (per_edition[k][1], per_edition[k][0]))
-        pool = [item for item in pool if item['_edition'] == chosen_edition]
 
-    raw_total = len(pool)
+    # 记下每条推文出现在哪些桶里。auto 筛桶时不能用 item['_edition'] 直接砍——
+    # 那会把「chosen 桶有副本、但更新鲜的那份来自其他桶」的条目误剪掉。
+    # 这里先收一份 {_title_key: {editions}}，筛桶时只丢「chosen 桶完全没收录过」的条目。
+    title_to_editions = {}
+    for item in pool:
+        title_to_editions.setdefault(item['_title_key'], set()).add(item['_edition'])
+
+    raw_total = (per_edition[chosen_edition][0]
+                 if chosen_edition else len(pool))
     items = dedup_items(pool, strategy='title')
+    if chosen_edition:
+        items = [item for item in items
+                 if chosen_edition in title_to_editions.get(item['_title_key'], set())]
     for item in items:
         item.pop('_title_key', None)
         item.pop('_ts', None)
