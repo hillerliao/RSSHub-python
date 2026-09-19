@@ -109,7 +109,7 @@
                         <li><code>when</code> 时间窗 <code>24h</code> / <code>7d</code> / <code>30d</code>，默认 <code>7d</code></li>
                         <li><code>editions</code> 用哪几个桶，逗号分隔，默认 <code>cn,us</code>（双桶合并）
                                 可选：<code>cn</code>（中文桶） / <code>us</code>（美/英桶） / <code>gb</code> / <code>jp</code> / <code>tw</code></li>
-                        <li><code>auto=1</code> 自动选桶 —— 把 <code>editions</code> 列出的桶都查一遍，挑返回最新推文的那桶。代价是多 N 倍请求。</li>
+                        <li><code>auto=1</code> 自动选桶 —— 把 <code>editions</code> 列出的桶都查一遍，挑返回最新推文的那桶。</li>
                         <li><code>limit</code> 最多返回多少条，默认 <code>30</code></li>
                 </ul>
                 <p class="card-text">原理：把 <code>site:x.com/&lt;username&gt;</code> 丢给 Google News 的 RSS 端点
@@ -125,6 +125,8 @@
                         实时性受 Google News 索引速度制约（中文桶 0–7 天，英文桶可接近实时）。</p>
                 <p class="card-text">permalink 推文（标题是 URL 的那种）的真实 x.com 链接会被提到
                         <code>link</code> 字段；其它条目仍是 <code>news.google.com/rss/articles/CBMi...</code> 跳转。</p>
+                <p class="card-text">⚠️ Google News 会把同一条推文收录成 <strong>多个不同的 article id</strong>（同一个桶里就能重复 2–3 条），
+                        因此本节点按<strong>标题排重</strong>，不会出现重复推文；代价是同一作者在时间窗内重复发一模一样的文案会被并成一条。</p>
         </div>
 </div>
 <br>

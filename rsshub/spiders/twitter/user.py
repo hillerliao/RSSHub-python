@@ -14,8 +14,8 @@ Google News 的 RSS 端点（区别于 google.com/search HTML）：
 - 不强制登录、不要求 cookie、无频率审计
 - 复用了项目里 ``google/news.py`` 的底层（feedparser 解析、entry 抽取）
 
-**关键坑：地区桶**
-------------------
+**关键坑一：地区桶**
+--------------------
 
 实测发现 Google News 的 ``ceid`` / ``hl`` / ``gl`` 三元组决定返回哪份索引。
 同一个查询，桶不同结果天差地别：
@@ -27,14 +27,40 @@ Google News 的 RSS 端点（区别于 google.com/search HTML）：
 
 所以默认同时查两个桶再合并去重，规避单边索引滞后。
 
+**关键坑二：同一条推文有多个 article id**
+----------------------------------------
+
+Google News 会把同一条推文在不同索引分片里重复收录，同一次请求就返回
+2~3 条：标题与 pubDate 完全相同，``<id>`` / ``<link>`` 却是
+``news.google.com/rss/articles/CBMi...`` 各不相同（实测 wangwatchworld 的
+CN 桶 100 条里有 17 条属于这种重复）。所以**按 link/guid 排重等于不去重**，
+必须按「归一化标题」比对——正是 ``google/news.py`` 里那套排重的用武之地，
+本 spider 直接复用它的 ``dedup_items``。
+
+这些 CBMi ID 是不透明的 ``AU_yqL...`` token（base64 解出来只有 token 本身，
+没有原文 URL），不靠 ``batchexecute`` 解不出真实地址，指望不上。
+
+对 permalink 推文（标题里只有 ``x.com/.../status/...`` 链接）要小心：
+标题被清成兜底文案后看起来都一样，但排重用的是**清洗前的原始标题**，
+不同的 permalink 推文不会因此被误并。
+
+**关键坑三：when 时间窗**
+------------------------
+
+``tbs=qdr:7d`` 在 News RSS 上是**空操作**（实测与不带任何时间参数返回
+逐条相同），时间窗得写成查询串里的 ``when:7d``。带 when: 时 Google 偶尔
+返回空（``google/news.py`` 记录过这类不稳定后端），此时去掉 when: 重查一次，
+再用 ``when_window`` 按条目 pubDate 本地过滤。
+
 代价与局限
 ==========
 
 - 实时性受 Google News 索引速度制约：**中文桶通常 0–7 天延迟，
   英文桶可接近实时**（取决于账号内容语种）
 - 不被 Google News 收录的推文（如被作者删除、账号受限）抓不到
-- 链接形式：entry 里偶尔会露出真实的 ``x.com/.../status/...``，
-  本 spider 会把它提到 link 字段；其余仍是 ``news.google.com/rss/articles/CBMi...`` 跳转
+- 链接形式：permalink 推文能拿到真实 ``x.com/.../status/...``，
+  其余仍是 ``news.google.com/rss/articles/CBMi...`` 跳转
+- 排重按标题：同一作者在窗口内重复发一模一样的文案，会被并成一条
 
 为什么不用 ``google/news.py.ctx`` 而是直接调底层
 ==============================================
@@ -60,16 +86,19 @@ Google News 的 RSS 端点（区别于 google.com/search HTML）：
 - ``/x/wangwatchworld`` —— 默认 cn+us 双桶，中文桶新鲜时优先
 """
 
+import calendar
 import re
-from html import escape
-from urllib.parse import unquote, urlencode
+from urllib.parse import unquote
+
+import arrow
 
 from rsshub.spiders.google.news import (
-    DEFAULT_HEADERS,
     FETCH_DEADLINE,
     FETCH_TIMEOUT,
+    dedup_items,
     fetch_feed,
     parse as gnews_parse,
+    when_window,
 )
 
 # x.com 链接（不含 www.）出现在标题里时，把它提到 link 字段
@@ -79,7 +108,6 @@ _X_URL_RE = re.compile(
 )
 
 _WHEN_RE = re.compile(r'^(\d+)([hdwmy])$')
-_WHEN_UNITS = {'h': 'hours', 'd': 'days', 'w': 'weeks', 'm': 'months', 'y': 'years'}
 
 # 不同地区桶：(hl, gl, ceid) 三元组
 EDITION_PRESETS = {
@@ -117,19 +145,40 @@ def _promote_real_url(item):
     return item
 
 
+def _entry_ts(entry):
+    """entry 的发布时间戳（秒）；拿不到返回 0。"""
+    parsed = getattr(entry, 'published_parsed', None) or getattr(entry, 'updated_parsed', None)
+    if not parsed:
+        return 0
+    try:
+        return calendar.timegm(parsed)
+    except Exception:
+        return 0
+
+
 def _query_edition(username, edition_key, when):
-    """对单个桶发起一次 Google News 查询，返回 entries 列表。"""
+    """对单个桶发起一次 Google News 查询，返回 (桶名, entries, 错误信息)。"""
     hl, gl, ceid = EDITION_PRESETS[edition_key]
-    params = {
-        'q': 'site:x.com/%s' % username,
-        'hl': hl,
-        'gl': gl,
-        'ceid': ceid,
-    }
+    query = 'site:x.com/%s' % username
+    params = {'q': query, 'hl': hl, 'gl': gl, 'ceid': ceid}
     if when:
-        params['tbs'] = 'qdr:%s' % when
+        params['q'] = '%s when:%s' % (query, when)
     try:
         entries = fetch_feed(params, deadline=FETCH_DEADLINE, timeout=FETCH_TIMEOUT)
+        return edition_key, entries, None
+    except ValueError as e:
+        # 「没返回任何条目」：带 when: 时 Google 偶尔会这样，去掉 when: 重查一次
+        # 再本地按 pubDate 过滤，保证时间窗语义不变。
+        if not when:
+            return edition_key, [], str(e)
+        try:
+            entries = fetch_feed(dict(params, q=query),
+                                 deadline=FETCH_DEADLINE, timeout=FETCH_TIMEOUT)
+        except Exception as retry_err:
+            return edition_key, [], str(retry_err)
+        cutoff = when_window(when)
+        if cutoff:
+            entries = [entry for entry in entries if _entry_ts(entry) >= cutoff]
         return edition_key, entries, None
     except Exception as e:
         return edition_key, [], str(e)
@@ -153,8 +202,8 @@ def ctx(username='', when='7d', editions='cn,us', limit=30, auto=False):
     :param editions: 逗号分隔的桶列表，默认 ``cn,us``
                      可选：cn / us / gb / jp / tw
     :param limit: 最多返回多少条
-    :param auto: 自动选桶 —— 把请求的桶都查一遍,选「返回最新推文」的桶。
-                 用户不用关心账号是中文还是英文,代价是多 N 倍请求。
+    :param auto: 自动选桶 —— 把请求的桶都查一遍，只用「最新推文最新鲜」的那桶。
+                 用户不用关心账号是中文还是英文，代价是多查几个桶。
     """
     username = unquote(str(username or '')).strip().lstrip('@')
     if not re.match(r'^[A-Za-z0-9_]{1,15}$', username):
@@ -173,10 +222,10 @@ def ctx(username='', when='7d', editions='cn,us', limit=30, auto=False):
     if not requested:
         requested = ['cn', 'us']
 
-    # 顺序查询每个桶（并发会更复杂，对小量端点串行足够）
-    hits = {}          # dedup_key -> item
+    # 顺序查询每个桶，条目先进「大池子」，最后统一排重（并发会更复杂，串行足够）
+    pool = []
     edition_stats = []
-    per_edition = {}   # key -> (entries_count, newest_pubDate_str)
+    per_edition = {}   # key -> (条目数, 最新推文时间)，auto 选桶用
 
     for key in requested:
         edition_key, entries, err = _query_edition(username, key, when)
@@ -184,44 +233,37 @@ def ctx(username='', when='7d', editions='cn,us', limit=30, auto=False):
             print('[Twitter/Google News] edition=%s err: %s' % (key, err))
             edition_stats.append('%s=失败' % key)
             continue
-        edition_stats.append('%s=%d' % (key, len(entries)))
-        # 记录该桶的最早条目时间戳,用于 auto 选桶
         newest = ''
         for entry in entries:
-            ts = getattr(entry, 'published_parsed', None) or getattr(entry, 'updated_parsed', None)
+            ts = _entry_ts(entry)
             if ts:
-                import calendar as _cal
-                import arrow as _arrow
-                iso = _arrow.get(_cal.timegm(ts)).isoformat()
+                iso = arrow.get(ts).isoformat()
                 if iso > newest:
                     newest = iso
-        per_edition[key] = (len(entries), newest)
-        for entry in entries:
             item = gnews_parse(entry, keep_source=True)
             _promote_real_url(item)
-            dedup_key = item.get('link') or item.get('guid') or id(item)
-            if dedup_key and dedup_key not in hits:
-                hits[dedup_key] = item
+            if not item['_title_key']:
+                # 标题为空的坏数据退回 guid，免得它们被当成同一条并掉
+                item['_title_key'] = item.get('guid') or item.get('link') or ''
+            item['_edition'] = key
+            pool.append(item)
+        per_edition[key] = (len(entries), newest)
+        edition_stats.append('%s=%d' % (key, len(entries)))
 
-    # auto 模式:挑出「返回最新推文」的桶,只用那一桶的结果
+    # auto 模式：只留「最新推文最新鲜」的那个桶。选桶在第一轮查询时就顺手记下了，
+    # 这里不再重复请求——Vercel 下多打一次 Google 很容易撞上 8s 截止而丢掉全部结果。
     chosen_edition = None
     if auto and per_edition:
-        best_key = max(per_edition.keys(),
-                       key=lambda k: (per_edition[k][1], per_edition[k][0]))
-        chosen_edition = best_key
-        # 只保留 best_key 桶的条目
-        # 找出 best_key 桶 entry 的 link 集合
-        _, best_entries, _ = _query_edition(username, best_key, when)
-        best_keys = set()
-        for entry in best_entries:
-            tmp = gnews_parse(entry, keep_source=True)
-            _promote_real_url(tmp)
-            k = tmp.get('link') or tmp.get('guid')
-            if k:
-                best_keys.add(k)
-        hits = {k: v for k, v in hits.items() if k in best_keys}
+        chosen_edition = max(per_edition,
+                             key=lambda k: (per_edition[k][1], per_edition[k][0]))
+        pool = [item for item in pool if item['_edition'] == chosen_edition]
 
-    items = list(hits.values())
+    raw_total = len(pool)
+    items = dedup_items(pool, strategy='title')
+    for item in items:
+        item.pop('_title_key', None)
+        item.pop('_ts', None)
+        item.pop('_edition', None)
     items.sort(key=lambda x: x.get('pubDate', ''), reverse=True)
     if limit and len(items) > limit:
         items = items[:limit]
@@ -236,13 +278,15 @@ def ctx(username='', when='7d', editions='cn,us', limit=30, auto=False):
         'link': 'https://x.com/%s' % username,
         'description': (
             '通过 Google News RSS 端点查询 site:x.com/%s（when=%s），'
-            '桶：%s%s；共 %d 条。无需 X 登录、无封号风险；'
+            '桶：%s%s；原始 %d 条，排重后 %d 条'
+            '（Google News 会把同一条推文收录成多个不同的 article id，'
+            '只能按标题排重）。无需 X 登录、无封号风险；'
             '延迟取决于 Google News 各桶索引速度。'
         ) % (
             username, when or 'all',
             ','.join(edition_stats),
             '，auto 选中 %s' % chosen_edition if chosen_edition else '',
-            len(items),
+            raw_total, len(items),
         ),
         'author': 'Google News',
         'items': items,

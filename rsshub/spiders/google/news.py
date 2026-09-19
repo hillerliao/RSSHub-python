@@ -275,11 +275,13 @@ def _iso_date(entry, timestamp):
     return arrow.now().isoformat()
 
 
-def _when_window(when):
+def when_window(when):
     """把 when='7d' 换算成本地过滤用的 Unix 时间戳下限。
 
     Google 的部分后端对「when: + 中文复杂查询」会不稳定地返回空结果，
     此时需要去掉 when: 抓全量再按条目 pubDate 自行过滤。换算不了返回 None。
+
+    其他 spider（如 ``twitter/user.py``）做同样的兜底时共用本函数。
     """
     value = str(when).strip().lower()
     if not _WHEN_RE.match(value):
@@ -421,7 +423,7 @@ def ctx(keyword='', site='', intitle=True, exclude='', when='',
     items = [parse(entry, keep_source) for entry in entries]
     items = [item for item in items if item['link']]
     if local_when:
-        min_ts = _when_window(local_when)
+        min_ts = when_window(local_when)
         if min_ts:
             before = len(items)
             items = [item for item in items if item['_ts'] >= min_ts]
