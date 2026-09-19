@@ -5,8 +5,9 @@ warnings.filterwarnings("ignore", category=UserWarning, module="flask.cli")
 import os
 from dotenv import load_dotenv
 
+# On Vercel the environment comes from project settings, so only read .env locally
 dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-if os.path.exists(dotenv_path):
+if not os.environ.get('VERCEL') and os.path.exists(dotenv_path):
     load_dotenv(dotenv_path)
 
 from rsshub import create_app
