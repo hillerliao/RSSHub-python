@@ -135,6 +135,28 @@
 <!--item info start-->
 <div class="card text-left">
         <div class="card-body">
+                <h4 class="card-title">即刻</h4>
+                <h6 class="text-muted">圈子</h6>
+                <p class="card-text">举例：<a
+                                href="https://pyrsshub.vercel.app/jike/topic/61e120ee29850b0010e0bf08"
+                                target="_blank">https://pyrsshub.vercel.app/jike/topic/61e120ee29850b0010e0bf08</a>
+                </p>
+                <p class="card-text">路由：<code>/jike/topic/&lt;topic_id&gt;</code> 或 <code>/jike/topic/&lt;topic_id&gt;/&lt;show_uid&gt;</code></p>
+                <p class="card-text">参数：</p>
+                <ul>
+                        <li><code>topic_id</code> 圈子 id，可在即刻 web 端圈子页或 APP 分享出来的圈子页 URL 中找到</li>
+                        <li><code>show_uid</code> 是否在内容中显示用户信息，设置为 <code>1</code> 则开启</li>
+                </ul>
+                <p class="card-text">原理：解析 <code>m.okjike.com</code> 圈子页内嵌的 JSON 数据，
+                        <strong>不需要登录</strong>。目前只取第一页（最新 10 条左右）。</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
                 <h4 class="card-title">RSS 代理</h4>
                 <h6 class="text-muted">RSS 代理 <a href="https://github.com/hillerliao" target="_blank"
                                 class="badge badge-secondary">by hillerliao</a></h6>

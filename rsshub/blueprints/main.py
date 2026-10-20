@@ -580,6 +580,14 @@ def danjuan_departure(strategy_code='TIA08030'):
     return render_template('main/atom.xml', **filter_content(ctx(strategy_code, page_no, page_size)))
 
 
+@bp.route('/jike/topic/<string:topic_id>')
+@bp.route('/jike/topic/<string:topic_id>/<int:show_uid>')
+@swr_cache(timeout=1800)  # 30分钟缓存
+def jike_topic(topic_id, show_uid=0):
+    from rsshub.spiders.jike.topic import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(topic_id, show_uid)))
+
+
 @bp.route('/scrape/<path:url>')
 @cache.cached(timeout=300)  # 5分钟缓存
 def scrape_html(url):
