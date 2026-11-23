@@ -3,6 +3,14 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="flask.cli")
 
 import os
+import socket
+
+# 用量治理（2026-11-23）：给未显式带 timeout 的网络请求兜底，单次
+# connect/read 最多等 8 秒，避免慢上游把函数拖满超时上限、白烧
+# Function Duration（GB-Hrs）。与 utils.fetch_with_deadline 的 5 秒
+# 截止互补：那条管总时长，这条管单次读写。
+socket.setdefaulttimeout(8)
+
 from dotenv import load_dotenv
 
 # On Vercel the environment comes from project settings, so only read .env locally
