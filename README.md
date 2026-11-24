@@ -74,6 +74,16 @@ Turn Google News search results into a clean, deduplicated RSS feed.
 > The default strategy normalizes titles (strips the " - Publisher" suffix, ignores
 > punctuation, case and full/half-width differences) and keeps the newest copy.
 
+### Jiucaishuo Broadcasts (`/jiucaishuo/feed`)
+Subscribe to the public broadcast stream at [韭圈 · 投研工作台](https://jiucaishuo.com/feed).
+- Examples: `/jiucaishuo/feed`, `/jiucaishuo/feed?agent_id=13`, `/jiucaishuo/feed?tab=recommend&limit=20`
+- `agent_id`: Optional positive integer to select a broadcast channel (shown in the website's channel URL).
+- `tab`: `all` (default) or `recommend`; personal subscriptions and private robots require login and are not supported.
+- Includes text, images and indicator chips, sorted newest first with stable entry IDs and Shanghai timestamps.
+- Fetches up to 100 public entries within the last 90 days; supports the universal filters below.
+- Uses the public HTTP API, no browser or extra dependencies required. Responses are cached for 5 minutes per query.
+- Invalid parameters return HTTP 400; upstream failures return HTTP 502 and are not cached.
+
 ### Universal Filtering
 Filter any feed using URL parameters:
 - `include_title` / `include_description`: Case-insensitive keyword matching (supports `|` for OR).

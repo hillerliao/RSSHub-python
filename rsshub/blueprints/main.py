@@ -82,6 +82,32 @@ def filter_content(ctx):
 
 
 #---------- feed路由从这里开始 -----------#
+@bp.route('/jiucaishuo/feed')
+@cache.cached(timeout=300, query_string=True)
+def jiucaishuo_feed():
+    from flask import Response, abort
+    import requests
+    from rsshub.spiders.jiucaishuo.feed import ctx
+
+    tab = request.args.get('tab', 'all')
+    if tab not in ('all', 'recommend'):
+        abort(400)
+    agent_id = request.args.get('agent_id')
+    if agent_id is not None:
+        try:
+            agent_id = int(agent_id)
+            if agent_id <= 0:
+                abort(400)
+        except ValueError:
+            abort(400)
+    try:
+        context = filter_content(ctx(agent_id=agent_id, tab=tab))
+    except (requests.RequestException, ValueError):
+        abort(502)
+    return Response(render_template('main/jiucaishuo.atom.xml', **context),
+                    content_type='application/atom+xml; charset=utf-8')
+
+
 @bp.route('/cninfo/announcement/<string:stock_id>/<string:category>')
 @bp.route('/cninfo/announcement')
 def cninfo_announcement(stock_id='', category=''):
@@ -678,6 +704,18 @@ def aia_press_releases():
     return render_template('main/atom.xml', **filter_content(ctx()))
 
 
+@bp.route('/skillhub/skills')
+@cache.cached(timeout=3600, query_string=True)
+def skillhub_skills():
+    from flask import abort
+    import requests
+    from rsshub.spiders.skillhub.skills import ctx
+
+    try:
+        context = filter_content(ctx())
+    except (requests.RequestException, ValueError):
+        abort(502)
+    return render_template('main/atom.xml', **context)
 @bp.route('/chinadaily/latest')
 @bp.route('/chinadaily')
 @bp.route('/chinadaily/<path:section>')

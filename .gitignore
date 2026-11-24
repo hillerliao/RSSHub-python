@@ -17,6 +17,8 @@ venv
 htmlcov/
 data-dev.db
 test*
+!tests/
+!tests/test_skillhub.py
 repro*
 debug*
 

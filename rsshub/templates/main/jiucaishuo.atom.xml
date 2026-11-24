@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="zh-CN">
+    <id>{{ link }}</id>
+    <title>{{ title }}</title>
+    <subtitle>{{ description }}</subtitle>
+    <link href="{{ link }}"/>
+    <link rel="self" href="{{ request.url }}" type="application/atom+xml"/>
+    <updated>{{ items[0].pubDate if items else now.isoformat() ~ 'Z' }}</updated>
+    <author><name>{{ author }}</name></author>
+    {% for item in items %}
+    <entry>
+        <id>{{ item.link }}</id>
+        <title>{{ item.title }}</title>
+        <author><name>{{ item.author }}</name></author>
+        <published>{{ item.pubDate }}</published>
+        <updated>{{ item.pubDate }}</updated>
+        <link href="{{ item.link }}"/>
+        <content type="html">{{ item.description }}</content>
+    </entry>
+    {% endfor %}
+</feed>

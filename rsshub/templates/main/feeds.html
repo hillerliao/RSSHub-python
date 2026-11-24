@@ -24,6 +24,20 @@
 <!--item info start-->
 <div class="card text-left">
         <div class="card-body">
+                <h4 class="card-title">韭圈 · 投研工作台</h4>
+                <p class="card-text">订阅 <a href="https://jiucaishuo.com/feed" target="_blank">韭菜说公开播报</a>，含正文、图片和指标。</p>
+                <p class="card-text">路由：<a href="/jiucaishuo/feed"><code>/jiucaishuo/feed</code></a></p>
+                <p class="card-text">参数：<code>agent_id</code> 可选，频道 ID（正整数，见官网频道 URL）；<code>tab</code> 为 all（默认）或 recommend。</p>
+                <p class="card-text">举例：<a href="/jiucaishuo/feed?agent_id=13&amp;limit=20"><code>/jiucaishuo/feed?agent_id=13&amp;limit=20</code></a></p>
+                <p class="card-text">抓取近 90 天内最多 100 条公开播报，支持通用过滤；缓存 5 分钟，无需浏览器。个人订阅和私人机器人不支持。</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
                 <h4 class="card-title">ASMR Online</h4>
                 <h6 class="text-muted">ASMR <a href="https://github.com/bamboo-king" target="_blank"
                                 class="badge badge-secondary">by Bamboo_King</a></h6>
@@ -1436,6 +1450,18 @@
 </div>
 <br>
 <!--item prudential end-->
+
+<!--item skillhub start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">SkillHub 技能库</h4>
+                <p class="card-text">路由：<code>/skillhub/skills</code></p>
+                <p class="card-text">抓取 <a href="https://skillhub.swaggin.cn/skills.html">SkillHub 技能库</a>，支持通用标题、描述过滤和 <code>?limit=10</code>。</p>
+                <p class="card-text">当前上游为 data-simulator.js 静态演示数据，没有真实发布日期；按 ID 倒序排列不代表已验证的发布时间。条目时间取源文件 Last-Modified，链接回技能库（站点未提供详情页）。缓存 1 小时。</p>
+        </div>
+</div>
+<br>
+<!--item skillhub end-->
 
 <!--item search start-->
 <div class="card text-left">
