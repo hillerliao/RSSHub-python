@@ -38,12 +38,13 @@ uv run flask run
 
 ### Dynamic Source Discovery (`/randomline`)
 Extract random content blocks from various file formats.
-- Supports: `CSV`, `TSV`, `TXT`, `PDF`, `EPUB`, `MOBI`, and Web URLs.
+- Supports: `CSV`, `TSV`, `TXT`, `MD`, `PDF`, `EPUB`, `MOBI`, and Web URLs.
 - Features: Automatic paragraph joining for PDFs and readability extraction for web pages.
 - Parameters:
-  - `url`: Custom file URL (supports CSV/TXT/PDF/EPUB/MOBI or web pages)
+  - `url`: Custom file URL (supports CSV/TXT/MD/PDF/EPUB/MOBI or web pages)
   - `title_col`: Column index for title (0-based, default: 0)
   - `delimiter`: Separator type (`tab`, `newline`, `double_newline`, `triple_newline`, etc.)
+    For `MD`/HTML sources one physical line = one item by default; use `p` to keep whole paragraphs merged.
   - `min_length`: Minimum title length requirement
   - `include_context`: Include previous and next lines in description when set to `true`
 

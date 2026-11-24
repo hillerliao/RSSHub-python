@@ -32,3 +32,5 @@ debug*
 logs/
 *.log
 tmp*
+*tmp*
+.env*

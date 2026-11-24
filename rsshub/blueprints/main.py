@@ -434,6 +434,31 @@ def google_news(keyword=''):
         sort=_flag('sort'),
     )))
 
+@bp.route('/x/<string:username>')
+@bp.route('/x')
+@swr_cache(timeout=1800)  # 30分钟SWR缓存：Google News RSS 索引延迟本来就大，缓存防过频
+def twitter_user(username=''):
+    """Twitter / X 用户时间线（通过 Google News RSS，无需登录 cookie）。
+
+    把 ``site:x.com/<username>`` 丢给 ``news.google.com/rss/search``，
+    让已被 Google News 索引的推文以 RSS 形式返回。无封号风险。
+
+    关键：Google News 按 ``ceid`` 把索引分桶。中文内容账号用 CN 桶最新，
+    英文内容账号用 US 桶最新。默认同时查 cn + us 两个桶再合并去重。
+
+    短路径 ``/x/<username>`` 与已有 ``/xhunt`` / ``/xueqiu`` / ``/xinhuanet``
+    不冲突：Flask 按 segment 数匹配，本路由要求恰好两段 ``x`` + username。
+    """
+    from rsshub.spiders.twitter.user import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(
+        username=username or request.args.get('username', ''),
+        when=request.args.get('when', default='7d', type=str),
+        editions=request.args.get('editions', default='cn,us', type=str),
+        limit=request.args.get('limit', default=30, type=int),
+        auto=request.args.get('auto', default='', type=str).lower() in ('1', 'true', 'yes'),
+    )))
+
+
 @bp.route('/mp/gh/<string:gh>')
 def mp_gh(gh=''):
     from rsshub.spiders.mp.gh import ctx
@@ -542,6 +567,13 @@ def zhihu_question(qid):
     return render_template('main/atom.xml', **filter_content(ctx_question(qid)))
 
 
+@bp.route('/zhitongcaijing/theme/<string:theme_id>')
+@cache.cached(timeout=3600)
+def zhitongcaijing_theme(theme_id=''):
+    from rsshub.spiders.zhitongcaijing.theme import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(theme_id)))
+
+
 @bp.route('/xueqiu/user/<string:user_id>')
 @swr_cache(timeout=1800)  # 30分钟缓存
 def xueqiu_user(user_id):
@@ -574,6 +606,14 @@ def danjuan_departure(strategy_code='TIA08030'):
     return render_template('main/atom.xml', **filter_content(ctx(strategy_code, page_no, page_size)))
 
 
+@bp.route('/jike/topic/<string:topic_id>')
+@bp.route('/jike/topic/<string:topic_id>/<int:show_uid>')
+@swr_cache(timeout=1800)  # 30分钟缓存
+def jike_topic(topic_id, show_uid=0):
+    from rsshub.spiders.jike.topic import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(topic_id, show_uid)))
+
+
 @bp.route('/scrape/<path:url>')
 @cache.cached(timeout=300)  # 5分钟缓存
 def scrape_html(url):
@@ -604,7 +644,8 @@ def random_line():
     delimiter = request.args.get('delimiter')
     min_length = request.args.get('min_length', default=0, type=int)
     include_context = request.args.get('include_context', default='false', type=str).lower() == 'true'
-    return render_template('main/atom.xml', **filter_content(ctx(url, title_col, delimiter=delimiter, min_length=min_length, include_context=include_context)))
+    chapter = request.args.get('chapter')
+    return render_template('main/atom.xml', **filter_content(ctx(url, title_col, delimiter=delimiter, min_length=min_length, include_context=include_context, chapter=chapter)))
 
 
 @bp.route('/hf_dataset')
@@ -675,4 +716,30 @@ def skillhub_skills():
     except (requests.RequestException, ValueError):
         abort(502)
     return render_template('main/atom.xml', **context)
+@bp.route('/chinadaily/latest')
+@bp.route('/chinadaily')
+@bp.route('/chinadaily/<path:section>')
+@swr_cache(timeout=600)  # 10分钟SWR缓存：chinadaily 跨境抓取偶发缓慢，回源抽风时返回旧数据
+def chinadaily_latest(section='china/59b8d010a3108c54ed7dfc23'):
+    from rsshub.spiders.chinadaily.latest import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(section)))
+
+
+@bp.route('/chinadailyglobal/topnews')
+@bp.route('/chinadailyglobal')
+@bp.route('/chinadailyglobal/<path:section>')
+@swr_cache(timeout=600)  # 10分钟SWR缓存：chinadailyglobal 跨境抓取偶发缓慢，回源抽风时返回旧数据
+def chinadailyglobal_topnews(section='e/5c00a33ba310eff30328c087'):
+    from rsshub.spiders.chinadailyglobal.topnews import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(section)))
+
+
+@bp.route('/zhitongcaijing/profile/<string:author_id>')
+@bp.route('/zhitongcaijing/profile')
+@swr_cache(timeout=600)  # 10分钟SWR缓存：智通财经作者专栏JSON接口,跨境偶发缓慢时返回旧数据
+def zhitongcaijing_profile(author_id='85'):
+    limit = request.args.get('limit', default=10, type=int)
+    name = request.args.get('name', default='', type=str)
+    from rsshub.spiders.zhitongcaijing.profile import ctx
+    return render_template('main/atom.xml', **filter_content(ctx(author_id, limit=limit, name=name)))
 

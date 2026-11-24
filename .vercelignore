@@ -3,3 +3,38 @@ pyproject.toml
 Pipfile
 Pipfile.lock
 .python-version
+
+# The CLI uploads the local working tree: it honours this file plus Vercel's
+# built-in defaults, but *not* .gitignore. Everything below is excluded from
+# git anyway, so this only affects `vercel deploy` from a working copy.
+.venv
+venv
+testenv
+__pycache__
+*.py[cod]
+.pytest_cache
+
+# main.py calls load_dotenv('.env') on import, so shipping this file would
+# inject FLASK_ENV=development (and enable Flask_DebugToolbar) in production.
+.env
+.env.*
+.flaskenv
+
+tmp*
+logs
+data-dev.db
+
+# Host / Docker deploy tooling; Vercel builds with @vercel/python instead.
+Dockerfile
+Dockerfile.*
+docker-compose.yml
+supervisord.conf
+gunicorn.conf
+flask.conf
+push_docker.sh
+deploy_liao.ps1
+.dockerignore
+
+.vscode
+.idea
+.codebuddy

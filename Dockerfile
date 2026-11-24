@@ -8,6 +8,7 @@ COPY . .
 
 # Install Python dependencies
 # Official image has system dependencies, we just need python deps
+ENV PIP_REQUIRE_HASHES=
 RUN pip install --no-cache-dir -r requirements-full.txt && \
     playwright install chromium
 

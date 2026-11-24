@@ -126,28 +126,42 @@ def _extract_semantic_text(html_content, heading_hierarchy=None, split_lines=Tru
 
     return extracted
 
-def _extract_semantic_markdown(text):
-    """Extract text from markdown headings and paragraphs, tracking hierarchical chapters."""
-    lines = text.split('\n')
+def _extract_semantic_markdown(text, split_lines=True):
+    """
+    Extract text from markdown headings and paragraphs, tracking hierarchical chapters.
+
+    split_lines=True  -> every physical line becomes one item (respects hard-wrapped lines)
+    split_lines=False -> consecutive lines are merged into one paragraph item
+    """
+    lines = text.replace('\r\n', '\n').replace('\r', '\n').split('\n')
     extracted = []
     heading_hierarchy = {}
     
     current_para = []
     
+    def breadcrumb():
+        return " > ".join([heading_hierarchy[l] for l in range(1, 7) if l in heading_hierarchy])
+    
     def flush_para():
-        if current_para:
+        if not current_para:
+            return
+        if split_lines:
+            # Keep each line separate so hard-wrapped books don't collapse into one blob
+            for raw_line in current_para:
+                item = raw_line.strip()
+                if item:
+                    extracted.append({
+                        "line_content": item,
+                        "chapter": breadcrumb()
+                    })
+        else:
             content = " ".join(current_para).strip()
             if content:
-                # Build breadcrumb
-                breadcrumb_parts = []
-                for l in range(1, 7):
-                    if l in heading_hierarchy:
-                        breadcrumb_parts.append(heading_hierarchy[l])
                 extracted.append({
                     "line_content": content,
-                    "chapter": " > ".join(breadcrumb_parts)
+                    "chapter": breadcrumb()
                 })
-            current_para.clear()
+        current_para.clear()
 
     for line in lines:
         stripped_line = line.strip()
@@ -247,7 +261,10 @@ def extract_content(response, url, user_delimiter=None):
         else:
             text = response.text
         
-        extracted_parts = _extract_semantic_markdown(text)
+        # `delimiter=p` keeps whole paragraphs merged; anything else (including the
+        # default and `newline`) yields one item per physical line, which avoids
+        # hard-wrapped books collapsing into one giant block.
+        extracted_parts = _extract_semantic_markdown(text, split_lines=split_lines)
         content = json.dumps(extracted_parts, ensure_ascii=False)
         delimiter = 'semantic'
     elif ext == '.pdf':
@@ -365,7 +382,7 @@ def extract_content(response, url, user_delimiter=None):
     
     return content, delimiter, feed_title
 
-def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0, include_context=False):
+def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/main/raz.csv", title_col=0, delimiter=None, min_length=0, include_context=False, chapter=None):
     
     feed_title = "Random Line Feed"
     try:
@@ -378,7 +395,7 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
         filename = filename.upper()
         feed_title = f'{filename} {filetype.upper()} Feed'.strip()
         
-        cache_key = f'randomline_csv_content:{url}'
+        cache_key = f'randomline_csv_content:{url}:{delimiter or "default"}'
         content = cache.get(cache_key)
         
         if not content:
@@ -544,6 +561,22 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
                 title_col = 0
             title_column_name = fieldnames[title_col]
         
+        # Filter rows by chapter (only available in semantic extraction mode)
+        if chapter:
+            chapter_keyword = chapter.strip()
+            chapter_rows = [
+                (ln, row) for ln, row in indexed_rows
+                if chapter_keyword.lower() in (row.get('chapter') or '').lower()
+            ]
+            if not chapter_rows:
+                return {
+                    'title': feed_title,
+                    'link': url,
+                    'description': f'No lines found in chapter: {chapter}',
+                    'items': []
+                }
+            indexed_rows = chapter_rows
+
         # Filter rows that meet the min_length criteria
         if min_length > 0:
             valid_rows = [
@@ -651,10 +684,20 @@ def ctx(url="https://raw.githubusercontent.com/HenryLoveMiller/ja/refs/heads/mai
             'pubDate': '',  # No date in CSV
         }
 
+        # Build feed description based on actual file type / extraction mode
+        if filetype:
+            source_desc = f'Random item from {filetype.upper()} file'
+        elif delimiter == 'semantic':
+            source_desc = 'Random item from file (semantic extraction)'
+        elif is_newline_delimiter:
+            source_desc = 'Random line from file'
+        else:
+            source_desc = 'Random item from CSV/TSV file'
+
         return {
             'title': feed_title,
             'link': url,
-            'description': 'Random item from CSV file',
+            'description': source_desc,
             'items': [item]
         }
     except Exception as e:

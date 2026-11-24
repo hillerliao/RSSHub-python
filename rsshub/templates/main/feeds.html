@@ -111,6 +111,66 @@
 <!--item info start-->
 <div class="card text-left">
         <div class="card-body">
+                <h4 class="card-title">Twitter / X 用户时间线</h4>
+                <h6 class="text-muted">Twitter User Timeline (via Google News)</h6>
+                <p class="card-text">举例：<a
+                                href="https://pyrsshub.vercel.app/x/elonmusk?when=24h"
+                                target="_blank">https://pyrsshub.vercel.app/x/elonmusk?when=24h</a>
+                </p>
+                <p class="card-text">路由：<code>/x/&lt;username&gt;</code> 或 <code>/x?username=&lt;name&gt;</code></p>
+                <p class="card-text">参数：</p>
+                <ul>
+                        <li><code>when</code> 时间窗 <code>24h</code> / <code>7d</code> / <code>30d</code>，默认 <code>7d</code></li>
+                        <li><code>editions</code> 用哪几个桶，逗号分隔，默认 <code>cn,us</code>（双桶合并）
+                                可选：<code>cn</code>（中文桶） / <code>us</code>（美/英桶） / <code>gb</code> / <code>jp</code> / <code>tw</code></li>
+                        <li><code>auto=1</code> 自动选桶 —— 把 <code>editions</code> 列出的桶都查一遍，挑返回最新推文的那桶。</li>
+                        <li><code>limit</code> 最多返回多少条，默认 <code>30</code></li>
+                </ul>
+                <p class="card-text">原理：把 <code>site:x.com/&lt;username&gt;</code> 丢给 Google News 的 RSS 端点
+                        <code>https://news.google.com/rss/search</code>，把已被 Google News 索引的推文转成 Atom。
+                        <strong>不需要 X 登录 cookie、无封号风险</strong>。</p>
+                <p class="card-text">⚠️ <strong>桶选择很重要</strong>：Google News 按 <code>ceid</code> 把索引分桶，
+                        中文内容账号（如本机测试的 <code>wangwatchworld</code>）用 CN 桶拿当天推文，
+                        用 US 桶只有几个月前的；英文内容账号（如 <code>elonmusk</code>）反过来。
+                        三个用法：
+                        <strong>(1)</strong> 你知道账号语言 → 直接 <code>?editions=cn</code> 或 <code>?editions=us</code>；
+                        <strong>(2)</strong> 不确定 → <code>?editions=cn,us</code> 默认合并；
+                        <strong>(3)</strong> 懒得想 → <code>?auto=1&amp;editions=cn,us,gb,jp,tw</code> 自动选最合适的桶。
+                        实时性受 Google News 索引速度制约（中文桶 0–7 天，英文桶可接近实时）。</p>
+                <p class="card-text">permalink 推文（标题是 URL 的那种）的真实 x.com 链接会被提到
+                        <code>link</code> 字段；其它条目仍是 <code>news.google.com/rss/articles/CBMi...</code> 跳转。</p>
+                <p class="card-text">⚠️ Google News 会把同一条推文收录成 <strong>多个不同的 article id</strong>（同一个桶里就能重复 2–3 条），
+                        因此本节点按<strong>标题排重</strong>，不会出现重复推文；代价是同一作者在时间窗内重复发一模一样的文案会被并成一条。</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">即刻</h4>
+                <h6 class="text-muted">圈子</h6>
+                <p class="card-text">举例：<a
+                                href="https://pyrsshub.vercel.app/jike/topic/61e120ee29850b0010e0bf08"
+                                target="_blank">https://pyrsshub.vercel.app/jike/topic/61e120ee29850b0010e0bf08</a>
+                </p>
+                <p class="card-text">路由：<code>/jike/topic/&lt;topic_id&gt;</code> 或 <code>/jike/topic/&lt;topic_id&gt;/&lt;show_uid&gt;</code></p>
+                <p class="card-text">参数：</p>
+                <ul>
+                        <li><code>topic_id</code> 圈子 id，可在即刻 web 端圈子页或 APP 分享出来的圈子页 URL 中找到</li>
+                        <li><code>show_uid</code> 是否在内容中显示用户信息，设置为 <code>1</code> 则开启</li>
+                </ul>
+                <p class="card-text">原理：解析 <code>m.okjike.com</code> 圈子页内嵌的 JSON 数据，
+                        <strong>不需要登录</strong>。目前只取第一页（最新 10 条左右）。</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
                 <h4 class="card-title">RSS 代理</h4>
                 <h6 class="text-muted">RSS 代理 <a href="https://github.com/hillerliao" target="_blank"
                                 class="badge badge-secondary">by hillerliao</a></h6>
@@ -298,6 +358,7 @@
                                 表示4个空行），或者使用自定义分隔符（如 <code>---</code>、<code>***</code>），默认为逗号。</li>
                         <li><code>min_length</code> Optional，最小长度限制，只有当标题长度大于等于该值时才会被选中，默认为0。</li>
                         <li><code>include_context</code> Optional，是否包含上一行和下一行，设置为 <code>true</code> 时会在描述中显示所选内容的上一行和下一行，默认为 <code>false</code>。</li>
+                        <li><code>chapter</code> Optional，指定章节名（支持关键词子串匹配，无需输入完整章节名），仅当内容为 HTML/Markdown/EPUB/MOBI 等自动提取章节结构的语义模式时生效，如 <code>chapter=Waterfall</code> 或 <code>chapter=第二章</code>。</li>
                 </ul>
                 <p class="card-text">功能：从文件或网页中随机选择一行（或一段）生成RSS项。如果是网页，会自动提取正文内容并按换行符分割。举例：
                         <a href="https://pyrsshub.vercel.app/randomline?min_length=50&url=https://www.gushiwen.cn/guwen/bookv_c89d8eda4c2d.aspx"
@@ -1058,6 +1119,65 @@
                 <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/xinhuanet/world"
                                 target="_blank">https://pyrsshub.vercel.app/xinhuanet/world</a></p>
                 <p class="card-text">路由：<code>/xinhuanet/world</code></p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">中国日报 - Latest</h4>
+                <h6 class="text-muted">China Daily - China 频道最新列表<a href="https://github.com/hillerliao"
+                                target="_blank" class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/chinadaily/latest"
+                                target="_blank">https://pyrsshub.vercel.app/chinadaily/latest</a></p>
+                <p class="card-text">路由：<code>/chinadaily/latest</code></p>
+                <p class="card-text">说明：抓取中国日报英文网「China / Latest（最新）」新闻列表，默认 20 条；也支持 <code>/chinadaily/:section</code> 传入其他相同布局的栏目列表路径</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">中国日报(国际版) - Top News</h4>
+                <h6 class="text-muted">China Daily Global - Top News 头条列表<a href="https://github.com/hillerliao"
+                                target="_blank" class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/chinadailyglobal/topnews"
+                                target="_blank">https://pyrsshub.vercel.app/chinadailyglobal/topnews</a></p>
+                <p class="card-text">路由：<code>/chinadailyglobal/topnews</code></p>
+                <p class="card-text">说明：抓取中国日报国际版网站（chinadailyglobal.com）「Top News（头条）」列表，默认 20 条；也支持 <code>/chinadailyglobal/:section</code> 传入其他相同布局的栏目列表路径</p>
+        </div>
+</div>
+<br>
+<!--item info end-->
+
+<!--item info start-->
+<div class="card text-left">
+        <div class="card-body">
+                <h4 class="card-title">智通财经 - 作者专栏</h4>
+                <h6 class="text-muted">智通财经 作者专栏文章列表<a href="https://github.com/hillerliao"
+                                target="_blank" class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/zhitongcaijing/profile/85"
+                                target="_blank">https://pyrsshub.vercel.app/zhitongcaijing/profile/85</a></p>
+                <p class="card-text">路由：<code>/zhitongcaijing/profile/:author_id</code></p>
+                <p class="card-text">参数：</p>
+                <ul>
+                        <li><code>author_id</code> [可选，作者/专栏 id，默认 85，对应<a href="https://www.zhitongcaijing.com/author/profile/85.html" target="_blank">智通数据专栏</a>]</li>
+                        <li><code>limit</code> [可选，限制条数，默认 10]</li>
+                        <li><code>name</code> [可选，自定义显示名。默认从作者页 <code>&lt;title&gt;</code>(形如「专栏-智通财经网-智通数据」)动态切出专栏名，切不到时退化为「专栏 #&lt;id&gt;」]</li>
+                </ul>
+                <p class="card-text">说明：基于站点 <code>/column/detail.html?data_type=1&amp;id=&lt;author_id&gt;</code> JSON 接口拉取专栏首页文章，默认返回最新 10 条</p>
+
+                <h6 class="text-muted">智通财经 主题聚合<a href="https://github.com/hillerliao" target="_blank"
+                                class="badge badge-secondary">by hillerliao</a></h6>
+                <p class="card-text">举例：<a href="https://pyrsshub.vercel.app/zhitongcaijing/theme/20"
+                                target="_blank">https://pyrsshub.vercel.app/zhitongcaijing/theme/20</a>（隔夜美股）</p>
+                <p class="card-text">路由：<code>/zhitongcaijing/theme/:theme_id</code></p>
+                <p class="card-text">参数：theme_id [必填，主题 id，例如 20（隔夜美股），对应<a href="https://www.zhitongcaijing.com/theme/detail/20.html" target="_blank">智通财经主题页</a>]</p>
+                <p class="card-text">说明：基于站点 <code>/theme/article-list.html?id=&lt;theme_id&gt;&amp;page=&lt;n&gt;</code> JSON 接口聚合主题列表，默认取前 2 页约 40 条</p>
         </div>
 </div>
 <br>
